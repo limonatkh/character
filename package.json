@@ -1,0 +1,23 @@
+{
+  "name": "limonat-character-creator",
+  "version": "1.0.0",
+  "description": "Standalone voxel character creator for Limonat: AI-generated JSON commands customize a rigged base character; exports GLB + metadata + a Limonat drop-in file.",
+  "scripts": {
+    "start": "python3 -m http.server 8080",
+    "test": "node --test tests/unit/*.test.mjs",
+    "test:e2e": "node tests/e2e/app.test.mjs",
+    "test:dist": "node tests/e2e/app.test.mjs --dist",
+    "gen": "node tools/gen-schema.mjs",
+    "build": "node tools/gen-schema.mjs && node tools/build.mjs"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@gltf-transform/core": "^4.5.1",
+    "esbuild": "^0.28.2",
+    "gltf-validator": "^2.0.0-dev.3.10",
+    "three": "^0.158.0",
+    "playwright": "1.56.0"
+  },
+  "type": "module",
+  "private": true
+}

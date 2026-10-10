@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "1.0",
+  "mode": "replace",
+  "baseCharacter": "base_classic_block",
+  "reference": {
+    "description": "Cheerful young pirate: straw hat with a red band, short messy black hair, scar under the left eye, open red sleeveless vest over a bare chest, blue rolled knee shorts, yellow sash, sandals.",
+    "source": "anime"
+  },
+  "character": {
+    "name": "Straw Hat Pirate",
+    "body": {
+      "typeId": "body_block_01",
+      "skinColor": "#E8B48A",
+      "proportions": {
+        "headScale": 1.12,
+        "torsoWidth": 0.92,
+        "legLength": 0.95
+      }
+    },
+    "head": {
+      "shapeId": "head_round_01"
+    },
+    "hair": {
+      "assetId": "hair_spiky_01",
+      "color": "#161616"
+    },
+    "face": {
+      "eyes": {
+        "styleId": "eyes_anime_01",
+        "color": "#2A1A12",
+        "gaze": "center"
+      },
+      "eyebrows": {
+        "styleId": "brows_thick_01",
+        "color": "#161616"
+      },
+      "mouth": {
+        "styleId": "mouth_grin_01"
+      },
+      "facialHair": {
+        "assetId": "facialhair_none"
+      },
+      "details": [
+        {
+          "assetId": "detail_scar_cheek_01",
+          "side": "left",
+          "color": "#7A3030"
+        }
+      ]
+    },
+    "headwear": {
+      "assetId": "hat_straw_01",
+      "color": "#E6C35C",
+      "secondaryColor": "#C62E2E",
+      "material": "cloth"
+    },
+    "clothing": {
+      "top": {
+        "assetId": "top_none"
+      },
+      "outerwear": {
+        "assetId": "outer_vest_open_01",
+        "color": "#C8282A",
+        "secondaryColor": "#F2C230",
+        "material": "cloth"
+      },
+      "bottom": {
+        "assetId": "bottom_shorts_rolled_01",
+        "color": "#3E6FB0",
+        "material": "denim"
+      },
+      "shoes": {
+        "assetId": "shoes_sandals_01",
+        "color": "#7A4A2A",
+        "secondaryColor": "#3A2618",
+        "material": "leather"
+      }
+    },
+    "accessories": [
+      {
+        "assetId": "acc_belt_01",
+        "attachTo": "waist",
+        "color": "#F2C230",
+        "secondaryColor": "#F2C230",
+        "material": "cloth"
+      }
+    ]
+  },
+  "uncertain": [
+    {
+      "field": "character.clothing.shoes",
+      "note": "Feet are small in the image; sandals chosen."
+    }
+  ],
+  "unsupported": [
+    {
+      "feature": "Yellow cloth sash tied at the waist",
+      "closestSubstitute": "acc_belt_01 coloured yellow"
+    }
+  ]
+}

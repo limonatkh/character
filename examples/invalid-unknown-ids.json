@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "1.0",
+  "character": {
+    "hair": {
+      "assetId": "hair_spikey_01",
+      "color": "red"
+    },
+    "clothing": {
+      "top": {
+        "assetId": "top_hawaiian_99"
+      }
+    },
+    "accessories": [
+      {
+        "assetId": "acc_glasses_round_01",
+        "attachTo": "tail"
+      }
+    ]
+  }
+}

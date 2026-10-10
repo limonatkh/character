@@ -1,0 +1,1875 @@
+{
+  "schemaVersion": "1.0",
+  "generator": "Limonat Character Creator 1.0.0",
+  "bases": [
+    {
+      "id": "base_limonat_hero",
+      "description": "The Limonat hero (white toon body, black beanie, white tuft, big round eyes), with normal connected arms."
+    },
+    {
+      "id": "base_classic_block",
+      "description": "Blocky human with normal proportions; a neutral starting point for realistic people."
+    },
+    {
+      "id": "base_chibi",
+      "description": "Cute chibi proportions: very big head, short body and legs, anime eyes."
+    }
+  ],
+  "slots": {
+    "bodyType": {
+      "path": "body.typeId",
+      "assets": [
+        {
+          "id": "body_toon_01",
+          "label": "Limonat toon",
+          "description": "Limonat cartoon body (same proportions as the game hero): big head, compact torso, thin stick arms and legs, round mitten hands. Clothes look chunky over the thin limbs.",
+          "tags": [
+            "cartoon",
+            "chibi",
+            "stick limbs",
+            "mitten hands",
+            "default"
+          ],
+          "colors": []
+        },
+        {
+          "id": "body_block_01",
+          "label": "Classic block",
+          "description": "Classic blocky voxel humanoid: square limbs as thick as a block, square hands, normal human proportions with a slightly large head.",
+          "tags": [
+            "blocky",
+            "minecraft-like",
+            "realistic proportions",
+            "thick limbs"
+          ],
+          "colors": []
+        }
+      ]
+    },
+    "headShape": {
+      "path": "head.shapeId",
+      "assets": [
+        {
+          "id": "head_round_01",
+          "label": "Round",
+          "description": "Rounded cartoon head (stacked blocks that read as a circle from the front). Best for most cartoon and anime characters.",
+          "tags": [
+            "round",
+            "cartoon",
+            "default"
+          ],
+          "colors": []
+        },
+        {
+          "id": "head_block_01",
+          "label": "Square block",
+          "description": "A single cube head, classic voxel style. Good for blocky or robot-like characters and realistic people.",
+          "tags": [
+            "square",
+            "cube",
+            "blocky"
+          ],
+          "colors": []
+        },
+        {
+          "id": "head_tall_01",
+          "label": "Tall oval",
+          "description": "Rounded head that is taller and narrower than round; suits adults, long faces and older characters.",
+          "tags": [
+            "oval",
+            "long face",
+            "adult"
+          ],
+          "colors": []
+        }
+      ]
+    },
+    "hair": {
+      "path": "hair.assetId",
+      "assets": [
+        {
+          "id": "hair_none",
+          "label": "Bald / none",
+          "description": "No hair (bald or fully covered).",
+          "tags": [
+            "bald",
+            "none",
+            "shaved"
+          ],
+          "colors": []
+        },
+        {
+          "id": "hair_buzz_01",
+          "label": "Buzz cut",
+          "description": "Very short buzz cut that hugs the head; a thin layer of hair with no volume.",
+          "tags": [
+            "buzz",
+            "very short",
+            "military",
+            "crew cut"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Hair colour",
+              "default": "#2B2118"
+            }
+          ]
+        },
+        {
+          "id": "hair_short_01",
+          "label": "Short",
+          "description": "Neat short hair with a small fringe; sides cover the top of the ears. Everyday hairstyle.",
+          "tags": [
+            "short",
+            "neat",
+            "everyday",
+            "fringe"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Hair colour",
+              "default": "#3A2A1E"
+            }
+          ]
+        },
+        {
+          "id": "hair_spiky_01",
+          "label": "Spiky / messy",
+          "description": "Short messy anime hair with spikes on top and the back, and pointed bangs hanging over the forehead (energetic shonen hero look).",
+          "tags": [
+            "spiky",
+            "messy",
+            "anime",
+            "shonen",
+            "short",
+            "bangs"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Hair colour",
+              "default": "#1E1E22"
+            }
+          ]
+        },
+        {
+          "id": "hair_long_01",
+          "label": "Long straight",
+          "description": "Long straight hair parted in the middle, falling past the shoulders at the back.",
+          "tags": [
+            "long",
+            "straight",
+            "middle part",
+            "flowing"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Hair colour",
+              "default": "#4A2E1C"
+            }
+          ]
+        },
+        {
+          "id": "hair_bob_01",
+          "label": "Bob with bangs",
+          "description": "Chin-length bob haircut with straight bangs cut across the forehead.",
+          "tags": [
+            "bob",
+            "bangs",
+            "chin length",
+            "straight fringe"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Hair colour",
+              "default": "#20140E"
+            }
+          ]
+        },
+        {
+          "id": "hair_ponytail_01",
+          "label": "Ponytail",
+          "description": "Hair pulled back into a ponytail at the back of the head, tied with a band (secondary colour).",
+          "tags": [
+            "ponytail",
+            "tied back",
+            "sporty"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Hair colour",
+              "default": "#3A2414"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Hair tie",
+              "default": "#D94B5C"
+            }
+          ]
+        },
+        {
+          "id": "hair_bun_01",
+          "label": "Top bun",
+          "description": "Hair gathered into a round bun on top/back of the head, with a hair tie (secondary colour).",
+          "tags": [
+            "bun",
+            "top knot",
+            "tied up"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Hair colour",
+              "default": "#2A1A12"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Hair tie",
+              "default": "#E0B13B"
+            }
+          ]
+        },
+        {
+          "id": "hair_afro_01",
+          "label": "Afro / big curly",
+          "description": "Big round voluminous curly hair (afro) standing far off the head.",
+          "tags": [
+            "afro",
+            "curly",
+            "big",
+            "volume",
+            "round"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Hair colour",
+              "default": "#1C1410"
+            }
+          ]
+        },
+        {
+          "id": "hair_mohawk_01",
+          "label": "Mohawk",
+          "description": "Tall strip of hair running front-to-back over the middle of the head, with shaved sides (secondary colour = shaved stubble).",
+          "tags": [
+            "mohawk",
+            "punk",
+            "shaved sides",
+            "tall"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Hair colour",
+              "default": "#D93A2B"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Shaved sides",
+              "default": "#4A3A30"
+            }
+          ]
+        },
+        {
+          "id": "hair_tuft_01",
+          "label": "Limonat tuft",
+          "description": "The Limonat hero's single spiky tuft sweeping up and to the right out of the top of the head or hat; no other visible hair.",
+          "tags": [
+            "tuft",
+            "cowlick",
+            "limonat",
+            "spike",
+            "single lock"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Hair colour",
+              "default": "#F7F7F5"
+            }
+          ]
+        }
+      ]
+    },
+    "headwear": {
+      "path": "headwear.assetId",
+      "assets": [
+        {
+          "id": "hat_none",
+          "label": "None",
+          "description": "No hat or headwear.",
+          "tags": [
+            "none",
+            "bare head"
+          ],
+          "colors": []
+        },
+        {
+          "id": "hat_beanie_01",
+          "label": "Beanie (Limonat)",
+          "description": "Snug knitted beanie covering the top of the head down to the eyebrows, with a small knot on top (the Limonat hero's black beanie).",
+          "tags": [
+            "beanie",
+            "knit cap",
+            "winter hat",
+            "limonat"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Hat colour",
+              "default": "#161616"
+            }
+          ]
+        },
+        {
+          "id": "hat_cap_01",
+          "label": "Baseball cap",
+          "description": "Baseball cap with a front brim (secondary colour = brim).",
+          "tags": [
+            "cap",
+            "baseball cap",
+            "sporty",
+            "brim"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Hat colour",
+              "default": "#2F5FD0"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Brim",
+              "default": "#1E3A8A"
+            }
+          ]
+        },
+        {
+          "id": "hat_straw_01",
+          "label": "Straw hat",
+          "description": "Wide-brimmed straw hat with a coloured band around the crown (secondary colour = band). The classic pirate-hero straw hat.",
+          "tags": [
+            "straw hat",
+            "sun hat",
+            "wide brim",
+            "pirate"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Hat colour",
+              "default": "#E6C35C"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Band",
+              "default": "#C62E2E"
+            }
+          ]
+        },
+        {
+          "id": "hat_headband_01",
+          "label": "Headband / bandana",
+          "description": "Cloth band tied around the forehead with tails at the back; optional front plate (secondary colour). Ninja headband, sports band or tied bandana.",
+          "tags": [
+            "headband",
+            "bandana",
+            "ninja",
+            "sweatband"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Hat colour",
+              "default": "#2D3A8C"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Front plate",
+              "default": "#AEB6C2"
+            }
+          ]
+        },
+        {
+          "id": "hat_tophat_01",
+          "label": "Top hat",
+          "description": "Tall formal top hat with a narrow brim and a band (secondary colour). Magicians, gentlemen, villains.",
+          "tags": [
+            "top hat",
+            "formal",
+            "tall hat",
+            "magician"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Hat colour",
+              "default": "#1E1E22"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Band",
+              "default": "#8E2B2B"
+            }
+          ]
+        }
+      ]
+    },
+    "eyes": {
+      "path": "face.eyes.styleId",
+      "assets": [
+        {
+          "id": "eyes_round_big_01",
+          "label": "Big round (Limonat)",
+          "description": "Huge round cartoon eyes: thick black ring, white eyeball and a coloured pupil (the Limonat hero eyes). Supports gaze direction.",
+          "tags": [
+            "big",
+            "round",
+            "cartoon",
+            "cute",
+            "limonat"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Eye colour",
+              "default": "#161616"
+            }
+          ]
+        },
+        {
+          "id": "eyes_dot_01",
+          "label": "Small dots",
+          "description": "Small solid dot eyes, simple and cute (chibi / mascot style).",
+          "tags": [
+            "small",
+            "dot",
+            "simple",
+            "chibi"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Eye colour",
+              "default": "#161616"
+            }
+          ]
+        },
+        {
+          "id": "eyes_block_01",
+          "label": "Classic block",
+          "description": "Classic voxel-game eyes: a white rectangle with a square coloured iris. Good for realistic people and blocky styles.",
+          "tags": [
+            "classic",
+            "square",
+            "realistic",
+            "minecraft-like"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Iris",
+              "default": "#3B2A1E"
+            }
+          ]
+        },
+        {
+          "id": "eyes_anime_01",
+          "label": "Anime",
+          "description": "Tall anime eyes: thick upper lash line, big coloured iris with a darker pupil and a white highlight.",
+          "tags": [
+            "anime",
+            "manga",
+            "tall",
+            "expressive",
+            "highlight"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Iris",
+              "default": "#3D6FB8"
+            }
+          ]
+        },
+        {
+          "id": "eyes_sleepy_01",
+          "label": "Sleepy / closed",
+          "description": "Short horizontal dash eyes: sleepy, calm, squinting or closed eyes.",
+          "tags": [
+            "sleepy",
+            "closed",
+            "calm",
+            "squint",
+            "dash"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Eye colour",
+              "default": "#161616"
+            }
+          ]
+        },
+        {
+          "id": "eyes_happy_01",
+          "label": "Happy arcs ^ ^",
+          "description": "Closed happy eyes shaped like upside-down U (^ ^), used for laughing or very cheerful characters.",
+          "tags": [
+            "happy",
+            "laughing",
+            "closed",
+            "smiling eyes"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Eye colour",
+              "default": "#161616"
+            }
+          ]
+        }
+      ]
+    },
+    "eyebrows": {
+      "path": "face.eyebrows.styleId",
+      "assets": [
+        {
+          "id": "brows_none",
+          "label": "None",
+          "description": "No visible eyebrows (the Limonat hero has none).",
+          "tags": [
+            "none",
+            "hidden"
+          ],
+          "colors": []
+        },
+        {
+          "id": "brows_flat_01",
+          "label": "Thin straight",
+          "description": "Thin straight eyebrows; neutral expression.",
+          "tags": [
+            "thin",
+            "straight",
+            "neutral"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Eyebrow colour",
+              "default": "#2A211C"
+            }
+          ]
+        },
+        {
+          "id": "brows_thick_01",
+          "label": "Thick",
+          "description": "Thick, bold straight eyebrows.",
+          "tags": [
+            "thick",
+            "bold",
+            "heavy"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Eyebrow colour",
+              "default": "#2A211C"
+            }
+          ]
+        },
+        {
+          "id": "brows_angry_01",
+          "label": "Angry / determined",
+          "description": "Eyebrows slanting down toward the nose: angry, serious or determined.",
+          "tags": [
+            "angry",
+            "serious",
+            "determined",
+            "slanted"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Eyebrow colour",
+              "default": "#2A211C"
+            }
+          ]
+        },
+        {
+          "id": "brows_sad_01",
+          "label": "Worried / sad",
+          "description": "Eyebrows slanting up toward the nose: worried, sad or pleading.",
+          "tags": [
+            "sad",
+            "worried",
+            "raised inner"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Eyebrow colour",
+              "default": "#2A211C"
+            }
+          ]
+        },
+        {
+          "id": "brows_arched_01",
+          "label": "Arched",
+          "description": "Rounded arched eyebrows (flat top with short drops on both ends); surprised or elegant.",
+          "tags": [
+            "arched",
+            "surprised",
+            "elegant"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Eyebrow colour",
+              "default": "#2A211C"
+            }
+          ]
+        }
+      ]
+    },
+    "mouth": {
+      "path": "face.mouth.styleId",
+      "assets": [
+        {
+          "id": "mouth_dash_01",
+          "label": "Small dash",
+          "description": "Tiny straight line mouth; neutral or calm (Limonat hero).",
+          "tags": [
+            "neutral",
+            "small",
+            "line",
+            "calm"
+          ],
+          "colors": []
+        },
+        {
+          "id": "mouth_smile_01",
+          "label": "Smile",
+          "description": "Closed U-shaped smile.",
+          "tags": [
+            "smile",
+            "happy",
+            "friendly"
+          ],
+          "colors": []
+        },
+        {
+          "id": "mouth_grin_01",
+          "label": "Big grin (teeth)",
+          "description": "Wide open grin showing a row of white teeth; excited, cheeky or laughing (very common for energetic anime heroes).",
+          "tags": [
+            "grin",
+            "teeth",
+            "laughing",
+            "excited",
+            "wide"
+          ],
+          "colors": []
+        },
+        {
+          "id": "mouth_open_01",
+          "label": "Open \"O\"",
+          "description": "Small round open mouth: surprised, singing or talking.",
+          "tags": [
+            "open",
+            "surprised",
+            "o",
+            "shocked"
+          ],
+          "colors": []
+        },
+        {
+          "id": "mouth_frown_01",
+          "label": "Frown",
+          "description": "Upside-down U mouth: sad, grumpy or unimpressed.",
+          "tags": [
+            "frown",
+            "sad",
+            "grumpy",
+            "angry"
+          ],
+          "colors": []
+        },
+        {
+          "id": "mouth_cat_01",
+          "label": "Cat smile :3",
+          "description": "Small w-shaped \"cat\" smile (:3); playful or smug.",
+          "tags": [
+            "cat",
+            "w",
+            "playful",
+            "smug",
+            "cute"
+          ],
+          "colors": []
+        }
+      ]
+    },
+    "facialHair": {
+      "path": "face.facialHair.assetId",
+      "assets": [
+        {
+          "id": "facialhair_none",
+          "label": "None",
+          "description": "Clean shaven / no facial hair.",
+          "tags": [
+            "none",
+            "clean shaven"
+          ],
+          "colors": []
+        },
+        {
+          "id": "facialhair_mustache_01",
+          "label": "Mustache",
+          "description": "A thick mustache above the mouth.",
+          "tags": [
+            "mustache",
+            "moustache"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Facial hair colour",
+              "default": "#2B2118"
+            }
+          ]
+        },
+        {
+          "id": "facialhair_goatee_01",
+          "label": "Goatee",
+          "description": "Small beard on the chin only (goatee), optionally with a thin mustache.",
+          "tags": [
+            "goatee",
+            "chin beard"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Facial hair colour",
+              "default": "#2B2118"
+            }
+          ]
+        },
+        {
+          "id": "facialhair_beard_full_01",
+          "label": "Full beard",
+          "description": "Full beard covering the jaw, chin and cheeks up to the sideburns, with a mustache.",
+          "tags": [
+            "beard",
+            "full beard",
+            "bearded"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Facial hair colour",
+              "default": "#2B2118"
+            }
+          ]
+        },
+        {
+          "id": "facialhair_stubble_01",
+          "label": "Stubble",
+          "description": "Light stubble / five o'clock shadow on the jaw and chin.",
+          "tags": [
+            "stubble",
+            "shadow",
+            "unshaven"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Facial hair colour",
+              "default": "#2B2118"
+            }
+          ]
+        }
+      ]
+    },
+    "faceDetail": {
+      "path": "face.details[].assetId",
+      "assets": [
+        {
+          "id": "detail_blush_01",
+          "label": "Blush",
+          "description": "Pink blush marks on both cheeks.",
+          "tags": [
+            "blush",
+            "cheeks",
+            "cute",
+            "shy"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Blush",
+              "default": "#F29AA5"
+            }
+          ]
+        },
+        {
+          "id": "detail_freckles_01",
+          "label": "Freckles",
+          "description": "Small freckle dots across the cheeks and nose.",
+          "tags": [
+            "freckles",
+            "spots"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Freckles",
+              "default": "#B7714A"
+            }
+          ]
+        },
+        {
+          "id": "detail_scar_cheek_01",
+          "label": "Stitched scar under eye",
+          "description": "A short stitched scar just under one eye (like a classic pirate-hero scar). Use side \"left\" or \"right\" (the character's own side).",
+          "tags": [
+            "scar",
+            "stitches",
+            "under eye",
+            "cheek"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Scar",
+              "default": "#7A3030"
+            }
+          ],
+          "sides": [
+            "left",
+            "right",
+            "both"
+          ]
+        },
+        {
+          "id": "detail_whiskers_01",
+          "label": "Whisker marks",
+          "description": "Three thin horizontal whisker-like marks on each cheek (fox / ninja style).",
+          "tags": [
+            "whiskers",
+            "cheek marks",
+            "lines",
+            "fox"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Marks",
+              "default": "#3A2A22"
+            }
+          ]
+        },
+        {
+          "id": "detail_bandage_01",
+          "label": "Cheek bandage",
+          "description": "A small adhesive bandage on one cheek. Use side \"left\" or \"right\".",
+          "tags": [
+            "bandage",
+            "plaster",
+            "band-aid",
+            "injury"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Bandage",
+              "default": "#F1D2A8"
+            }
+          ],
+          "sides": [
+            "left",
+            "right",
+            "both"
+          ]
+        }
+      ]
+    },
+    "top": {
+      "path": "clothing.top.assetId",
+      "assets": [
+        {
+          "id": "top_none",
+          "label": "None (bare torso)",
+          "description": "No shirt; bare skin torso (use with an open vest or jacket for an open-chest look).",
+          "tags": [
+            "none",
+            "shirtless",
+            "bare chest"
+          ],
+          "colors": []
+        },
+        {
+          "id": "top_tshirt_01",
+          "label": "T-shirt",
+          "description": "Plain crew-neck T-shirt with short sleeves.",
+          "tags": [
+            "t-shirt",
+            "tee",
+            "crew neck",
+            "short sleeves",
+            "casual"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Shirt colour",
+              "default": "#3B82C4"
+            }
+          ],
+          "material": "cloth"
+        },
+        {
+          "id": "top_vneck_01",
+          "label": "V-neck tee (Limonat)",
+          "description": "Short-sleeve T-shirt with a V-neck collar (the Limonat hero's white shirt).",
+          "tags": [
+            "v-neck",
+            "t-shirt",
+            "short sleeves",
+            "limonat"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Shirt colour",
+              "default": "#F4F3EF"
+            }
+          ],
+          "material": "cloth"
+        },
+        {
+          "id": "top_tank_01",
+          "label": "Tank top",
+          "description": "Sleeveless tank top / singlet with bare shoulders and arms.",
+          "tags": [
+            "tank top",
+            "sleeveless",
+            "singlet",
+            "vest top"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Shirt colour",
+              "default": "#F2F2F2"
+            }
+          ],
+          "material": "cloth"
+        },
+        {
+          "id": "top_longsleeve_01",
+          "label": "Long-sleeve shirt",
+          "description": "Plain long-sleeve shirt / sweater with cuffs at the wrists.",
+          "tags": [
+            "long sleeves",
+            "sweater",
+            "jumper",
+            "pullover"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Shirt colour",
+              "default": "#6B4FA0"
+            }
+          ],
+          "material": "cloth"
+        },
+        {
+          "id": "top_collar_shirt_01",
+          "label": "Collared shirt",
+          "description": "Button-up shirt with a pointed collar, a button line and long sleeves (secondary colour = collar and buttons). Formal or school shirt.",
+          "tags": [
+            "button-up",
+            "dress shirt",
+            "collar",
+            "formal",
+            "school uniform"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Shirt colour",
+              "default": "#F5F5F0"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Collar & buttons",
+              "default": "#D8DCE2"
+            }
+          ],
+          "material": "cloth"
+        },
+        {
+          "id": "top_striped_01",
+          "label": "Striped tee",
+          "description": "Short-sleeve T-shirt with wide horizontal stripes (secondary colour = stripes). Sailor / casual striped shirt.",
+          "tags": [
+            "striped",
+            "stripes",
+            "sailor",
+            "breton",
+            "t-shirt"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Shirt colour",
+              "default": "#F4F4F4"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Stripes",
+              "default": "#2A4B8D"
+            }
+          ],
+          "material": "cloth"
+        }
+      ]
+    },
+    "outerwear": {
+      "path": "clothing.outerwear.assetId",
+      "assets": [
+        {
+          "id": "outer_none",
+          "label": "None",
+          "description": "No jacket or outer layer.",
+          "tags": [
+            "none"
+          ],
+          "colors": []
+        },
+        {
+          "id": "outer_jacket_open_01",
+          "label": "Open jacket",
+          "description": "Long-sleeve jacket worn open, showing the shirt underneath, with lapels (secondary colour = lapels / lining). Blazer, open hoodie-less jacket, open coat.",
+          "tags": [
+            "jacket",
+            "open",
+            "blazer",
+            "lapels",
+            "long sleeves"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Jacket colour",
+              "default": "#2B2F3A"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Lapels",
+              "default": "#1B1E26"
+            }
+          ],
+          "material": "cloth"
+        },
+        {
+          "id": "outer_jacket_closed_01",
+          "label": "Zip jacket (closed)",
+          "description": "Closed zip-up jacket or windbreaker with a zipper line, collar band and two pockets (secondary colour = zipper and collar).",
+          "tags": [
+            "jacket",
+            "zip",
+            "windbreaker",
+            "track jacket",
+            "bomber",
+            "closed"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Jacket colour",
+              "default": "#D92F35"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Zip & collar",
+              "default": "#F2F2F2"
+            }
+          ],
+          "material": "cloth"
+        },
+        {
+          "id": "outer_hoodie_01",
+          "label": "Hoodie",
+          "description": "Pullover hoodie with the hood down at the back of the neck, a front pocket and drawstrings (secondary colour = drawstrings / lining).",
+          "tags": [
+            "hoodie",
+            "hooded sweatshirt",
+            "pullover",
+            "streetwear"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Jacket colour",
+              "default": "#8A8F99"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Drawstrings",
+              "default": "#F2F2F2"
+            }
+          ],
+          "material": "cloth"
+        },
+        {
+          "id": "outer_vest_open_01",
+          "label": "Open vest",
+          "description": "Sleeveless vest worn open over a bare chest or shirt, with buttons on one side (secondary colour = buttons). Classic pirate-hero red vest.",
+          "tags": [
+            "vest",
+            "waistcoat",
+            "sleeveless",
+            "open",
+            "buttons"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Jacket colour",
+              "default": "#D3312F"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Buttons",
+              "default": "#F2C230"
+            }
+          ],
+          "material": "cloth"
+        },
+        {
+          "id": "outer_coat_long_01",
+          "label": "Long open coat",
+          "description": "Knee-length open coat with long sleeves and a collar (secondary colour = collar / trim). Trench coat, lab coat, captain's coat.",
+          "tags": [
+            "coat",
+            "long coat",
+            "trench coat",
+            "lab coat",
+            "cloak with sleeves"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Jacket colour",
+              "default": "#5A4632"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Collar & trim",
+              "default": "#3A2C1F"
+            }
+          ],
+          "material": "cloth"
+        }
+      ]
+    },
+    "bottom": {
+      "path": "clothing.bottom.assetId",
+      "assets": [
+        {
+          "id": "bottom_shorts_01",
+          "label": "Shorts (Limonat)",
+          "description": "Mid-thigh shorts (the Limonat hero's shorts).",
+          "tags": [
+            "shorts",
+            "short trousers",
+            "summer",
+            "limonat"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Trousers colour",
+              "default": "#F0EFEB"
+            }
+          ],
+          "material": "cloth"
+        },
+        {
+          "id": "bottom_shorts_rolled_01",
+          "label": "Rolled knee shorts",
+          "description": "Knee-length shorts / cut-off jeans with thick rolled-up cuffs just below the knee.",
+          "tags": [
+            "shorts",
+            "rolled cuffs",
+            "knee length",
+            "jeans shorts",
+            "capri"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Trousers colour",
+              "default": "#3E6FB0"
+            }
+          ],
+          "material": "denim"
+        },
+        {
+          "id": "bottom_pants_straight_01",
+          "label": "Straight trousers",
+          "description": "Full-length straight trousers / jeans / slacks down to the shoes.",
+          "tags": [
+            "trousers",
+            "pants",
+            "jeans",
+            "slacks",
+            "long"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Trousers colour",
+              "default": "#2E3A55"
+            }
+          ],
+          "material": "cloth"
+        },
+        {
+          "id": "bottom_cargo_01",
+          "label": "Cargo trousers",
+          "description": "Loose full-length cargo trousers with side pockets on the thighs and a belt (secondary colour = belt).",
+          "tags": [
+            "cargo",
+            "pockets",
+            "utility",
+            "military",
+            "baggy"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Trousers colour",
+              "default": "#6B6B4A"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Belt",
+              "default": "#2B2620"
+            }
+          ],
+          "material": "cloth"
+        },
+        {
+          "id": "bottom_skirt_01",
+          "label": "Skirt",
+          "description": "Knee-length A-line skirt (flared at the bottom) with bare legs below.",
+          "tags": [
+            "skirt",
+            "a-line",
+            "dress bottom",
+            "school skirt"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Trousers colour",
+              "default": "#2F3E75"
+            }
+          ],
+          "material": "cloth"
+        }
+      ]
+    },
+    "shoes": {
+      "path": "clothing.shoes.assetId",
+      "assets": [
+        {
+          "id": "shoes_none",
+          "label": "Barefoot",
+          "description": "No shoes, bare feet.",
+          "tags": [
+            "barefoot",
+            "none"
+          ],
+          "colors": []
+        },
+        {
+          "id": "shoes_sneakers_01",
+          "label": "Sneakers (Limonat)",
+          "description": "Rounded chunky sneakers with a contrasting sole (secondary colour = sole). The Limonat hero's shoes.",
+          "tags": [
+            "sneakers",
+            "trainers",
+            "running shoes",
+            "casual",
+            "limonat"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Shoe colour",
+              "default": "#F4F3EF"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Sole",
+              "default": "#B4B9C5"
+            }
+          ],
+          "material": "cloth"
+        },
+        {
+          "id": "shoes_boots_01",
+          "label": "Boots",
+          "description": "Sturdy boots reaching up the shin, worn over the trousers (secondary colour = sole).",
+          "tags": [
+            "boots",
+            "combat boots",
+            "hiking",
+            "cowboy",
+            "tall shoes"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Shoe colour",
+              "default": "#4A3326"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Sole",
+              "default": "#1E1612"
+            }
+          ],
+          "material": "leather"
+        },
+        {
+          "id": "shoes_sandals_01",
+          "label": "Sandals",
+          "description": "Open sandals / flip-flops: a sole with straps, toes visible (secondary colour = sole).",
+          "tags": [
+            "sandals",
+            "flip-flops",
+            "open toe",
+            "summer",
+            "beach"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Shoe colour",
+              "default": "#7A4A2A"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Sole",
+              "default": "#3A2618"
+            }
+          ],
+          "material": "leather"
+        },
+        {
+          "id": "shoes_dress_01",
+          "label": "Dress shoes",
+          "description": "Low polished formal shoes / loafers with a small heel (secondary colour = sole and heel).",
+          "tags": [
+            "dress shoes",
+            "formal",
+            "loafers",
+            "oxford",
+            "polished"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Shoe colour",
+              "default": "#1C1C1E"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Sole",
+              "default": "#0E0E10"
+            }
+          ],
+          "material": "plastic"
+        }
+      ]
+    },
+    "accessory": {
+      "path": "accessories[].assetId",
+      "assets": [
+        {
+          "id": "acc_glasses_round_01",
+          "label": "Round glasses",
+          "description": "Thin round-ish glasses with clear lenses.",
+          "tags": [
+            "glasses",
+            "spectacles",
+            "round",
+            "nerd"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Frame",
+              "default": "#1C1C1C"
+            }
+          ],
+          "material": "plastic",
+          "attach": {
+            "points": [
+              "face"
+            ],
+            "default": "face"
+          }
+        },
+        {
+          "id": "acc_glasses_square_01",
+          "label": "Square glasses",
+          "description": "Thick rectangular glasses frames with clear lenses.",
+          "tags": [
+            "glasses",
+            "square",
+            "rectangular",
+            "thick frames"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Frame",
+              "default": "#3A2E28"
+            }
+          ],
+          "material": "plastic",
+          "attach": {
+            "points": [
+              "face"
+            ],
+            "default": "face"
+          }
+        },
+        {
+          "id": "acc_sunglasses_01",
+          "label": "Sunglasses",
+          "description": "Dark sunglasses with solid opaque lenses (secondary colour = lens tint). Hides the eyes.",
+          "tags": [
+            "sunglasses",
+            "shades",
+            "dark glasses",
+            "cool"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Frame",
+              "default": "#111111"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Lenses",
+              "default": "#1E2A38"
+            }
+          ],
+          "material": "plastic",
+          "attach": {
+            "points": [
+              "face"
+            ],
+            "default": "face"
+          }
+        },
+        {
+          "id": "acc_headphones_01",
+          "label": "Headphones",
+          "description": "Over-ear headphones with a band over the head (secondary colour = ear cups).",
+          "tags": [
+            "headphones",
+            "headset",
+            "gamer",
+            "music",
+            "dj"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Band",
+              "default": "#2B2B2F"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Ear cups",
+              "default": "#E05A47"
+            }
+          ],
+          "material": "plastic",
+          "attach": {
+            "points": [
+              "head_top"
+            ],
+            "default": "head_top"
+          }
+        },
+        {
+          "id": "acc_scarf_01",
+          "label": "Scarf",
+          "description": "Knitted scarf wrapped around the neck with one end hanging down the front (secondary colour = stripes).",
+          "tags": [
+            "scarf",
+            "muffler",
+            "winter"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Scarf",
+              "default": "#C8322B"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Stripes",
+              "default": "#F2F2F2"
+            }
+          ],
+          "material": "cloth",
+          "attach": {
+            "points": [
+              "neck"
+            ],
+            "default": "neck"
+          }
+        },
+        {
+          "id": "acc_necklace_01",
+          "label": "Necklace with pendant",
+          "description": "Thin chain necklace with a gem pendant on the chest (secondary colour = pendant).",
+          "tags": [
+            "necklace",
+            "chain",
+            "pendant",
+            "jewelry",
+            "amulet"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Chain",
+              "default": "#D9B44A"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Pendant",
+              "default": "#3FA9F5"
+            }
+          ],
+          "material": "metal",
+          "attach": {
+            "points": [
+              "neck"
+            ],
+            "default": "neck"
+          }
+        },
+        {
+          "id": "acc_lemon_badge_01",
+          "label": "Lemon badge",
+          "description": "Small Limonat lemon pin badge with a green leaf (secondary colour = leaf).",
+          "tags": [
+            "badge",
+            "pin",
+            "lemon",
+            "limonat",
+            "emblem"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Lemon",
+              "default": "#FFD83A"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Leaf",
+              "default": "#4F9E32"
+            }
+          ],
+          "material": "plastic",
+          "attach": {
+            "points": [
+              "chest",
+              "back"
+            ],
+            "default": "chest"
+          }
+        },
+        {
+          "id": "acc_backpack_01",
+          "label": "Backpack",
+          "description": "School / adventure backpack with shoulder straps and a front flap (secondary colour = flap and straps).",
+          "tags": [
+            "backpack",
+            "rucksack",
+            "school bag",
+            "bag"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Bag",
+              "default": "#3E6B3A"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Flap & straps",
+              "default": "#2A4A28"
+            }
+          ],
+          "material": "cloth",
+          "attach": {
+            "points": [
+              "back"
+            ],
+            "default": "back"
+          }
+        },
+        {
+          "id": "acc_cape_01",
+          "label": "Cape",
+          "description": "Long hero cape hanging from the shoulders down the back to the knees (secondary colour = collar / clasp).",
+          "tags": [
+            "cape",
+            "cloak",
+            "superhero",
+            "royal",
+            "mantle"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Cape",
+              "default": "#A3262A"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Collar",
+              "default": "#E0B13B"
+            }
+          ],
+          "material": "cloth",
+          "attach": {
+            "points": [
+              "back"
+            ],
+            "default": "back"
+          }
+        },
+        {
+          "id": "acc_belt_01",
+          "label": "Belt",
+          "description": "Belt around the waist with a square buckle (secondary colour = buckle).",
+          "tags": [
+            "belt",
+            "buckle",
+            "waist"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Belt",
+              "default": "#4A3020"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Buckle",
+              "default": "#D9B44A"
+            }
+          ],
+          "material": "leather",
+          "attach": {
+            "points": [
+              "waist"
+            ],
+            "default": "waist"
+          }
+        },
+        {
+          "id": "acc_watch_01",
+          "label": "Wrist watch",
+          "description": "Wrist watch with a strap and a round face (secondary colour = watch face). Use wrist_left or wrist_right.",
+          "tags": [
+            "watch",
+            "wristwatch",
+            "bracelet",
+            "smartwatch"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Strap",
+              "default": "#222222"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Face",
+              "default": "#E8E8E8"
+            }
+          ],
+          "material": "plastic",
+          "attach": {
+            "points": [
+              "wrist_left",
+              "wrist_right"
+            ],
+            "default": "wrist_left"
+          }
+        },
+        {
+          "id": "acc_sword_01",
+          "label": "Sword",
+          "description": "Straight sword / katana with a guard. On the back or a hip it is sheathed (scabbard = main colour); in a hand it is drawn and points down along the arm. Main colour = handle/scabbard, secondary = guard.",
+          "tags": [
+            "sword",
+            "katana",
+            "blade",
+            "weapon",
+            "samurai",
+            "knight"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Handle / scabbard",
+              "default": "#2B2B33"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Guard",
+              "default": "#C9A227"
+            }
+          ],
+          "material": "leather",
+          "attach": {
+            "points": [
+              "back",
+              "hip_left",
+              "hip_right",
+              "hand_right",
+              "hand_left"
+            ],
+            "default": "hip_left"
+          }
+        },
+        {
+          "id": "acc_shield_01",
+          "label": "Round shield",
+          "description": "Round wooden shield with a metal boss (secondary colour = boss / rim). Held on the outside of a hand or carried on the back.",
+          "tags": [
+            "shield",
+            "buckler",
+            "knight",
+            "viking",
+            "defence"
+          ],
+          "colors": [
+            {
+              "key": "color",
+              "label": "Shield",
+              "default": "#8E5A2B"
+            },
+            {
+              "key": "secondaryColor",
+              "label": "Boss",
+              "default": "#C0C6CE"
+            }
+          ],
+          "material": "cloth",
+          "attach": {
+            "points": [
+              "hand_left",
+              "hand_right",
+              "back"
+            ],
+            "default": "hand_left"
+          }
+        }
+      ]
+    }
+  },
+  "attachPoints": [
+    "head_top",
+    "face",
+    "neck",
+    "chest",
+    "back",
+    "waist",
+    "hip_left",
+    "hip_right",
+    "wrist_left",
+    "wrist_right",
+    "hand_left",
+    "hand_right"
+  ],
+  "materials": [
+    "cloth",
+    "denim",
+    "leather",
+    "plastic",
+    "metal",
+    "emissive"
+  ],
+  "proportions": {
+    "headScale": {
+      "min": 0.8,
+      "max": 1.35,
+      "default": 1,
+      "doc": "head size (1.3 = chibi big head)"
+    },
+    "torsoWidth": {
+      "min": 0.8,
+      "max": 1.3,
+      "default": 1,
+      "doc": "shoulder/waist width (1.25 = broad or heavy build, 0.85 = slim)"
+    },
+    "torsoLength": {
+      "min": 0.85,
+      "max": 1.2,
+      "default": 1,
+      "doc": "torso height"
+    },
+    "armLength": {
+      "min": 0.85,
+      "max": 1.2,
+      "default": 1,
+      "doc": "arm length"
+    },
+    "legLength": {
+      "min": 0.75,
+      "max": 1.25,
+      "default": 1,
+      "doc": "leg length (0.8 = short / child, 1.2 = tall / long legs)"
+    },
+    "limbThickness": {
+      "min": 0.75,
+      "max": 1.35,
+      "default": 1,
+      "doc": "arm and leg thickness (1.3 = muscular / chunky)"
+    }
+  },
+  "gaze": [
+    "center",
+    "left",
+    "right",
+    "up",
+    "down"
+  ]
+}

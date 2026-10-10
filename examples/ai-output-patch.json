@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "1.0",
+  "mode": "patch",
+  "character": {
+    "hair": {
+      "color": "#E9D08A"
+    },
+    "accessories": [
+      {
+        "assetId": "acc_glasses_round_01",
+        "attachTo": "face",
+        "color": "#1C1C1C"
+      }
+    ]
+  }
+}

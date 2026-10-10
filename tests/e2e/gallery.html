@@ -1,0 +1,43 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Gallery</title>
+<style>body{margin:0;background:#BFD9EF} canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"../../vendor/three/three.module.js","three/addons/":"../../vendor/three/addons/"}}</script>
+</head><body>
+<script type="module">
+import * as THREE from 'three';
+import '../../src/assets/index.js';
+import { listBases, getBase } from '../../src/core/registry.js';
+import { compile } from '../../src/core/compile.js';
+import { buildCharacterObject } from '../../src/render/mesh.js';
+import { applyPose } from '../../src/render/poses.js';
+import { PX } from '../../src/core/constants.js';
+const params = new URLSearchParams(location.search);
+let configs = [];
+if (params.get('cfg')) configs = JSON.parse(decodeURIComponent(params.get('cfg')));
+else configs = listBases().map(b => b.character);
+window.renderConfigs = (cfgs, views = ['front', 'side', 'back', 'tq'], pose = 'rest') => {
+  const W = window.CW || 260, H = window.CH || 380;
+  const r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+  r.setSize(W * views.length, H * cfgs.length); r.outputColorSpace = THREE.SRGBColorSpace;
+  r.setScissorTest(true);
+  document.body.innerHTML = ''; document.body.appendChild(r.domElement);
+  cfgs.forEach((cfg, row) => {
+    const scene = new THREE.Scene(); scene.background = new THREE.Color('#BFD9EF');
+    const model = compile(cfg); const rig = buildCharacterObject(model); scene.add(rig.root);
+    applyPose(rig, pose, 0.7, rig.bones.hips.position.y);
+    const h = model.height * PX;
+    views.forEach((v, col) => {
+      const dir = { front: [0, 0.05, -1], side: [1, 0.05, 0], back: [0, 0.1, 1], tq: [0.7, 0.3, -0.8], left: [-1, 0.05, 0] }[v];
+      const cam = new THREE.PerspectiveCamera(30, W / H, 0.05, 50);
+      const t = new THREE.Vector3(0, h * 0.5, 0);
+      cam.position.copy(t).add(new THREE.Vector3(...dir).normalize().multiplyScalar(h * 2.4 + 0.6)); cam.lookAt(t);
+      const y = (cfgs.length - 1 - row) * H;
+      r.setViewport(col * W, y, W, H); r.setScissor(col * W, y, W, H);
+      r.render(scene, cam);
+    });
+  });
+  return true;
+};
+window.ready = true;
+window.renderConfigs(configs);
+</script></body></html>

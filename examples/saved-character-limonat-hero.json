@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "limonat-character",
+  "id": "chr_example_hero",
+  "baseCharacter": "base_limonat_hero",
+  "character": {
+    "name": "Limonat Hero",
+    "body": {
+      "typeId": "body_toon_01",
+      "skinColor": "#F4F3EF",
+      "proportions": {
+        "headScale": 1,
+        "torsoWidth": 1,
+        "torsoLength": 1,
+        "armLength": 1,
+        "legLength": 1,
+        "limbThickness": 1
+      }
+    },
+    "head": {
+      "shapeId": "head_round_01"
+    },
+    "hair": {
+      "assetId": "hair_tuft_01",
+      "color": "#F7F7F5"
+    },
+    "face": {
+      "eyes": {
+        "styleId": "eyes_round_big_01",
+        "color": "#161616",
+        "gaze": "left"
+      },
+      "eyebrows": {
+        "styleId": "brows_none"
+      },
+      "mouth": {
+        "styleId": "mouth_dash_01"
+      },
+      "facialHair": {
+        "assetId": "facialhair_none"
+      },
+      "details": []
+    },
+    "headwear": {
+      "assetId": "hat_beanie_01",
+      "color": "#161616",
+      "material": "cloth"
+    },
+    "clothing": {
+      "top": {
+        "assetId": "top_vneck_01",
+        "color": "#F4F3EF",
+        "material": "cloth"
+      },
+      "outerwear": {
+        "assetId": "outer_none"
+      },
+      "bottom": {
+        "assetId": "bottom_shorts_01",
+        "color": "#F0EFEB",
+        "material": "cloth"
+      },
+      "shoes": {
+        "assetId": "shoes_sneakers_01",
+        "color": "#F4F3EF",
+        "secondaryColor": "#B4B9C5",
+        "material": "cloth"
+      }
+    },
+    "accessories": []
+  },
+  "meta": {
+    "createdAt": "2026-10-10T00:00:00.000Z",
+    "updatedAt": "2026-10-10T00:00:00.000Z",
+    "generator": "Limonat Character Creator 1.0.0"
+  }
+}

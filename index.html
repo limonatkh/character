@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>صانع شخصيات ليمونات</title>
+<meta name="description" content="Standalone voxel character creator for the Limonat game: AI-generated JSON commands customize a rigged base character, exported as GLB + metadata + a Limonat drop-in file.">
+<link rel="stylesheet" href="css/app.css">
+<!-- Three.js r158 is vendored, so the app works offline (serve this folder with any static web server). -->
+<script type="importmap">{ "imports": { "three": "./vendor/three/three.module.js", "three/addons/": "./vendor/three/addons/" } }</script>
+</head>
+<body>
+<!--APP-->
+<div id="app">
+  <header id="topbar" class="topbar"></header>
+  <section id="stage" class="stage" aria-label="3D preview">
+    <div id="viewport" class="viewport"></div>
+    <div id="stage-tools" class="stage-tools"></div>
+  </section>
+  <nav id="tabs" class="tabs" role="tablist" aria-label="Sections"></nav>
+  <main id="panels" class="panels">
+    <div class="tabpanel" id="tab-customize" role="tabpanel" aria-labelledby="tabbtn-customize"></div>
+    <div class="tabpanel" id="tab-ai" role="tabpanel" aria-labelledby="tabbtn-ai" hidden></div>
+    <div class="tabpanel" id="tab-prompt" role="tabpanel" aria-labelledby="tabbtn-prompt" hidden></div>
+    <div class="tabpanel" id="tab-chars" role="tabpanel" aria-labelledby="tabbtn-chars" hidden></div>
+    <div class="tabpanel" id="tab-export" role="tabpanel" aria-labelledby="tabbtn-export" hidden></div>
+  </main>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+<div id="modal-root" hidden></div>
+<noscript><p style="padding:16px">This app needs JavaScript.</p></noscript>
+<!--/APP-->
+<script type="module" src="src/main.js"></script>
+</body>
+</html>

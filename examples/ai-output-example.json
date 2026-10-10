@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1.0",
+  "mode": "replace",
+  "baseCharacter": "base_classic_block",
+  "reference": {
+    "description": "Teenage boy with short spiky black hair, red open jacket over a white T-shirt, dark jeans, white sneakers, black headphones.",
+    "source": "photo"
+  },
+  "character": {
+    "name": "Red Jacket Kid",
+    "body": {
+      "typeId": "body_block_01",
+      "skinColor": "#C68A5E",
+      "proportions": {
+        "headScale": 1.1,
+        "torsoWidth": 1,
+        "torsoLength": 1,
+        "armLength": 1,
+        "legLength": 1,
+        "limbThickness": 1
+      }
+    },
+    "head": {
+      "shapeId": "head_block_01"
+    },
+    "hair": {
+      "assetId": "hair_spiky_01",
+      "color": "#242424"
+    },
+    "face": {
+      "eyes": {
+        "styleId": "eyes_anime_01",
+        "color": "#5A3A22",
+        "gaze": "center"
+      },
+      "eyebrows": {
+        "styleId": "brows_flat_01",
+        "color": "#2A211C"
+      },
+      "mouth": {
+        "styleId": "mouth_grin_01"
+      },
+      "facialHair": {
+        "assetId": "facialhair_none"
+      },
+      "details": []
+    },
+    "headwear": {
+      "assetId": "hat_none"
+    },
+    "clothing": {
+      "top": {
+        "assetId": "top_tshirt_01",
+        "color": "#F2F2F2",
+        "material": "cloth"
+      },
+      "outerwear": {
+        "assetId": "outer_jacket_open_01",
+        "color": "#D92F35",
+        "secondaryColor": "#8E1F24",
+        "material": "cloth"
+      },
+      "bottom": {
+        "assetId": "bottom_pants_straight_01",
+        "color": "#2E3A55",
+        "material": "denim"
+      },
+      "shoes": {
+        "assetId": "shoes_sneakers_01",
+        "color": "#F2F2F2",
+        "secondaryColor": "#D92F35",
+        "material": "cloth"
+      }
+    },
+    "accessories": [
+      {
+        "assetId": "acc_headphones_01",
+        "attachTo": "head_top",
+        "color": "#2B2B2F",
+        "secondaryColor": "#D92F35",
+        "material": "plastic"
+      }
+    ]
+  },
+  "uncertain": [
+    {
+      "field": "character.clothing.shoes",
+      "note": "Feet are cut off in the image; chose white sneakers."
+    }
+  ],
+  "unsupported": [
+    {
+      "feature": "Logo print on the T-shirt",
+      "closestSubstitute": "none"
+    }
+  ]
+}
