@@ -1,6 +1,8 @@
-# Test report — version 1.0.1
+# Test report — version 1.0.2
 
-Version 1.0.1 · 2026-10-11
+Version 1.0.2 · 2026-10-11
+
+**1.0.2:** the site logo and icons are now the Limonat hero's voxel head, rendered by the app's own voxel engine (`npm run logo`). Tests re-run.
 
 **1.0.1:** Arabic text showed with unjoined letters on iPhone (Safari cannot shape the game's Arabic pixel font, Handjet). Arabic now uses Changa (interface) and Kufam (titles); Latin letters and digits keep the Tiny5 pixel font. All tests re-run after the change.
 

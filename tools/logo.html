@@ -1,0 +1,59 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>logo renderer</title>
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.js", "three/addons/": "../vendor/three/addons/" } }</script>
+</head><body style="margin:0;background:#888">
+<script type="module">
+/* Renders the site logo: the head of a base character, built by the app's own
+ * compiler + mesh builder (voxels, ink outline, Limonat flat shading).
+ * Used by tools/make-logo.mjs. */
+import * as THREE from 'three';
+import '../src/assets/index.js';
+import { compile } from '../src/core/compile.js';
+import { baseConfig } from '../src/schema/validate.js';
+import { buildCharacterObject } from '../src/render/mesh.js';
+
+const HEAD_JOINTS = new Set(['head', 'leftEye', 'rightEye', 'jaw']);
+
+/** opts: { size, dir:[x,y,z], background:'#rrggbb'|null, pad, baseId, ortho } → PNG data URL */
+window.renderHead = (opts = {}) => {
+  const size = opts.size || 256, pad = opts.pad ?? 0.06;
+  const model = compile(baseConfig(opts.baseId || 'base_limonat_hero'));
+  model.boxes = model.boxes.filter(b => HEAD_JOINTS.has(b.joint));
+  const rig = buildCharacterObject(model, { shading: 'flat' });
+  const scene = new THREE.Scene();
+  if (opts.background) scene.background = new THREE.Color(opts.background);
+  scene.add(rig.root);
+  rig.root.updateMatrixWorld(true);
+
+  // fit an orthographic camera tightly around the head as seen from `dir`
+  const box = new THREE.Box3();
+  for (const m of rig.meshes) { m.geometry.computeBoundingBox(); box.union(m.geometry.boundingBox.clone().applyMatrix4(m.matrixWorld)); }
+  const center = box.getCenter(new THREE.Vector3());
+  const dir = new THREE.Vector3(...(opts.dir || [0.62, 0.42, -0.72])).normalize();
+  const cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.01, 100);
+  cam.position.copy(center).addScaledVector(dir, 10);
+  cam.lookAt(center);
+  cam.updateMatrixWorld(true);
+  const inv = cam.matrixWorldInverse;
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  for (let i = 0; i < 8; i++) {
+    const p = new THREE.Vector3(i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y, i & 4 ? box.max.z : box.min.z).applyMatrix4(inv);
+    x0 = Math.min(x0, p.x); x1 = Math.max(x1, p.x); y0 = Math.min(y0, p.y); y1 = Math.max(y1, p.y);
+  }
+  const half = Math.max(x1 - x0, y1 - y0) / 2 * (1 + pad * 2), cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+  Object.assign(cam, { left: cx - half, right: cx + half, top: cy + half, bottom: cy - half });
+  cam.updateProjectionMatrix();
+
+  const r = new THREE.WebGLRenderer({ antialias: true, alpha: !opts.background, preserveDrawingBuffer: true });
+  r.setPixelRatio(1);
+  r.setSize(size, size, false);
+  r.outputColorSpace = THREE.SRGBColorSpace;
+  r.setClearColor(0x000000, 0);
+  r.render(scene, cam);
+  const url = r.domElement.toDataURL('image/png');
+  r.dispose(); rig.dispose();
+  return url;
+};
+window.ready = true;
+</script>
+</body></html>

@@ -39,6 +39,8 @@ const html = fs.readFileSync(rel('index.html'), 'utf8');
 const body = html.slice(html.indexOf('<!--APP-->') + 10, html.indexOf('<!--/APP-->')).trim();
 const title = html.match(/<title>([^<]*)<\/title>/)[1];
 const desc = html.match(/<meta name="description" content="([^"]*)"/)[1];
+const dataUri = f => `data:image/png;base64,${fs.readFileSync(rel(f)).toString('base64')}`;
+const icons = `<link rel="icon" type="image/png" sizes="192x192" href="${dataUri('assets/icon-192.png')}">\n<link rel="apple-touch-icon" href="${dataUri('assets/apple-touch-icon.png')}">\n<meta name="theme-color" content="#232a3b">`;
 const licence = '<!-- Limonat Character Creator. Bundles three.js (MIT, © three.js authors) and the Tiny5, Changa and Kufam fonts (SIL OFL 1.1). -->';
 
 const standalone = `<!doctype html>
@@ -48,6 +50,7 @@ const standalone = `<!doctype html>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>${title}</title>
 <meta name="description" content="${desc}">
+${icons}
 ${licence}
 <style>${css}</style>
 </head>

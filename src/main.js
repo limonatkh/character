@@ -13,7 +13,8 @@ import { newDocument, loadDocument } from './core/document.js';
 import { defaultBaseId } from './core/registry.js';
 import { Store } from './ui/store.js';
 import { Library, lastOpen, prefs } from './storage/library.js';
-import { h, clear, toast, lemonIcon } from './ui/dom.js';
+import { h, clear, toast } from './ui/dom.js';
+import { LOGO_HEAD } from './ui/logo.js';
 import { t, setLang, getLang } from './ui/i18n.js';
 import { CustomizePanel } from './ui/customize.js';
 import { ImportPanel } from './ui/importer.js';
@@ -139,7 +140,7 @@ class App {
     this.redoBtn = h('button.btn.small.icon', { type: 'button', title: t('redo') + ' (Ctrl+Shift+Z)', attrs: { 'aria-label': t('redo') }, onclick: () => this.store.redo() }, '↷');
     const langBtn = h('button.btn.small.lang', { type: 'button', title: t('langLabel'), attrs: { 'aria-label': t('langLabel') }, onclick: () => this.toggleLang() }, t('lang'));
     top.append(
-      h('div.brand', lemonIcon(2), h('div.brand-text', h('h1', t('appTitle')), h('span.brand-sub', t('appSub')))),
+      h('div.brand', h('img.logo', { src: LOGO_HEAD, alt: '', width: 40, height: 40, attrs: { 'aria-hidden': 'true' } }), h('div.brand-text', h('h1', t('appTitle')), h('span.brand-sub', t('appSub')))),
       h('label.name-wrap', h('span.sr', t('name')), this.nameInput, this.statusChip),
       h('div.top-actions', this.undoBtn, this.redoBtn, langBtn));
 

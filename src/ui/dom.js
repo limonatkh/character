@@ -67,18 +67,3 @@ export function toast(msg, kind = 'ok', ms = 2600) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), ms);
 }
-
-/** Pixel-art lemon (same art as Limonat's lemon_icon texture). */
-export function lemonIcon(px = 2) {
-  const P = { o: '#6b4e0a', y: '#ffd83a', l: '#fff29a', d: '#e0a812', g: '#4f9e32', G: '#2f6b1e' };
-  const rows = [
-    '.........gG.....', '........gGG.....', '.......oogg.....', '.....ooyyyoo....', '....oyyllyyyo...', '...oyyllyyyyyo..',
-    '..oyyylyyyyyydo.', '..oyyyyyyyyyydo.', '.oyyyyyyyyyyyddo', '..oyyyyyyyyyydo.', '..oyyyyyyyyyddo.', '...oyyyyyyyddo..',
-    '....oddyyyddo...', '.....oooddoo....', '........oo......', '................',
-  ];
-  const c = h('canvas.lemon', { width: 16, height: 16, attrs: { 'aria-hidden': 'true' } });
-  c.style.width = c.style.height = 16 * px + 'px';
-  const ctx = c.getContext('2d');
-  rows.forEach((row, y) => [...row].forEach((ch, x) => { if (P[ch]) { ctx.fillStyle = P[ch]; ctx.fillRect(x, y, 1, 1); } }));
-  return c;
-}

@@ -1,6 +1,6 @@
 # صانع شخصيات ليمونات — Limonat Character Creator
 
-Version 1.0.1 · 2026-10-11 · character schema 1.0
+Version 1.0.2 · 2026-10-11 · character schema 1.0
 
 A standalone app that builds **real 3D voxel characters** for Limonat from
 **JSON commands written by any external AI model**. You give an AI a picture of a
@@ -81,7 +81,8 @@ docs/                   documentation (see below)
 dist/                   single-file builds
 tests/unit/             Node tests for the pure modules
 tests/e2e/              browser acceptance test (Playwright)
-tools/                  gen-schema.mjs, build.mjs
+assets/                 site icons (the hero's voxel head)
+tools/                  gen-schema.mjs, build.mjs, make-logo.mjs (logo + icons from the hero's head)
 vendor/three/           Three.js r158 (MIT)
 fonts/                  Tiny5 pixel font (Latin, as in the game) + Changa / Kufam (Arabic), SIL OFL
 ```
