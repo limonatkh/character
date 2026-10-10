@@ -39,7 +39,7 @@ const html = fs.readFileSync(rel('index.html'), 'utf8');
 const body = html.slice(html.indexOf('<!--APP-->') + 10, html.indexOf('<!--/APP-->')).trim();
 const title = html.match(/<title>([^<]*)<\/title>/)[1];
 const desc = html.match(/<meta name="description" content="([^"]*)"/)[1];
-const licence = '<!-- Limonat Character Creator. Bundles three.js (MIT, © three.js authors) and the Tiny5 + Handjet fonts (SIL OFL 1.1). -->';
+const licence = '<!-- Limonat Character Creator. Bundles three.js (MIT, © three.js authors) and the Tiny5, Changa and Kufam fonts (SIL OFL 1.1). -->';
 
 const standalone = `<!doctype html>
 <html lang="ar" dir="rtl">

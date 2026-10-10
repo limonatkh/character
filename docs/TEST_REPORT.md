@@ -1,6 +1,8 @@
-# Test report — version 1.0.0
+# Test report — version 1.0.1
 
-Version 1.0.0 · 2026-10-10
+Version 1.0.1 · 2026-10-11
+
+**1.0.1:** Arabic text showed with unjoined letters on iPhone (Safari cannot shape the game's Arabic pixel font, Handjet). Arabic now uses Changa (interface) and Kufam (titles); Latin letters and digits keep the Tiny5 pixel font. All tests re-run after the change.
 
 ## 1. Summary
 
@@ -57,6 +59,7 @@ load round trip, prompt / catalog / schema listing every id, the Limonat export
 | Drag hint overlapped the character | Moved above the pose buttons |
 | 5 glTF validator warnings (skinned meshes under a wrapper node) | Export a scene so armature and skinned meshes are root nodes |
 | Export buttons hard to target reliably | Stable `data-kind` attributes |
+| Arabic letters not joined on iPhone (reported from a real device) | Arabic fonts switched to Changa / Kufam |
 
 ## 4. Known limits (for a later version)
 

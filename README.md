@@ -1,6 +1,6 @@
 # صانع شخصيات ليمونات — Limonat Character Creator
 
-Version 1.0.0 · 2026-10-10 · character schema 1.0
+Version 1.0.1 · 2026-10-11 · character schema 1.0
 
 A standalone app that builds **real 3D voxel characters** for Limonat from
 **JSON commands written by any external AI model**. You give an AI a picture of a
@@ -59,7 +59,7 @@ are no network requests.
 | AI prompt | Generated from the live asset registry, so it always lists exactly the parts that exist. Provider-neutral. Copy buttons for full prompt, prompt only, catalog. |
 | Safety | AI output is data: parsed with `JSON.parse`, validated field by field, rendered with `textContent` only. Nothing is ever executed. |
 | Export | GLB (skinned mesh, 20 bones, ink outline, materials, idle/walk/wave clips; arms-down or T-pose; −Z or +Z facing; flat or PBR shading), metadata JSON, `*.limonat.js` (a `VR.CHARACTERS` entry for the game), ZIP of everything. |
-| Interface | Arabic (default) and English, phone and desktop layouts, Limonat's own UI style and pixel fonts. Undo/redo (Ctrl+Z / Ctrl+Shift+Z). |
+| Interface | Arabic (default) and English, phone and desktop layouts, Limonat's own UI style; pixel font for Latin, Changa / Kufam for Arabic (render correctly on iPhone). Undo/redo (Ctrl+Z / Ctrl+Shift+Z). |
 
 ## 4. Project layout
 
@@ -83,7 +83,7 @@ tests/unit/             Node tests for the pure modules
 tests/e2e/              browser acceptance test (Playwright)
 tools/                  gen-schema.mjs, build.mjs
 vendor/three/           Three.js r158 (MIT)
-fonts/                  Tiny5 + Handjet pixel fonts (SIL OFL), same as the game
+fonts/                  Tiny5 pixel font (Latin, as in the game) + Changa / Kufam (Arabic), SIL OFL
 ```
 
 ## 5. Documentation
@@ -114,5 +114,5 @@ The app itself always builds the prompt and catalog live from the registry.
 
 ## 7. Licences
 
-App code: MIT. Bundled: three.js (MIT), Tiny5 and Handjet fonts (SIL Open Font
-License 1.1, texts in `fonts/`).
+App code: MIT. Bundled: three.js (MIT), Tiny5, Changa and Kufam fonts (SIL Open
+Font License 1.1, texts in `fonts/`).

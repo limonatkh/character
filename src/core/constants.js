@@ -8,7 +8,7 @@
  *   +X is the character's RIGHT-hand side, -X its LEFT
  * ===================================================================== */
 export const APP_NAME = 'Limonat Character Creator';
-export const APP_VERSION = '1.0.0';
+export const APP_VERSION = '1.0.1';
 export const SCHEMA_VERSION = '1.0';
 export const DOC_KIND = 'limonat-character';
 

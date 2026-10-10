@@ -2,18 +2,23 @@
  * Limonat Character Creator — styles.
  * Uses Limonat's own UI system (index.html of the game): ink-bordered
  * navy panels, grass / lemon / stone block buttons and the 'Game' pixel
- * font (Tiny5 for Latin, Handjet for Arabic). The game commits to one dark
+ * font for Latin (Tiny5), with Changa / Kufam for Arabic. The game commits to one dark
  * look over a sky-blue world, so this page does too (single theme).
  * Layout: one-screen app. Phone: header / 3D stage / panel / tab bar.
  * Wide screens: 3D stage beside a tabbed side panel.
  * ===================================================================== */
-@font-face { font-family: 'Game'; font-weight: 400; font-display: swap; src: url(../fonts/tiny5-latin-400-normal.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-200B, U+2010-206F, U+20AC, U+2122, U+2212, U+FEFF, U+FFFD; }
-@font-face { font-family: 'Game'; font-weight: 400; font-display: swap; src: url(../fonts/handjet-arabic-500-normal.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC; size-adjust: 118%; }
-@font-face { font-family: 'Game'; font-weight: 700; font-display: swap; src: url(../fonts/tiny5-latin-400-normal.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-200B, U+2010-206F, U+20AC, U+2122, U+2212, U+FEFF, U+FFFD; }
-@font-face { font-family: 'Game'; font-weight: 700; font-display: swap; src: url(../fonts/handjet-arabic-700-normal.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC; size-adjust: 118%; }
-/* Arabic in the pixel font, Latin in a plain sans: for longer reading text */
-@font-face { font-family: 'GameAr'; font-weight: 400; font-display: swap; src: url(../fonts/handjet-arabic-500-normal.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFC; size-adjust: 118%; }
-@font-face { font-family: 'GameAr'; font-weight: 700; font-display: swap; src: url(../fonts/handjet-arabic-700-normal.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFC; size-adjust: 118%; }
+/* Latin letters and digits: Tiny5, the game's pixel font.
+ * Arabic: Changa (square, game-like) and Kufam for big titles. The game's Arabic pixel font
+ * (Handjet) is not used here because Safari on iPhone does not join its letters. */
+@font-face { font-family: 'Game'; font-weight: 400; font-display: swap; src: url(../fonts/tiny5-latin-400-normal.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-200B, U+2012-204E, U+2050-206F, U+20AC, U+2122, U+2212, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Game'; font-weight: 400; font-display: swap; src: url(../fonts/changa-arabic-500-normal.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC; }
+@font-face { font-family: 'Game'; font-weight: 700; font-display: swap; src: url(../fonts/tiny5-latin-400-normal.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-200B, U+2012-204E, U+2050-206F, U+20AC, U+2122, U+2212, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Game'; font-weight: 700; font-display: swap; src: url(../fonts/changa-arabic-700-normal.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC; }
+/* longer reading text: Arabic in Changa, Latin in a plain sans */
+@font-face { font-family: 'GameAr'; font-weight: 400; font-display: swap; src: url(../fonts/changa-arabic-500-normal.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC; }
+@font-face { font-family: 'GameAr'; font-weight: 700; font-display: swap; src: url(../fonts/changa-arabic-700-normal.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC; }
+/* big Arabic titles */
+@font-face { font-family: 'GameTitle'; font-weight: 700; font-display: swap; src: url(../fonts/kufam-arabic-700-normal.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC; }
 
 :root {
   /* Limonat palette */
@@ -43,6 +48,7 @@
   --code-text: #dfe6f5;
   /* type */
   --font: 'Game', 'Segoe UI', Tahoma, system-ui, sans-serif;
+  --title: 'GameTitle', 'Game', 'Segoe UI', Tahoma, system-ui, sans-serif;
   --read: 'GameAr', system-ui, 'Segoe UI', Roboto, Tahoma, sans-serif;
   --mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;
   color-scheme: dark;
@@ -102,7 +108,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .brand { display: flex; align-items: center; gap: 8px; flex: none; }
 .lemon { image-rendering: pixelated; flex: none; filter: drop-shadow(0 2px 0 var(--ink)); }
 .brand-text { display: none; }
-.brand h1 { margin: 0; font-size: 21px; font-weight: 700; line-height: 1; color: var(--lemon); text-shadow: 0 2px 0 var(--lemon-dark), 0 4px 0 var(--ink); white-space: nowrap; }
+.brand h1 { margin: 0; font-family: var(--title); font-size: 21px; font-weight: 700; line-height: 1; color: var(--lemon); text-shadow: 0 2px 0 var(--lemon-dark), 0 4px 0 var(--ink); white-space: nowrap; }
 .brand-sub { display: block; margin-top: 6px; font-size: 12px; color: var(--muted); white-space: nowrap; }
 @media (min-width: 760px) { .brand-text { display: block; } }
 .name-wrap { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 8px; }
@@ -198,7 +204,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   box-shadow: inset 0 3px 0 rgba(255, 255, 255, .06), inset 0 -4px 0 rgba(0, 0, 0, .3), 0 4px 0 rgba(0, 0, 0, .35);
 }
 .card-sec { padding: 14px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-h2 { margin: 0; font-size: 22px; font-weight: 700; line-height: 1.15; text-shadow: 0 2px 0 var(--ink); text-wrap: balance; }
+h2 { margin: 0; font-family: var(--title); font-size: 22px; font-weight: 700; line-height: 1.15; text-shadow: 0 2px 0 var(--ink); text-wrap: balance; }
 h3 { margin: 0; font-size: 17px; font-weight: 700; color: var(--gold); text-shadow: 0 2px 0 var(--ink); }
 p { margin: 0; }
 .lead, .card-sec p, .notes li { font-family: var(--read); font-size: 15px; line-height: 1.6; max-width: 68ch; }
@@ -220,7 +226,7 @@ details.sec > summary::before {
 }
 details.sec[open] > summary::before { content: '−'; }
 details.sec[open] > summary { border-bottom: 2px solid var(--ink); }
-.sec-title { flex: none; }
+.sec-title { flex: none; font-family: var(--title); }
 .sec-meta { margin-inline-start: auto; font-size: 13px; font-weight: 400; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .sec-body { padding: 4px 14px 16px; display: flex; flex-direction: column; }
 .slot { display: flex; flex-direction: column; gap: 9px; padding-block: 12px; min-width: 0; }

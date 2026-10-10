@@ -1,6 +1,6 @@
 {
   "name": "limonat-character-creator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Standalone voxel character creator for Limonat: AI-generated JSON commands customize a rigged base character; exports GLB + metadata + a Limonat drop-in file.",
   "scripts": {
     "start": "python3 -m http.server 8080",
