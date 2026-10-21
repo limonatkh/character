@@ -1,6 +1,6 @@
 # Normal 3D mode — architecture
 
-Version 1.0.0 · 2026-10-11 · creator 1.1.0
+Version 1.0.0 · 2026-10-21 · creator 1.1.0
 
 ## 1. How the two modes share one app
 
@@ -35,6 +35,11 @@ AI JSON / file / UI ─▶ validateN3D ─▶ document (limonat-character-3d) �
                                                                           │
                                        exporter ─▶ GLB · metadata · document · Limonat registration · ZIP
 ```
+
+AI notes (`reference`, `observations` with confidence, `uncertain`,
+`unsupported`) and item `confidence` values pass through the same validator
+(`cleanAiNotes` in `core/document.js`), are stored in the document as `ai`, never
+affect the geometry, and are shown in the AI import tab and written to exports.
 
 The pipeline (`src/n3d/build/character.js`) is pure JavaScript on typed arrays:
 it runs in a Web Worker (the page stays responsive), in the page as a fallback,

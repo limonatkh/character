@@ -87,7 +87,7 @@ function upper(p, ctx, asset, o = {}) {
     ...hemOf(p.hemShape),
   };
   // tucked in: the hem sits a few cm inside the waistband, without flare or hang, so the bottoms stay smooth over it
-  if (p.tucked && asset.slot === 'top') Object.assign(torso, { length: Math.min(torso.length, 0.4), flare: 0, hang: 0, hemCurve: 0, hemDip: 0, hemAsym: 0 });
+  if (p.tucked && asset.slot === 'top') Object.assign(torso, { length: Math.min(torso.length, 0.4), flare: 0, hang: 0, hemCurve: 0, hemDip: 0, hemAsym: 0, tuckY: ctx.tuckY ?? ctx.F.waistY });
   if (o.hemBand) torso.hemBand = o.hemBand * S;
   if (o.noHem) { torso.noHem = true; torso.cutBelow = ctx.F.crotchY - 0.03 * S; }
   const bands = {}, trims = [], stitch = { edges: {}, seams: o.seams ?? 'single' };

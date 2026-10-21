@@ -30,6 +30,7 @@ import { buildFacialHair, faceZones } from '../face/facialhair.js';
 import { BONE_INDEX } from '../core/skeleton.js';
 import { FABRICS, garmentMaterials } from '../materials/fabrics.js';
 import { GARMENT_LAYER_TUCKED } from '../assets/garments.js';
+import { riseHeight } from '../garments/cut.js';
 import { clipHairParts, bodyWeights, rigidWeights } from '../accessories/common.js';
 import { BONE_INDEX as BI } from '../core/skeleton.js';
 
@@ -111,6 +112,9 @@ export function buildCharacter(docIn, opts = {}) {
   // one-piece garments with legs (overalls, jumpsuits, coveralls) are worn over the top: it is tucked in
   if (items.some(x => x.r.asset.tucksTops)) for (const x of items) if (x.r.asset.slot === 'top' && 'tucked' in (x.r.asset.params || {})) x.r = { ...x.r, params: { ...x.r.params, tucked: true } };
   items.forEach(x => { x.layer = itemLayer(x.r.asset, x.r.params); });
+  // tucked tops are pressed flat under the waistband of the bottoms worn over them
+  const lowItem = items.find(x => ['bottom', 'fullBody'].includes(x.r.asset.slot) && typeof x.r.params.rise === 'number');
+  const tuckY = Math.round((lowItem ? riseHeight(F, lowItem.r.params.rise) : F.waistY) * 1000) / 1000;
   items.sort((a, b) => a.layer - b.layer || a.i - b.i);
   let U = sf.farField;
   let chainKey = anatomyKey;
@@ -119,16 +123,16 @@ export function buildCharacter(docIn, opts = {}) {
     progress('garments', k / Math.max(1, items.length));
     const { asset, params, colors, material } = x.r;
     const fabricId = material.fabric || asset.fabric;
-    const geoKey = hashOf({ c: chainKey, a: asset.id, p: params, f: fabricId, d: detailId, l: x.layer });
+    const geoKey = hashOf({ c: chainKey, a: asset.id, p: params, f: fabricId, d: detailId, l: x.layer, t: params.tucked ? tuckY : 0 });
     chainKey = geoKey;
     let G = cache.get('g:' + geoKey);
     if (!G) {
       try {
-        const ctx = { F, S, fabric: fabricId, D };
+        const ctx = { F, S, fabric: fabricId, D, tuckY };
         if (asset.slot === 'footwear') G = asset.buildFootwear ? asset.buildFootwear(params, { ...ctx, sf, rig, U, meas }) : null;
         else {
           const spec = asset.build(params, ctx, asset);
-          G = buildGarment(spec, { F, S, D, meas, U, sf, seed: 1 + x.i, asset });
+          G = buildGarment(spec, { F, S, D, meas, U, sf, seed: 1 + x.i, asset, layered: garments.some(g => g.G && g.item.r.asset.slot !== 'footwear') });
         }
       } catch (e) {
         G = { error: String(e && e.message || e) };
@@ -341,7 +345,7 @@ export function accessoryMaterials(r) {
 /** Garment = shell + trims, with skin weights on the trims copied from the shell. */
 export function buildGarment(spec, ctx) {
   const { F, S, D, meas, U, sf } = ctx;
-  const c = cutGarment(spec, { F, meas, U, D, S, seed: ctx.seed });
+  const c = cutGarment(spec, { F, meas, U, D, S, seed: ctx.seed, layered: !!ctx.layered });
   const mesh = meshGarment(c.G, { bodyField: sf.field, S });
   const parts = buildTrims(spec.trims || [], { F, S, D, g: mesh, region: c.region, info: c.info, seed: ctx.seed + 5, stitch: spec.stitch, sleeveT: spec.sleeves?.t, field: c.field });
   const near = nearestIndex(mesh.position, 0.02 * S);
@@ -360,7 +364,8 @@ export function buildGarment(spec, ctx) {
 
 /** Nearest-vertex lookup (spatial hash). */
 export function nearestIndex(P, cell) {
-  const grid = new Map(), key = (x, y, z) => ((Math.floor(x / cell) * 73856093) ^ (Math.floor(y / cell) * 19349663) ^ (Math.floor(z / cell) * 83492791));
+  // exact cell keys (a hashed key can collide and hand a trim the weights of a far-away vertex)
+  const grid = new Map(), key = (x, y, z) => ((Math.floor(x / cell) + 1024) * 2048 + (Math.floor(y / cell) + 1024)) * 2048 + (Math.floor(z / cell) + 1024);
   for (let i = 0; i < P.length / 3; i++) { const k = key(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]); let l = grid.get(k); if (!l) grid.set(k, l = []); l.push(i); }
   return (x, y, z) => {
     let best = 0, bd = Infinity;
@@ -370,6 +375,7 @@ export function nearestIndex(P, cell) {
         for (const i of l) { const d = (P[i * 3] - x) ** 2 + (P[i * 3 + 1] - y) ** 2 + (P[i * 3 + 2] - z) ** 2; if (d < bd) { bd = d; best = i; } }
       }
     }
+    if (bd === Infinity) for (let i = 0; i < P.length / 3; i++) { const d = (P[i * 3] - x) ** 2 + (P[i * 3 + 1] - y) ** 2 + (P[i * 3 + 2] - z) ** 2; if (d < bd) { bd = d; best = i; } }
     return best;
   };
 }

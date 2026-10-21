@@ -69,7 +69,7 @@ export function meshGarment(G, ctx) {
   ({ P, I, onEdge } = compact(P, I, onEdge));
   // pin-holes left where the garment grazes the region boundary or a layer below: close them,
   // otherwise they would count as openings (and grow ribbed bands / rims around themselves)
-  ({ P, I, onEdge } = fillSmallHoles(P, I, onEdge, 0.09 * S, 28));
+  ({ P, I, onEdge } = fillSmallHoles(P, I, onEdge, 0.09 * S, 28, G.keepHole));
   // panel seams become clean curves: split the mesh exactly along each seam function
   for (const fn of G.seams || []) {
     const val = new Float32Array(P.length / 3);
@@ -128,7 +128,9 @@ export function meshGarment(G, ctx) {
   const bandU = new Float32Array(nv);                 // 0 at the edge … 1 at the band's inner limit
   for (const [, bd] of Object.entries(bandDist)) for (let i = 0; i < nv; i++) if (bd.d[i] < bd.w) { inBand[i] = BAND_KINDS.indexOf(bd.kind); bandU[i] = bd.d[i] / bd.w; }
 
-  // ---- surface detail (outward only)
+  // ---- surface detail (outward only); panels are decided on the surface BEFORE it (a fold may push a
+  // vertex of one trouser leg a millimetre across the centre line)
+  const P0 = P;
   let N = vertexNormals(P, I);
   if (G.displace || Object.keys(bandDist).length) {
     const info = { edgeDist: 0, index: 0, band: null, bandU: 0 };
@@ -147,9 +149,9 @@ export function meshGarment(G, ctx) {
 
   // ---- panels + UVs, split at the seams
   const panelOf = new Int16Array(nv);
-  for (let i = 0; i < nv; i++) panelOf[i] = G.panel ? G.panel(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]) : 0;
+  for (let i = 0; i < nv; i++) panelOf[i] = G.panel ? G.panel(P0[i * 3], P0[i * 3 + 1], P0[i * 3 + 2]) : 0;
   const uvFn = G.uv || ((pn, x, y) => [x, y]);
-  const outer = splitPanels(P, N, I, G.panel || (() => 0), uvFn);
+  const outer = splitPanels(P, N, I, G.panel || (() => 0), uvFn, P0);
 
   // ---- thickness: inner surface near the openings + rims
   const th = G.thickness;
@@ -210,9 +212,33 @@ export function meshGarment(G, ctx) {
       const s2 = out.layer[i] === 1 ? -1 : 1;     // inner normals point inward
       offset[i * 3] = out.normal[i * 3] * d * s2; offset[i * 3 + 1] = out.normal[i * 3 + 1] * d * s2; offset[i * 3 + 2] = out.normal[i * 3 + 2] * d * s2;
     }
-    const w = skinWeights(out.position, ctx.bodyField, { offset, sigmaMin: 0.012 * S });
+    const allow = G.allowBones ? (i => G.allowBones(out.source[i] >= 0 ? panelOf[out.source[i]] : 0)) : null;
+    const w = skinWeights(out.position, ctx.bodyField, { offset, sigmaMin: 0.012 * S, allow });
+    if (allow) {
+      // where panels that follow different bones are sewn together (armholes, crotch), fade to the
+      // unrestricted weights so the seam bends smoothly instead of tearing
+      const k = seamFade(P, I, nv, panelOf, G.allowBones, 0.05 * S);
+      if (k) {
+        const wAll = skinWeights(out.position, ctx.bodyField, { offset, sigmaMin: 0.012 * S });
+        for (let i = 0; i < nOut; i++) {
+          const f = out.source[i] >= 0 ? k[out.source[i]] : 1;
+          if (f >= 1) continue;
+          const acc = new Map();
+          for (let j = 0; j < 4; j++) {
+            if (w.skinWeight[i * 4 + j] > 0) acc.set(w.skinIndex[i * 4 + j], (acc.get(w.skinIndex[i * 4 + j]) || 0) + f * w.skinWeight[i * 4 + j]);
+            if (wAll.skinWeight[i * 4 + j] > 0) acc.set(wAll.skinIndex[i * 4 + j], (acc.get(wAll.skinIndex[i * 4 + j]) || 0) + (1 - f) * wAll.skinWeight[i * 4 + j]);
+          }
+          const top = [...acc.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4), sum = top.reduce((s2, [, v]) => s2 + v, 0) || 1;
+          for (let j = 0; j < 4; j++) { w.skinIndex[i * 4 + j] = top[j] ? top[j][0] : 0; w.skinWeight[i * 4 + j] = top[j] ? top[j][1] / sum : 0; }
+        }
+      }
+    }
     out.skinIndex = w.skinIndex; out.skinWeight = w.skinWeight;
+    // a few smoothing passes over the mesh: creases (armpits, the crotch) where the surface folds against
+    // itself would otherwise mix vertices that follow different bones and tear apart when posed
+    smoothWeights(out.index, nOut, out.skinIndex, out.skinWeight, 3, 0.5);
     if (G.adjustWeights) for (let i = 0; i < nOut; i++) G.adjustWeights(i, out.position, out.skinIndex, out.skinWeight);
+    weldWeights(out.position, out.skinIndex, out.skinWeight);
   }
   // data for trims (collars, cuffs, buttons…) and stitching
   const loopInfo = loops.map(lp => {
@@ -224,6 +250,91 @@ export function meshGarment(G, ctx) {
   out.surface = { P, N, I, loops: loopInfo, edgeDist, edgeType, panelOf, partNames: parts.map(p2 => p2.name), bandDist, seams: panelSeams(P, I, outer.triPanel, G.stitchSeams) };
   out.stats = { verts: nOut, tris: out.index.length / 3, ms: { mesh: tMesh - t0, total: now() - t0 }, octree: raw.stats };
   return out;
+}
+
+/**
+ * 0 on the seams where panels with different bone sets meet (vertices duplicated at the same place),
+ * rising to 1 at `R` from them; null when the garment has only one bone set.
+ */
+function seamFade(P, I, nv, panelOf, allowBones, R) {
+  const ids = new Map(), sid = new Int16Array(nv);
+  for (let i = 0; i < nv; i++) { const st = allowBones(panelOf[i]); let id = ids.get(st); if (id === undefined) { id = ids.size; ids.set(st, id); } sid[i] = id; }
+  if (ids.size < 2) return null;
+  const q = 1e-6, at = new Map();
+  for (let i = 0; i < nv; i++) {
+    const key = Math.round(P[i * 3] / q) + ',' + Math.round(P[i * 3 + 1] / q) + ',' + Math.round(P[i * 3 + 2] / q);
+    const g = at.get(key); if (g) g.push(i); else at.set(key, [i]);
+  }
+  const seamFlag = new Uint8Array(nv);
+  for (const g of at.values()) if (g.length > 1 && g.some(i => sid[i] !== sid[g[0]])) seamFlag[g[0]] = 1;
+  // and where the panels meet without a seam split (a loose sleeve running into the body)
+  for (let t = 0; t < I.length; t += 3) for (let e = 0; e < 3; e++) { const a = I[t + e], b = I[t + (e + 1) % 3]; if (sid[a] !== sid[b]) { seamFlag[a] = 1; seamFlag[b] = 1; } }
+  const seam = [];
+  for (let i = 0; i < nv; i++) if (seamFlag[i]) seam.push(i);
+  const k = new Float32Array(nv).fill(1);
+  if (!seam.length) return k;
+  const cs = R, grid = new Map(), cell = (x, y, z) => Math.floor(x / cs) + ',' + Math.floor(y / cs) + ',' + Math.floor(z / cs);
+  for (const v of seam) { const c = cell(P[v * 3], P[v * 3 + 1], P[v * 3 + 2]); const l = grid.get(c); if (l) l.push(v); else grid.set(c, [v]); }
+  for (let i = 0; i < nv; i++) {
+    const x = P[i * 3], y = P[i * 3 + 1], z = P[i * 3 + 2];
+    const cx = Math.floor(x / cs), cy = Math.floor(y / cs), cz = Math.floor(z / cs);
+    let best = R * R;
+    for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) for (let dz = -1; dz <= 1; dz++) {
+      const l = grid.get((cx + dx) + ',' + (cy + dy) + ',' + (cz + dz)); if (!l) continue;
+      for (const v of l) { const d2 = (P[v * 3] - x) ** 2 + (P[v * 3 + 1] - y) ** 2 + (P[v * 3 + 2] - z) ** 2; if (d2 < best) best = d2; }
+    }
+    const t = Math.sqrt(best) / R;
+    k[i] = t >= 1 ? 1 : t * t * (3 - 2 * t);
+  }
+  return k;
+}
+
+/** Laplacian smoothing of skin weights over the mesh edges (keeps the 4 largest per vertex). */
+export function smoothWeights(index, n, SI, SW, iterations = 2, alpha = 0.5) {
+  const deg = new Int32Array(n + 1);
+  for (let t = 0; t < index.length; t += 3) for (let e = 0; e < 3; e++) { deg[index[t + e]] += 2; }
+  const start = new Int32Array(n + 1);
+  for (let i = 0; i < n; i++) start[i + 1] = start[i] + deg[i];
+  const nb = new Int32Array(start[n]), fill = start.slice(0, n);
+  for (let t = 0; t < index.length; t += 3) for (let e = 0; e < 3; e++) {
+    const a = index[t + e], b = index[t + (e + 1) % 3], c = index[t + (e + 2) % 3];
+    nb[fill[a]++] = b; nb[fill[a]++] = c;
+  }
+  const bones = [], ws = [];
+  for (let it = 0; it < iterations; it++) {
+    const SI2 = new Uint16Array(SI.length), SW2 = new Float32Array(SW.length);
+    for (let i = 0; i < n; i++) {
+      bones.length = 0; ws.length = 0;
+      const add = (b, w) => { const k = bones.indexOf(b); if (k < 0) { bones.push(b); ws.push(w); } else ws[k] += w; };
+      const cnt = start[i + 1] - start[i];
+      for (let j = 0; j < 4; j++) if (SW[i * 4 + j] > 0) add(SI[i * 4 + j], SW[i * 4 + j] * (cnt ? 1 - alpha : 1));
+      if (cnt) for (let q = start[i]; q < start[i + 1]; q++) { const v = nb[q]; for (let j = 0; j < 4; j++) if (SW[v * 4 + j] > 0) add(SI[v * 4 + j], SW[v * 4 + j] * alpha / cnt); }
+      // top 4
+      const order = bones.map((b, k) => k).sort((a, b) => ws[b] - ws[a]).slice(0, 4);
+      let sum = 0; for (const k of order) sum += ws[k];
+      order.forEach((k, j) => { SI2[i * 4 + j] = bones[k]; SW2[i * 4 + j] = ws[k] / (sum || 1); });
+    }
+    SI.set(SI2); SW.set(SW2);
+  }
+}
+
+/**
+ * Vertices at the same place (panel seams are split into separate vertices, and each panel may follow
+ * different bones) get the same, averaged weights, so a seam never opens when the character moves.
+ */
+export function weldWeights(P, SI, SW) {
+  const n = P.length / 3, q = 1e-5, groups = new Map();
+  for (let i = 0; i < n; i++) {
+    const k = Math.round(P[i * 3] / q) + ',' + Math.round(P[i * 3 + 1] / q) + ',' + Math.round(P[i * 3 + 2] / q);
+    const g = groups.get(k); if (g) g.push(i); else groups.set(k, [i]);
+  }
+  for (const g of groups.values()) {
+    if (g.length < 2) continue;
+    const acc = new Map();
+    for (const i of g) for (let k = 0; k < 4; k++) if (SW[i * 4 + k] > 0) acc.set(SI[i * 4 + k], (acc.get(SI[i * 4 + k]) || 0) + SW[i * 4 + k]);
+    const top = [...acc.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4), sum = top.reduce((s2, [, w]) => s2 + w, 0) || 1;
+    for (const i of g) for (let k = 0; k < 4; k++) { SI[i * 4 + k] = top[k] ? top[k][0] : 0; SW[i * 4 + k] = top[k] ? top[k][1] / sum : 0; }
+  }
 }
 
 /** Band kinds: rib (knit rib: hems, cuffs, neckbands), band (same fabric, doubled), elastic (gathered). */
@@ -300,9 +411,14 @@ function project(f, p, iters) {
 }
 
 /** Close boundary loops shorter than maxLen (and with at most maxVerts vertices) with a fan around their centroid. */
-export function fillSmallHoles(P, I, flag, maxLen, maxVerts) {
+export function fillSmallHoles(P, I, flag, maxLen, maxVerts, keep = null) {
   const loops = boundaryLoops(I).filter(lp => {
     if (lp.length > maxVerts) return false;
+    if (keep) {                                   // deliberate cuts (e.g. between trouser legs) stay open
+      let x = 0, y = 0, z = 0;
+      for (const v of lp) { x += P[v * 3]; y += P[v * 3 + 1]; z += P[v * 3 + 2]; }
+      if (keep(x / lp.length, y / lp.length, z / lp.length)) return false;
+    }
     let L = 0;
     for (let k = 0; k < lp.length; k++) { const a = lp[k] * 3, b = lp[(k + 1) % lp.length] * 3; L += Math.hypot(P[a] - P[b], P[a + 1] - P[b + 1], P[a + 2] - P[b + 2]); if (L > maxLen) return false; }
     return true;
@@ -426,14 +542,14 @@ class MinHeap {
 }
 
 /** Duplicate vertices where triangles of different panels meet; per-panel UVs. */
-function splitPanels(P, N, I, panelFn, uvFn) {
+function splitPanels(P, N, I, panelFn, uvFn, Pc = P) {
   const map = new Map();
   const oP = [], oN = [], oUV = [], src = [], oI = [];
   const triPanel = new Int16Array(I.length / 3);
   for (let t = 0; t < I.length; t += 3) {
     const a = I[t], b = I[t + 1], c = I[t + 2];
     const cx = (P[a * 3] + P[b * 3] + P[c * 3]) / 3, cy = (P[a * 3 + 1] + P[b * 3 + 1] + P[c * 3 + 1]) / 3, cz = (P[a * 3 + 2] + P[b * 3 + 2] + P[c * 3 + 2]) / 3;
-    const pn = panelFn(cx, cy, cz);
+    const pn = panelFn((Pc[a * 3] + Pc[b * 3] + Pc[c * 3]) / 3, (Pc[a * 3 + 1] + Pc[b * 3 + 1] + Pc[c * 3 + 1]) / 3, (Pc[a * 3 + 2] + Pc[b * 3 + 2] + Pc[c * 3 + 2]) / 3);
     triPanel[t / 3] = pn;
     const ref = [cx, cy, cz];
     for (const v of [a, b, c]) {

@@ -95,13 +95,35 @@ function edgeRunsAll(sf, typePrefix) {
     if (!ok.some(Boolean)) continue;
     const pts = v => [sf.P[v * 3], sf.P[v * 3 + 1], sf.P[v * 3 + 2]];
     const nrm = v => [sf.N[v * 3], sf.N[v * 3 + 1], sf.N[v * 3 + 2]];
-    if (ok.every(Boolean)) { out.push({ pts: lp.verts.map(pts), nrm: lp.verts.map(nrm), closed: true, type: lp.types[0] }); continue; }
+    if (ok.every(Boolean)) {
+      const xs = lp.verts.map(v => Math.sign(sf.P[v * 3]));
+      const cut = lp.types[0].startsWith('legHem') ? xs.findIndex((x, i) => x !== xs[(i + n - 1) % n]) : -1;
+      if (cut < 0) { out.push({ pts: lp.verts.map(pts), nrm: lp.verts.map(nrm), closed: true, type: lp.types[0] }); continue; }
+      // one loop around both trouser legs (they touch at the hem): one open run per leg
+      let run = [];
+      for (let k = 0; k < n; k++) {
+        const i = (cut + k) % n;
+        if (run.length && xs[i] !== xs[(i + n - 1) % n]) { if (run.length > 2) out.push({ pts: run.map(pts), nrm: run.map(nrm), closed: false, type: lp.types[0] }); run = []; }
+        run.push(lp.verts[i]);
+      }
+      if (run.length > 2) out.push({ pts: run.map(pts), nrm: run.map(nrm), closed: false, type: lp.types[0] });
+      continue;
+    }
     let start = ok.findIndex((v, i) => v && !ok[(i + n - 1) % n]);
     for (let k = 0; k < n; k++) {
       const i = (start + k) % n;
       if (!ok[i] || ok[(i + n - 1) % n]) continue;
       const run = [];
-      for (let j = i; ok[j % n] && run.length < n; j++) run.push(lp.verts[j % n]);
+      for (let j = i; ok[j % n] && run.length < n; j++) {
+        const v = lp.verts[j % n];
+        // a trouser leg's hem never crosses the centre line: where the legs were split apart the run
+        // jumps to the other leg, so it ends there
+        if (run.length && lp.types[j % n].startsWith('legHem') && Math.sign(sf.P[v * 3]) !== Math.sign(sf.P[run[run.length - 1] * 3])) {
+          if (run.length > 2) out.push({ pts: run.map(pts), nrm: run.map(nrm), closed: false, type: lp.types[i] });
+          run.length = 0;
+        }
+        run.push(v);
+      }
       if (run.length > 2) out.push({ pts: run.map(pts), nrm: run.map(nrm), closed: false, type: lp.types[i] });
     }
     void start;

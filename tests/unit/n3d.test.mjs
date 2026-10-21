@@ -198,3 +198,33 @@ test('presets and extreme bodies build', { timeout: 900000 }, () => {
   checkResult('extreme', build({ body: { height: 2.05, muscle: 1, bodyFat: 1, belly: 1, stylization: 1, headScale: 1.4 }, outfit: [{ assetId: 'outer_coat_01' }, { assetId: 'bottom_trousers_01', params: { fit: 'oversized' } }] }));
   checkResult('petite', build({ body: { height: 1.45, masculinity: 0, muscle: 0, bodyFat: 0 }, outfit: [{ assetId: 'full_dress_01', params: { length: 3 } }] }));
 });
+
+// ------------------------------------------------------------------ posing: garments follow the skeleton
+test('posed garments do not tear: sleeves follow their arm, trouser legs their leg, bags the body', { timeout: 900000 }, async () => {
+  const THREE = await import('three');
+  const { makeSkeleton, applyPose } = await import('../../src/n3d/render/skeleton3.js');
+  const outfits = [
+    exampleN3D(),
+    { hair: { styleId: 'hair_long_straight_01' }, outfit: [{ assetId: 'top_tshirt_01' }, { assetId: 'bottom_jeans_01' }, { assetId: 'shoes_sneakers_01' }, { assetId: 'mid_hoodie_01' }, { assetId: 'outer_coat_01' }], accessories: [{ assetId: 'neck_scarf_01' }] },
+  ];
+  for (const doc of outfits) {
+    const res = buildCharacter(createN3DDocument(clone(doc)), { detail: 'standard' });
+    const sk = makeSkeleton(res.rig.joints);
+    applyPose(sk, 'walk', 0.6); sk.root.updateMatrixWorld(true);
+    const M = sk.bones.map((b, i) => new THREE.Matrix4().multiplyMatrices(b.matrixWorld, sk.skeleton.boneInverses[i]));
+    const v = new THREE.Vector3(), acc = new THREE.Vector3(), tmp = new THREE.Vector3();
+    for (const m of res.meshes) {
+      const g = m.geometry; if (!g || !g.index || !g.skinIndex || !['garment', 'accessory'].includes(m.kind)) continue;
+      const n = g.position.length / 3, Q = new Float32Array(n * 3);
+      for (let i = 0; i < n; i++) {
+        v.set(g.position[i * 3], g.position[i * 3 + 1], g.position[i * 3 + 2]); acc.set(0, 0, 0);
+        for (let k = 0; k < 4; k++) { const w = g.skinWeight[i * 4 + k]; if (w) { tmp.copy(v).applyMatrix4(M[g.skinIndex[i * 4 + k]]); acc.addScaledVector(tmp, w); } }
+        Q[i * 3] = acc.x; Q[i * 3 + 1] = acc.y; Q[i * 3 + 2] = acc.z;
+      }
+      const L = (A, a, b) => Math.hypot(A[a * 3] - A[b * 3], A[a * 3 + 1] - A[b * 3 + 1], A[a * 3 + 2] - A[b * 3 + 2]);
+      let worst = 0;
+      for (let t = 0; t < g.index.length; t += 3) for (const [a, b] of [[g.index[t], g.index[t + 1]], [g.index[t + 1], g.index[t + 2]], [g.index[t + 2], g.index[t]]]) worst = Math.max(worst, L(Q, a, b) - L(g.position, a, b));
+      assert.ok(worst < 0.1, `${m.id}: an edge stretches ${worst.toFixed(3)} m in the walk pose`);
+    }
+  }
+});

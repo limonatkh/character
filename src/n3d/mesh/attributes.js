@@ -2,7 +2,7 @@
  * MESH ATTRIBUTES: skin weights, region tags, UV projections, colours.
  * Pure JS on typed arrays (works in workers and Node).
  * ===================================================================== */
-import { primDist } from '../sdf/field.js';
+import { primDist, UNION } from '../sdf/field.js';
 
 /**
  * Skin weights from primitive contributions: every primitive belongs to a
@@ -17,11 +17,20 @@ export function skinWeights(positions, fieldForWeights, opts = {}) {
   const tags = new Uint8Array(n), dominant = new Uint16Array(n);
   const sigmaMin = opts.sigmaMin ?? 0.004;
   const offset = opts.offset || null;   // optional per-vertex normals * distance to probe inside (garments)
+  const allow = opts.allow || null;     // optional (i) => Set of allowed bone indices (e.g. a sleeve only follows its arm)
   const acc = new Map();
   for (let i = 0; i < n; i++) {
     let x = positions[i * 3], y = positions[i * 3 + 1], z = positions[i * 3 + 2];
     if (offset) { x -= offset[i * 3]; y -= offset[i * 3 + 1]; z -= offset[i * 3 + 2]; }
-    const prims = fieldForWeights.nearPrims(x, y, z);
+    let prims = fieldForWeights.nearPrims(x, y, z);
+    const ok = allow && allow(i);
+    if (ok) {
+      let f = prims.filter(p => ok.has(p.bone));
+      // the cell lists only primitives within the field's margin: far from the body (loose garments) the
+      // allowed ones may be missing from it, so look at all of them
+      if (!f.length && fieldForWeights.prims) f = fieldForWeights.prims.filter(p => p.bone !== undefined && ok.has(p.bone) && unionPrim(fieldForWeights, p));
+      if (f.length) prims = f;
+    }
     acc.clear();
     let dmin = Infinity, best = null, bestTag = 0, bestTagD = Infinity;
     const ds = new Float64Array(prims.length);
@@ -54,6 +63,13 @@ export function skinWeights(positions, fieldForWeights, opts = {}) {
     tags[i] = bestTag && bestTagD - dmin < (opts.tagBand ?? 0.0012) ? bestTag : 0;
   }
   return { skinIndex, skinWeight, tags, dominant };
+}
+
+const unionSets = new WeakMap();
+function unionPrim(field, p) {
+  let set = unionSets.get(field);
+  if (!set) { set = new Set(); for (const L of field.layers || []) if (L.op === UNION) for (const q of L.prims) set.add(q); unionSets.set(field, set); }
+  return set.has(p);
 }
 
 /**

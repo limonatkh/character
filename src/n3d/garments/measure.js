@@ -96,6 +96,25 @@ export function measureTorso(trunk, frame, opts = {}) {
 }
 
 /**
+ * Radial profile of what is already worn (the layer stack U) on the torso profile's grid, for garments
+ * worn over other garments: they hang from those layers, not from the body. Rays start 10 cm outside the
+ * body, so arms and sleeves standing away from the trunk are not measured.
+ */
+export function measureStack(U, torso, frame, opts = {}) {
+  const S = frame.S, prof = torso.clone(), { ny, na } = prof, out = 0.1 * S;
+  const y0 = opts.y0 ?? -Infinity, y1 = opts.y1 ?? Infinity;
+  for (let i = 0; i < ny; i++) {
+    const y = prof.yAt(i);
+    if (y < y0 || y > y1) continue;
+    for (let j = 0; j < na; j++) {
+      const th = prof.thAt(j), rb = torso.R[i * na + j];
+      prof.R[i * na + j] = Math.max(rb, traceIn(U, 0, y, prof.axisZ, Math.sin(th), -Math.cos(th), rb + out));
+    }
+  }
+  return prof.blur(1);
+}
+
+/**
  * Trouser hull around one leg: outermost trunk surface (hip, seat, thigh,
  * calf) around the leg's own (slanted) axis, with rays on the inner side
  * starting at the body's midline — so above the crotch each leg's hull
@@ -189,5 +208,6 @@ export function measureBody(sf, frame) {
     co.push([c * (h ? 2 : 1) / na, s2 * (h ? 2 : 1) / na]);
   }
   frame.neckSection = a => { let r = 0; for (let h = 0; h <= H; h++) r += co[h][0] * Math.cos(h * a) + co[h][1] * Math.sin(h * a); return r; };
-  return { trunk, torso, arms, legs, legHulls, neck: frame.neckField };
+  const trunkPrims = sf.body.union.filter(p => keepTrunk(BONE_NAMES[p.bone] || ''));
+  return { trunk, trunkPrims, torso, arms, legs, legHulls, neck: frame.neckField };
 }

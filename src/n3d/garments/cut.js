@@ -14,6 +14,9 @@
 import * as R from './regions.js';
 import { torsoDrape, limbDrape, legDrape, sleeveRadius, garmentField, stackField, baseEase } from './fit.js';
 import { noise3 } from '../mesh/builder.js';
+import { BONES } from '../core/skeleton.js';
+import { primDist } from '../sdf/field.js';
+import { measureStack } from './measure.js';
 
 const ss = R.smoothstep;
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -21,6 +24,19 @@ const bell = (x, c, w) => Math.exp(-((x - c) * (x - c)) / (w * w));
 const wrapPi = a => { while (a > Math.PI) a -= 2 * Math.PI; while (a < -Math.PI) a += 2 * Math.PI; return a; };
 
 export const PANEL = { FRONT: 0, BACK: 1, SLEEVE_L: 2, SLEEVE_R: 3, LEG_LF: 4, LEG_LB: 5, LEG_RF: 6, LEG_RB: 7 };
+/* Which bones each panel may follow: sleeves only their own arm (plus the chest at the armhole), the body of a
+ * garment never the forearms or hands, each trouser leg only its own leg (and the hips / spine), no arm bone. Without this, a loose sleeve or a coat hem
+ * hanging next to the hand in the A-pose takes the hip's or the hand's weights and tears when the arms move. */
+const ARM_CHAIN = /^(left|right)(Shoulder|UpperArm|LowerArm|Hand|Thumb|Index|Middle|Ring|Little)/;
+const FOREARM_DOWN = /^(left|right)(LowerArm|Hand|Thumb|Index|Middle|Ring|Little)/;
+const boneSet = keep => new Set(BONES.map((b, i) => (keep(b.name) ? i : -1)).filter(i => i >= 0));
+const BONE_SETS = {
+  sleeveL: boneSet(n => /^left(Shoulder|UpperArm|LowerArm|Hand)$/.test(n) || n === 'upperChest' || n === 'chest'),
+  sleeveR: boneSet(n => /^right(Shoulder|UpperArm|LowerArm|Hand)$/.test(n) || n === 'upperChest' || n === 'chest'),
+  noForearms: boneSet(n => !FOREARM_DOWN.test(n)),
+  legL: boneSet(n => !ARM_CHAIN.test(n) && !/^right(UpperLeg|LowerLeg|Foot|Toes)$/.test(n)),
+  legR: boneSet(n => !ARM_CHAIN.test(n) && !/^left(UpperLeg|LowerLeg|Foot|Toes)$/.test(n)),
+};
 const isLeg = pn => pn >= 4;
 
 /** Hem height of tops / jackets / dresses from a 0..1 (or longer) length. */
@@ -60,7 +76,7 @@ export function cutGarment(spec, ctx) {
 
   // ---------------------------------------------------------- upper body
   const T = spec.torso;
-  let hemFn = null, sleeveR = {};
+  let hemFn = null, sleeveR = {}, keepHole = null;
   if (T) {
     const hemBase = T.hemY ?? hemHeight(F, T.length ?? 0.5);
     const curve = (T.hemCurve || 0) * 0.05 * S, dip = (T.hemDip || 0) * 0.04 * S, asym = (T.hemAsym || 0) * 0.08 * S;
@@ -73,7 +89,9 @@ export function cutGarment(spec, ctx) {
     if (T.opening) add('opening', R.frontOpening(F, T.opening));
     const yTop = Math.min(F.armpitY - 0.005 * S, T.drapeTop ?? Infinity);
     const skirtBelow = spec.skirt ? F.crotchY + 0.04 * S : -Infinity;
-    drapes.push(torsoDrape(meas.torso, F, {
+    // over other garments the fabric hangs from them (a coat over a hoodie does not step in below its hem)
+    const torsoProf = ctx.layered ? measureStack(U, meas.torso, F, { y1: yTop + 0.02 * S }) : meas.torso;
+    drapes.push(torsoDrape(torsoProf, F, {
       yTop, hang: Math.min(1, (T.hang ?? 1.25) * L), ease: (T.ease ?? 1) * 0.03 * S * L * L, baseEase: e0,
       flare: T.flare || 0, flareFrom: T.flareFrom ?? F.waistY, front: T.front || 0,
       cutBelow: T.cutBelow, skirtBelow, skirtHull: spec.skirt ? 0.55 : 0,
@@ -119,6 +137,11 @@ export function cutGarment(spec, ctx) {
       const tEnd = B.t ?? 1;
       info.legT = tEnd;
       add('legHem', R.legEnd(F, tEnd));
+      // the two legs never join below the crotch, even where wide hems meet behind the heels
+      // (wider than a mesh cell, or a triangle could span it)
+      const splitY = F.crotchY - 0.06 * S - (B.crotchDrop || 0) * S, gap = Math.max(0.003 * S, 0.6 * (spec.cell ?? D.garment * (spec.cellScale || 1)));
+      add('legSplit', (x, y) => Math.min(gap - Math.abs(x), splitY - y));
+      keepHole = (x, y) => y < splitY + 0.01 * S && Math.abs(x) < 0.012 * S;
       const hemY = F.legs.left.a[1] + (F.legs.left.b[1] - F.legs.left.a[1]) * tEnd;
       for (const side of ['left', 'right']) {
         drapes.push(legDrape(meas.legHulls[side], F, {
@@ -131,6 +154,13 @@ export function cutGarment(spec, ctx) {
 
   const region = R.all(...parts.map(p => p.fn));
   const field = garmentField(U, e0, drapes, (spec.blend ?? (0.006 + 0.03 * L)) * S);
+  if (T && typeof T.tuckY === 'number') {
+    // tucked in: below the waistband the fabric is pressed against what is underneath (blended over 12 cm
+    // so the field stays a distance bound)
+    const base = field.fromU, ty = T.tuckY, tight = 0.0015 * S;
+    field.fromU = (u, x, y, z) => { const f = base(u, x, y, z), w = ss(ty + 0.04 * S, ty - 0.08 * S, y); return w > 0 ? f + w * (u - tight - f) : f; };
+    field.eval = (x, y, z) => field.fromU(U.eval(x, y, z), x, y, z);
+  }
 
   // ---------------------------------------------------------- panels and UVs
   const zc = 0.01 * S;
@@ -138,8 +168,18 @@ export function cutGarment(spec, ctx) {
   // armhole seam: a plane across the arm at t = 0.07, limited to the arm's surroundings
   const armSeam = s => (x, y, z) => { const l = R.limbCoords(F.arms[s], x, y, z); return Math.max(0.07 * F.arms[s].L - l.along, l.r - 0.13 * S, F.crotchY - y); };
   const armSeams = { left: armSeam('left'), right: armSeam('right') };
+  // a loose or layered sleeve can stand further from the arm than the armhole seam's 13 cm: it is still the
+  // sleeve while it is nearer the arm than the trunk (otherwise its wrist end would follow the hips)
+  const trunkDist = (x, y, z) => { let d = Infinity; for (const p of meas.trunkPrims) { const v = primDist(p, x, y, z); if (v < d) d = v; } return d; };
+  const inSleeve = (s, x, y, z) => {
+    const a = armSeams[s](x, y, z);
+    if (a < 0) return true;
+    const l = R.limbCoords(F.arms[s], x, y, z);
+    if (l.along < 0.07 * F.arms[s].L || y < F.crotchY || l.r < 0.13 * S || l.r > 0.35 * S) return false;
+    return l.r - meas.arms[s].at(Math.min(1, Math.max(0, l.t))) < trunkDist(x, y, z) - 0.01 * S;
+  };
   const panel = (x, y, z) => {
-    if (hasSleeves) for (const s of ['left', 'right']) if (armSeams[s](x, y, z) < 0) return s === 'left' ? PANEL.SLEEVE_L : PANEL.SLEEVE_R;
+    if (hasSleeves) for (const s of ['left', 'right']) if (inSleeve(s, x, y, z)) return s === 'left' ? PANEL.SLEEVE_L : PANEL.SLEEVE_R;
     // trousers: four panels per pair (front / back of each leg) → centre, side and inside-leg seams
     if (B && !B.skirt && (!T || y < F.crotchY + 0.02 * S)) {
       const s = x < 0 ? 'left' : 'right';
@@ -243,8 +283,10 @@ export function cutGarment(spec, ctx) {
     field, region, regionParts: parts, bands: spec.bands || {}, lined: !!spec.lined, thickness: th, seams, cell: spec.cell ?? D.garment * (spec.cellScale || 1), bounds: b,
     panel, uv, displace, bandWidth: spec.bandWidth ?? 0.11 * S, roundRim: th > 0.003 * S ? 3 : 2,
     adjustWeights: (spec.skirt || B?.skirt || (T && hemFn && info.hemY < F.crotchY)) ? skirtWeights(F) : null,
+    keepHole,
+    allowBones: pn => (pn === PANEL.SLEEVE_L ? BONE_SETS.sleeveL : pn === PANEL.SLEEVE_R ? BONE_SETS.sleeveR : pn === PANEL.LEG_LF || pn === PANEL.LEG_LB ? BONE_SETS.legL : pn >= PANEL.LEG_RF ? BONE_SETS.legR : BONE_SETS.noForearms),
   };
-  return { G, field, region, drapes, stack: stackField(field, region, foldMax + th * 0.5), info: { ...info, foldMax }, sleeveR };
+  return { G, field, region, drapes, stack: stackField(field, region, foldMax + th * 0.5, (B ? 0.04 : 0.025) * S), info: { ...info, foldMax }, sleeveR };
 }
 
 /**

@@ -4,7 +4,7 @@
  * ===================================================================== */
 import { skinWeights } from '../mesh/attributes.js';
 import { projectTo } from '../mesh/builder.js';
-import { BONE_INDEX } from '../core/skeleton.js';
+import { BONE_INDEX, BONES } from '../core/skeleton.js';
 
 export const ss = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
@@ -58,9 +58,12 @@ export function bodyWeights(positions, sf, S) {
     const q = projectTo(sf.farField || sf.field, [positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2]], 0, 4);
     probe[i * 3] = q[0]; probe[i * 3 + 1] = q[1]; probe[i * 3 + 2] = q[2];
   }
-  const w = skinWeights(probe, sf.field, { sigmaMin: 0.012 * S });
+  const w = skinWeights(probe, sf.field, { sigmaMin: 0.012 * S, allow: () => NO_ARMS });
   return { skinIndex: w.skinIndex, skinWeight: w.skinWeight };
 }
+/* Worn items that follow the body (bags, belts, straps, necklaces, ties, facial hair) never follow the arms:
+ * a bag hanging at the hip lies next to the hand in the A-pose, and must not swing with it. */
+const NO_ARMS = new Set(BONES.map((b, i) => (/^(left|right)(UpperArm|LowerArm|Hand|Thumb|Index|Middle|Ring|Little)/.test(b.name) ? -1 : i)).filter(i => i >= 0));
 /** Rigid attachment to one bone. */
 export function rigidWeights(n, bone) {
   const si = new Uint16Array(n * 4), sw = new Float32Array(n * 4);

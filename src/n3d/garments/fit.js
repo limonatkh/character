@@ -293,19 +293,21 @@ export function garmentField(U, easeFn, drapes, k) {
 }
 
 /**
- * Stack: what the NEXT layer sees underneath = min(U, garment solid).
+ * Stack: what the NEXT layer sees underneath = min(U, garment solid), smoothed by `fillet`.
  * The garment solid is the inside of its outer surface within its region.
  * (U is evaluated once per point, whatever the number of layers.)
  */
-export function stackField(Fg, region, inflate = 0) {
-  const U = Fg.U;
+export function stackField(Fg, region, inflate = 0, fillet = 0) {
+  const U = Fg.U, K = fillet;
   return {
     eval(x, y, z) {
       const u = U.eval(x, y, z);
       const r = region(x, y, z);
-      if (r >= u) return u;                       // exact shortcut: max(…, r) ≥ r ≥ u (keeps the field continuous)
+      if (r >= u + K) return u;                   // exact shortcut: g ≥ r ≥ u + K, so the (smooth) min is u
       const g = Math.max(Fg.fromU(u, x, y, z) - inflate, r);
-      return u < g ? u : g;
+      // a fillet where the garment's edge stands on what is below (a waistband, a hem): the next layer
+      // bridges the step instead of copying it
+      return K > 0 ? smin(u, g, K) : (u < g ? u : g);
     },
   };
 }
