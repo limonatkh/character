@@ -95,7 +95,9 @@ first build 13 s; a colour or fabric change 0.04 s; one garment 6 s; long hair
   combinations (an oversized puffer over a coat over a hoodie) can still show
   small intersections.
 * Poses in the viewer and the exported clips (idle, walk, wave) are procedural;
-  garments follow the skeleton through skin weights (no corrective shapes).
+  garments follow the skeleton through skin weights (each sleeve its arm, each
+  trouser leg its leg), without corrective shapes: the armpits of loose
+  jackets stretch a little in strong poses.
 * Hair is a sculpted mass + strand geometry, not a groom of individual
   simulated hairs; it does not move with physics.
 * No logos or brand marks are generated (patterns are generic).

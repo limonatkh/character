@@ -1,6 +1,12 @@
-# Test report — version 1.0.2
+# Test report — version 1.1.0 (Voxel mode)
 
-Version 1.0.2 · 2026-10-11
+Version 1.1.0 · 2026-10-21
+
+**1.1.0:** a second, independent creation mode was added (Normal 3D — its own
+report is [N3D_TEST_REPORT.md](N3D_TEST_REPORT.md)). The Voxel mode itself did
+not change; it gained the mode switch in its top bar, pauses its renderer while
+the other mode is shown, and refuses Normal 3D documents in its importer with an
+offer to switch. The Voxel tests below were re-run on 1.1.0: browser acceptance test 32 / 32 on the source version and 32 / 32 on the single-file build, unit tests 32 / 32 (`npm test` now also runs the Normal 3D unit tests).
 
 **1.0.2:** the site logo and icons are now the Limonat hero's voxel head, rendered by the app's own voxel engine (`npm run logo`). Tests re-run.
 
@@ -10,12 +16,12 @@ Version 1.0.2 · 2026-10-11
 
 | Suite | Result |
 |---|---|
-| Browser acceptance test, source version (`npm run test:e2e`) | **32 / 32** |
-| Browser acceptance test, single-file build (`npm run test:dist`) | **32 / 32** |
-| Unit tests (`npm test`) | **20 / 20** |
+| Browser acceptance test, source version (`node tests/e2e/app.test.mjs`) | **32 / 32** |
+| Browser acceptance test, single-file build (`node tests/e2e/app.test.mjs --dist`) | **32 / 32** |
+| Unit tests (`npm test`) | **32 / 32** (20 Voxel + 12 Normal 3D) |
 | Exported GLB, Khronos glTF validator | **0 errors, 0 warnings** (arms-down / −Z and T-pose / +Z) |
 | Generated JSON Schema vs. examples (Ajv, draft 2020-12) | valid examples pass, the invalid example fails for the same reasons the app reports |
-| Exported character inside the real game (copy of Limonat v1.39) | listed in the Character menu, renders, no console errors |
+| Exported character inside the real game (copy of Limonat v1.39) | listed in the Character menu, renders, no console errors (tested with 1.0.0, not re-run for 1.1.0) |
 | Single file opened from disk (`file://`, phone-sized window) | starts, fonts load, import works |
 | Game repository | untouched (`git status` clean) |
 

@@ -1,6 +1,6 @@
 # Normal 3D characters in Limonat
 
-Version 1.0.0 · 2026-10-11 · creator 1.1.0 · checked against Limonat v1.44 (`limonatkhi`, commit 4ab5bb1)
+Version 1.0.0 · 2026-10-21 · creator 1.1.0 · checked against Limonat v1.44.3 (`limonatkhi` main, commit c415b53)
 
 The game repository was only read for this; nothing in it was changed. This
 document describes how an exported Normal 3D character can be used by the game
@@ -9,7 +9,7 @@ and what that would cost. (Voxel characters: see
 
 ## 1. What the game does with characters today
 
-| Fact (v1.44) | Where |
+| Fact (v1.44.3) | Where |
 |---|---|
 | Classic `<script>` files, no bundler; Three.js r158 as `lib/three.min.js` (global `THREE`), **no GLTFLoader** | `index.html` |
 | Characters are entries of `VR.CHARACTERS` `{ id, name, tagline, model, palette, outline, fpArms? }`; the menu lists them | `js/character.js`, `js/game.js`, `js/ui.js` |
@@ -52,6 +52,19 @@ items.
    `LimonatN3D.configure({ material: 'lambert', height: 2.09 })`.
 
 No other game file has to change.
+
+### Tried in a copy of the game
+
+A scratch copy of `limonatkhi` (commit c415b53, never pushed) was given the
+two kit files and one exported character (*Sami*: T-shirt, hoodie, relaxed
+jeans, sneakers, backpack, glasses; standard detail, 376 k triangles, 13.9 MB).
+Result: the character is listed in the Character menu next to the voxel
+characters, loads, stands on the ground with its shadow, and in the first
+mission (third-person view) walks with the game's own leg and arm animation;
+no script errors.
+
+![Sami in the Character menu](images/n3d-in-limonat-menu.jpg)
+![Sami in third person, first mission](images/n3d-in-limonat-play.jpg)
 
 ## 3. What works and what stays voxel
 
