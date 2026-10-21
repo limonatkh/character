@@ -1,6 +1,6 @@
 # صانع شخصيات ليمونات — Limonat Character Creator
 
-Version 1.1.0 · 2026-10-11 · Voxel document 1.0 · Normal 3D document 1.0
+Version 1.1.0 · 2026-10-21 · Voxel document 1.0 · Normal 3D document 1.0
 
 A standalone app that builds 3D characters for Limonat from **JSON written by
 any external AI model**, with **two independent creation modes**:
