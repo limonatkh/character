@@ -1,0 +1,147 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>n3d view</title>
+<style>body{margin:0;background:#2a2f3a}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"../../vendor/three/three.module.js","three/addons/":"../../vendor/three/addons/"}}</script>
+</head><body>
+<script type="module">
+/* Development viewer for the Normal 3D generators: renders a character from
+ * several angles into one canvas (used by screenshot scripts). */
+import * as THREE from 'three';
+import { buildRig } from '../../src/n3d/anatomy/rig.js';
+import { skinField, meshSkin } from '../../src/n3d/build/skin.js';
+import { DETAIL_LEVELS } from '../../src/n3d/core/detail.js';
+import { buildEyeballs, buildLashes, buildBrows } from '../../src/n3d/face/features.js';
+import { buildHair } from '../../src/n3d/hair/engine.js';
+import '../../src/n3d/assets/hair.js';
+import { getAsset, paramDefaults, colorDefaults } from '../../src/n3d/core/registry.js';
+import { bodyFrame } from '../../src/n3d/garments/body-frame.js';
+import { measureBody } from '../../src/n3d/garments/measure.js';
+import { cutGarment } from '../../src/n3d/garments/cut.js';
+import { meshGarment } from '../../src/n3d/garments/shell.js';
+import { buildTrims } from '../../src/n3d/garments/trims.js';
+const hex = h => { const n = parseInt(h.slice(1), 16); return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255].map(v => Math.pow(v, 2.2)); };
+function stripTex() {
+  const c = document.createElement('canvas'); c.width = 128; c.height = 256; const g = c.getContext('2d');
+  g.clearRect(0, 0, 128, 256);
+  for (let i = 0; i < 260; i++) { const x = Math.random() * 128, w = 1 + Math.random() * 2, a = 0.5 + Math.random() * 0.5; const top = Math.random() * 20; const grd = g.createLinearGradient(0, 0, 0, 256); grd.addColorStop(0, `rgba(255,255,255,${a})`); grd.addColorStop(0.8, `rgba(255,255,255,${a * 0.9})`); grd.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = grd; const edge = Math.abs(x - 64) / 64; if (Math.random() < edge * edge) continue; g.fillRect(x, top, w, 256 - top - Math.random() * 40); }
+  const t = new THREE.CanvasTexture(c); return t;
+}
+
+const qs = new URLSearchParams(location.search);
+window.renderChar = (body = {}, face = {}, opts = {}) => {
+  const D = DETAIL_LEVELS[opts.detail || 'standard'];
+  const t0 = performance.now();
+  const rig = buildRig(body);
+  const sf = skinField(rig, face);
+  const res = meshSkin(rig, sf, D);
+  const ms = performance.now() - t0;
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color('#3a4150');
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x445566, 1.4));
+  const key = new THREE.DirectionalLight(0xffffff, 2.2); key.position.set(-1.5, 2.5, -2.5); scene.add(key);
+  const rim = new THREE.DirectionalLight(0xaaccff, 1.0); rim.position.set(2, 2, 2); scene.add(rim);
+  const skin = new THREE.Color(opts.skin || '#d9a07c');
+  for (const [name, g] of Object.entries(res.groups)) {
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(g.attributes.position.array, 3));
+    geo.setAttribute('normal', new THREE.BufferAttribute(g.attributes.normal.array, 3));
+    const reg = g.attributes.region.array, n = reg.length / 3, col = new Float32Array(n * 3);
+    const lip = new THREE.Color('#b56060'), nail = new THREE.Color('#f0c8b8');
+    for (let i = 0; i < n; i++) {
+      const c = skin.clone().lerp(lip, reg[i * 3] * 0.7).lerp(nail, reg[i * 3 + 1] * 0.6);
+      col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
+    }
+    geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    geo.setIndex(new THREE.BufferAttribute(g.indices, 1));
+    const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.6, wireframe: !!opts.wire });
+    scene.add(new THREE.Mesh(geo, mat));
+  }
+  const geom = g => { const b = new THREE.BufferGeometry(); b.setAttribute('position', new THREE.BufferAttribute(g.position, 3)); b.setAttribute('normal', new THREE.BufferAttribute(g.normal, 3)); b.setAttribute('uv', new THREE.BufferAttribute(g.uv, 2)); if (g.color) b.setAttribute('color', new THREE.BufferAttribute(g.color, 3)); b.setIndex(new THREE.BufferAttribute(g.index, 1)); return b; };
+  // eyeballs: polar iris
+  const eyeCv = document.createElement('canvas'); eyeCv.width = 256; eyeCv.height = 128; const ec = eyeCv.getContext('2d');
+  ec.fillStyle = '#f2efe9'; ec.fillRect(0, 0, 256, 128); ec.fillStyle = '#4a6a8a'; ec.fillRect(0, 128 - 24, 256, 24); ec.fillStyle = '#111'; ec.fillRect(0, 128 - 9, 256, 9);
+  const eyeTex = new THREE.CanvasTexture(eyeCv); eyeTex.colorSpace = THREE.SRGBColorSpace;
+  for (const e of buildEyeballs(sf.head)) scene.add(new THREE.Mesh(geom(e.geometry), new THREE.MeshStandardMaterial({ map: eyeTex, roughness: 0.15 })));
+  scene.add(new THREE.Mesh(geom(buildLashes(sf.head, {}, D).geometry), new THREE.MeshStandardMaterial({ color: '#1a1410', side: THREE.DoubleSide, roughness: 0.7 })));
+  if (!opts.noBrows) scene.add(new THREE.Mesh(geom(buildBrows(sf, sf.head, opts.brows || {}, D).geometry), new THREE.MeshStandardMaterial({ color: opts.browColor || '#3a2618', vertexColors: true, side: THREE.DoubleSide, roughness: 0.8 })));
+  if (opts.hair && opts.hair !== 'hair_none') {
+    const a = getAsset(opts.hair); const pd = { ...paramDefaults(a), ...(opts.hairParams || {}) }; const cd = { ...colorDefaults(a), ...(opts.hairColors || {}) };
+    const P = { ...pd, hairline: { height: pd.hairlineHeight, recession: pd.recession, widowsPeak: pd.widowsPeak, sideburns: pd.sideburns }, rootRGB: hex(cd.root), tipRGB: hex(cd.tip), highlightRGB: hex(cd.highlight) };
+    const t1 = performance.now();
+    const hr = buildHair({ field: sf.field, marks: sf.head.marks, rig, D, skinMesh: { ...res.raw, positions: res.raw.positions, normals: res.raw.normals, indices: res.raw.indices, isHead: res.raw.isHead } }, a.recipe, P);
+    window.hairMs = performance.now() - t1;
+    const tex = stripTex();
+    let tris = 0;
+    for (const part of hr.parts) {
+      const g = part.geometry; tris += g.index.length / 3;
+      const mat = new THREE.MeshStandardMaterial({ vertexColors: true, side: THREE.DoubleSide, roughness: 0.55, ...(part.alpha ? { alphaMap: tex, alphaTest: 0.35 } : {}) });
+      scene.add(new THREE.Mesh(geom(g), mat));
+    }
+    window.hairTris = tris;
+  }
+  if (opts.outfit) {
+    const F = bodyFrame(rig, sf.body.marks, sf.head.marks);
+    const t2 = performance.now();
+    const meas = measureBody(sf, F);
+    window.measMs = performance.now() - t2;
+    let U = sf.field;
+    window.garmentStats = [];
+    for (const it of opts.outfit) {
+      const t3 = performance.now();
+      const c = cutGarment(it.spec, { F, meas, U, D, S: F.S, seed: 1 });
+      const g = meshGarment(c.G, { bodyField: sf.field, S: F.S });
+      U = c.stack;
+      window.garmentStats.push({ ms: Math.round(performance.now() - t3), tris: g.index.length / 3, loops: g.surface.loops.map(l => l.length) });
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(g.position, 3));
+      geo.setAttribute('normal', new THREE.BufferAttribute(g.normal, 3));
+      geo.setAttribute('uv', new THREE.BufferAttribute(g.uv, 2));
+      geo.setIndex(new THREE.BufferAttribute(g.index, 1));
+      for (const gr of g.groups || []) geo.addGroup(gr.start, gr.count, ['main', 'rib', 'inside', 'lining'].indexOf(gr.name));
+      let map = null;
+      if (it.stripes) { const cv = document.createElement('canvas'); cv.width = cv.height = 64; const x = cv.getContext('2d'); x.fillStyle = it.color || '#ccc'; x.fillRect(0, 0, 64, 64); x.fillStyle = it.stripes; x.fillRect(0, 0, 64, 20); map = new THREE.CanvasTexture(cv); map.wrapS = map.wrapT = THREE.RepeatWrapping; map.repeat.set(1 / 0.04, 1 / 0.04); map.colorSpace = THREE.SRGBColorSpace; }
+      const mat = new THREE.MeshStandardMaterial({ color: map ? '#fff' : (it.color || '#5577aa'), map, roughness: 0.85, wireframe: !!opts.wire, side: THREE.FrontSide });
+      const rib = new THREE.MeshStandardMaterial({ color: new THREE.Color(it.color || '#5577aa').multiplyScalar(0.8), roughness: 0.9, wireframe: !!opts.wire });
+      const ins = new THREE.MeshStandardMaterial({ color: new THREE.Color(it.color || '#5577aa').multiplyScalar(0.6), roughness: 0.9 });
+      scene.add(new THREE.Mesh(geo, [mat, rib, ins, ins]));
+      window.lastGarment = g;
+      const t4 = performance.now();
+      const parts = buildTrims(it.spec.trims || [], { F, S: F.S, D, g, region: c.region, info: c.info, seed: 3, stitch: it.spec.stitch, sleeveT: it.spec.sleeves && it.spec.sleeves.t });
+      window.garmentStats[window.garmentStats.length - 1].trimMs = Math.round(performance.now() - t4);
+      window.garmentStats[window.garmentStats.length - 1].parts = parts.map(p => p.name + ':' + p.geometry.index.length / 3);
+      const tm = { main: mat, rib, trim: mat, lining: ins,
+        hardware: new THREE.MeshStandardMaterial({ color: it.hardware || '#d8d0c0', roughness: 0.35, metalness: it.metal ? 0.9 : 0.05 }),
+        stitch: new THREE.MeshStandardMaterial({ color: it.thread || '#e8e0d0', roughness: 0.8, side: THREE.DoubleSide }),
+        cord: new THREE.MeshStandardMaterial({ color: it.cord || '#eeeeee', roughness: 0.8 }),
+        tape: new THREE.MeshStandardMaterial({ color: '#1c1c1c', roughness: 0.7 }) };
+      for (const pt of parts) {
+        const gg = pt.geometry, bg = new THREE.BufferGeometry();
+        bg.setAttribute('position', new THREE.BufferAttribute(gg.position, 3)); bg.setAttribute('normal', new THREE.BufferAttribute(gg.normal, 3));
+        bg.setIndex(new THREE.BufferAttribute(gg.index, 1));
+        scene.add(new THREE.Mesh(bg, tm[pt.material] || mat));
+      }
+    }
+  }
+  const W = opts.w || 300, H = opts.h || 600;
+  const views = opts.views || ['front', 'side', 'back', 'tq', 'face', 'faceSide', 'hand'];
+  const r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+  r.setSize(W * views.length, H); r.setScissorTest(true); r.outputColorSpace = THREE.SRGBColorSpace;
+  document.body.innerHTML = ''; document.body.appendChild(r.domElement);
+  const h = rig.H, hm = sf.head.marks;
+  views.forEach((v, i) => {
+    const cam = new THREE.PerspectiveCamera(30, W / H, 0.01, 50);
+    let t = new THREE.Vector3(0, h * 0.52, 0), dir, dist = h * 2.3;
+    if (v === 'front') dir = [0, 0.02, -1]; if (v === 'side') dir = [1, 0.02, 0]; if (v === 'back') dir = [0, 0.05, 1]; if (v === 'tq') dir = [0.7, 0.2, -0.8];
+    if (v === 'headBack' || v === 'headTq' || v === 'headSide') { t = new THREE.Vector3(0, hm.eyes[0].center[1] - 0.05, 0.02); dist = 1.1; dir = v === 'headBack' ? [0.2, 0.15, 1] : v === 'headSide' ? [1, 0.05, 0] : [0.6, 0.15, -0.8]; }
+    if (v === 'face' || v === 'faceSide' || v === 'faceTq') { t = new THREE.Vector3(0, hm.eyes[0].center[1] - 0.03, -0.02); dist = 0.75; dir = v === 'face' ? [0, 0.02, -1] : v === 'faceTq' ? [0.6, 0.1, -0.8] : [1, 0.02, -0.1]; }
+    if (v === 'hand' || v === 'palm') { const j = rig.joints.rightMiddleProximal; t = new THREE.Vector3(...j); dist = 0.38; dir = v === 'hand' ? [0.55, 0.65, -0.5] : [-0.5, -0.7, -0.5]; }
+    if (v === 'chest' || v === 'chestTq' || v === 'chestBack') { t = new THREE.Vector3(0, rig.dim.shoulderY - 0.1, 0); dist = 1.3; dir = v === 'chest' ? [0, 0.1, -1] : v === 'chestBack' ? [0, 0.15, 1] : [0.7, 0.2, -0.7]; }
+    if (v === 'waist' || v === 'waistTq') { t = new THREE.Vector3(0, rig.dim.hipY, 0); dist = 1.4; dir = v === 'waist' ? [0, 0.1, -1] : [0.7, 0.1, -0.7]; }
+    if (v === 'feet') { const j = rig.joints.rightToes; t = new THREE.Vector3(0, 0.05, j[2] + 0.05); dist = 0.9; dir = [0.4, 0.5, -1]; }
+    cam.position.copy(t).add(new THREE.Vector3(...dir).normalize().multiplyScalar(dist)); cam.lookAt(t);
+    r.setViewport(i * W, 0, W, H); r.setScissor(i * W, 0, W, H); r.render(scene, cam);
+  });
+  return { ms, stats: res.stats, hairMs: window.hairMs, hairTris: window.hairTris, measMs: window.measMs, garments: window.garmentStats };
+};
+window.ready = true;
+</script></body></html>

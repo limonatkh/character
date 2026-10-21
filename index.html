@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>صانع شخصيات ليمونات</title>
-<meta name="description" content="Standalone voxel character creator for the Limonat game: AI-generated JSON commands customize a rigged base character, exported as GLB + metadata + a Limonat drop-in file.">
+<meta name="description" content="Character creator for the Limonat game with two modes — Voxel and Normal 3D (realistic / stylized): AI-generated JSON documents customize rigged characters, exported as GLB + metadata + Limonat loader files.">
 <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <meta name="theme-color" content="#232a3b">
@@ -14,7 +14,7 @@
 </head>
 <body>
 <!--APP-->
-<div id="app">
+<div id="app" class="app">
   <header id="topbar" class="topbar"></header>
   <section id="stage" class="stage" aria-label="3D preview">
     <div id="viewport" class="viewport"></div>
@@ -29,6 +29,8 @@
     <div class="tabpanel" id="tab-export" role="tabpanel" aria-labelledby="tabbtn-export" hidden></div>
   </main>
 </div>
+<!-- Normal 3D creation mode: built by src/n3d/ui/app.js the first time the mode is opened -->
+<div id="app3d" class="app app3d" hidden></div>
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="modal-root" hidden></div>
 <noscript><p style="padding:16px">This app needs JavaScript.</p></noscript>

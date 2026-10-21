@@ -1,0 +1,60 @@
+{
+  "format": "limonat-character-3d",
+  "version": "1.0",
+  "mode": "normal3d",
+  "meta": {
+    "name": "Business suit",
+    "notes": "Shirt and tie, suit jacket and trousers, dress shoes."
+  },
+  "body": {
+    "masculinity": 0.85
+  },
+  "hair": {
+    "styleId": "hair_sidepart_01"
+  },
+  "face": {
+    "facialHair": {
+      "styleId": "facial_short_beard_01"
+    }
+  },
+  "outfit": [
+    {
+      "assetId": "top_dress_shirt_01",
+      "params": {
+        "tucked": true
+      },
+      "colors": {
+        "main": "#F4F6F9"
+      }
+    },
+    {
+      "assetId": "bottom_trousers_01",
+      "material": {
+        "fabric": "wool_suiting"
+      },
+      "colors": {
+        "main": "#2B3242"
+      }
+    },
+    {
+      "assetId": "outer_blazer_01",
+      "colors": {
+        "main": "#2B3242"
+      }
+    },
+    {
+      "assetId": "shoes_dress_01"
+    }
+  ],
+  "accessories": [
+    {
+      "assetId": "neck_tie_01",
+      "colors": {
+        "main": "#7A1F2B"
+      }
+    },
+    {
+      "assetId": "watch_01"
+    }
+  ]
+}

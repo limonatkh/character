@@ -1,0 +1,26 @@
+{
+  "format": "limonat-character-3d",
+  "version": "1.0",
+  "mode": "normal3d",
+  "body": {
+    "height": 2.4,
+    "muscle": "strong"
+  },
+  "hair": {
+    "styleId": "hair_spikey_01"
+  },
+  "outfit": [
+    {
+      "assetId": "top_hawaiian_99"
+    },
+    {
+      "assetId": "bottom_jeans_01",
+      "params": {
+        "fit": "baggy"
+      },
+      "colors": {
+        "main": "blue"
+      }
+    }
+  ]
+}

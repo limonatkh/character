@@ -1,0 +1,43 @@
+{
+  "format": "limonat-character-3d",
+  "version": "1.0",
+  "mode": "normal3d",
+  "meta": {
+    "name": "Abaya and hijab",
+    "notes": "Black abaya with a hijab and flats."
+  },
+  "body": {
+    "masculinity": 0.1,
+    "height": 1.62
+  },
+  "hair": {
+    "styleId": "hair_long_straight_01"
+  },
+  "face": {
+    "makeup": {
+      "lipAmount": 0.45
+    }
+  },
+  "outfit": [
+    {
+      "assetId": "full_abaya_01"
+    },
+    {
+      "assetId": "shoes_dress_01",
+      "params": {
+        "style": "loafer"
+      },
+      "colors": {
+        "main": "#1A1412"
+      }
+    }
+  ],
+  "accessories": [
+    {
+      "assetId": "head_hijab_01",
+      "colors": {
+        "main": "#2A2A30"
+      }
+    }
+  ]
+}

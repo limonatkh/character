@@ -1,0 +1,33 @@
+{
+  "format": "limonat-character-3d",
+  "version": "1.0",
+  "mode": "normal3d",
+  "meta": {
+    "name": "Casual",
+    "notes": "T-shirt, jeans and sneakers."
+  },
+  "body": {
+    "masculinity": 0.75
+  },
+  "hair": {
+    "styleId": "hair_crop_01",
+    "colors": {
+      "root": "#2A1E16",
+      "tip": "#3A2A1E"
+    }
+  },
+  "outfit": [
+    {
+      "assetId": "top_tshirt_01",
+      "colors": {
+        "main": "#E9E4D8"
+      }
+    },
+    {
+      "assetId": "bottom_jeans_01"
+    },
+    {
+      "assetId": "shoes_sneakers_01"
+    }
+  ]
+}

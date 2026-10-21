@@ -1,0 +1,58 @@
+{
+  "format": "limonat-character-3d",
+  "version": "1.0",
+  "mode": "normal3d",
+  "meta": {
+    "name": "Shemagh and jacket",
+    "notes": "Red-and-white shemagh, shirt, jacket and trousers."
+  },
+  "body": {
+    "masculinity": 0.8
+  },
+  "hair": {
+    "styleId": "hair_crop_01"
+  },
+  "face": {
+    "facialHair": {
+      "styleId": "facial_moustache_01"
+    }
+  },
+  "outfit": [
+    {
+      "assetId": "top_dress_shirt_01"
+    },
+    {
+      "assetId": "bottom_trousers_01",
+      "colors": {
+        "main": "#3B3B3B"
+      }
+    },
+    {
+      "assetId": "outer_denim_jacket_01",
+      "material": {
+        "fabric": "corduroy"
+      },
+      "colors": {
+        "main": "#5A4632"
+      }
+    },
+    {
+      "assetId": "shoes_dress_01",
+      "params": {
+        "style": "derby"
+      }
+    }
+  ],
+  "accessories": [
+    {
+      "assetId": "head_keffiyeh_01",
+      "material": {
+        "pattern": "shemagh"
+      },
+      "colors": {
+        "main": "#F7F7F4",
+        "secondary": "#B3262B"
+      }
+    }
+  ]
+}

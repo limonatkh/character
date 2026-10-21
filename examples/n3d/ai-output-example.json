@@ -1,0 +1,179 @@
+{
+  "format": "limonat-character-3d",
+  "version": "1.0",
+  "mode": "normal3d",
+  "meta": {
+    "name": "Layla",
+    "notes": "Example: smart-casual outfit from a reference photo"
+  },
+  "detail": "high",
+  "body": {
+    "height": 1.66,
+    "masculinity": 0.15,
+    "muscle": 0.25,
+    "bodyFat": 0.3,
+    "hipWidth": 1.05,
+    "legLength": 1.02
+  },
+  "face": {
+    "headWidth": -0.1,
+    "jawWidth": -0.3,
+    "chinLength": 0.1,
+    "cheekbones": 0.4,
+    "eyeSize": 0.25,
+    "eyeTilt": 0.2,
+    "noseWidth": -0.2,
+    "upperLip": 0.3,
+    "lowerLip": 0.4,
+    "eyes": {
+      "iris": "#4A3020",
+      "lashLength": 1.2
+    },
+    "brows": {
+      "styleId": "brow_rounded_01",
+      "color": "#2A1B12"
+    },
+    "facialHair": {
+      "styleId": "facial_none"
+    },
+    "makeup": {
+      "lipColor": "#A8505A",
+      "lipAmount": 0.5,
+      "blush": 0.3
+    }
+  },
+  "skin": {
+    "tone": "#C08A64",
+    "undertone": 0.3,
+    "freckles": 0.15
+  },
+  "hair": {
+    "styleId": "hair_long_wavy_01",
+    "params": {
+      "length": 1.1,
+      "volume": 0.55,
+      "part": "left"
+    },
+    "colors": {
+      "root": "#2B1B12",
+      "tip": "#5A3A22",
+      "highlight": "#8A6040"
+    }
+  },
+  "outfit": [
+    {
+      "assetId": "top_blouse_01",
+      "params": {
+        "fit": "relaxed",
+        "neckline": "v",
+        "sleeveLength": 0.75,
+        "tucked": true
+      },
+      "colors": {
+        "main": "#F3E9DC"
+      },
+      "material": {
+        "fabric": "silk"
+      }
+    },
+    {
+      "assetId": "bottom_trousers_01",
+      "params": {
+        "fit": "relaxed",
+        "rise": 0.85,
+        "legOpening": 0.6,
+        "legLength": 1.02
+      },
+      "colors": {
+        "main": "#2F3A4A"
+      },
+      "material": {
+        "fabric": "wool_suiting"
+      }
+    },
+    {
+      "assetId": "outer_blazer_01",
+      "params": {
+        "fit": "regular",
+        "collar": "notch",
+        "closure": "open",
+        "buttons": 1
+      },
+      "colors": {
+        "main": "#B8A48A",
+        "lining": "#5A2A35"
+      },
+      "material": {
+        "fabric": "linen"
+      }
+    },
+    {
+      "assetId": "shoes_dress_01",
+      "params": {
+        "style": "loafer"
+      },
+      "colors": {
+        "main": "#3B2416"
+      }
+    }
+  ],
+  "accessories": [
+    {
+      "assetId": "jewel_earrings_01",
+      "params": {
+        "style": "hoop",
+        "size": 1
+      },
+      "colors": {
+        "main": "#D4AF37"
+      }
+    },
+    {
+      "assetId": "bag_crossbody_01",
+      "params": {
+        "style": "crossbody",
+        "side": "right"
+      },
+      "colors": {
+        "main": "#6B3E26",
+        "strap": "#4A2A18"
+      },
+      "confidence": 0.6
+    }
+  ],
+  "reference": {
+    "description": "Full-length photo of a young woman in smart-casual clothes, front view, soft daylight.",
+    "framing": "full",
+    "style": "realistic"
+  },
+  "observations": [
+    {
+      "area": "hair",
+      "note": "Long dark-brown hair in loose waves past the shoulders, side part on the left.",
+      "confidence": 0.9
+    },
+    {
+      "area": "outfit",
+      "note": "Beige linen blazer worn open over a cream silk blouse tucked into navy trousers.",
+      "confidence": 0.85
+    },
+    {
+      "area": "face",
+      "note": "Oval face, high cheekbones, almond eyes, full lips.",
+      "confidence": 0.7
+    }
+  ],
+  "uncertain": [
+    {
+      "field": "outfit[3]",
+      "note": "The feet are partly hidden: chose brown loafers.",
+      "confidence": 0.4
+    }
+  ],
+  "unsupported": [
+    {
+      "feature": "Small embroidered flowers on the blouse cuffs",
+      "closestSubstitute": "plain cuffs"
+    }
+  ]
+}

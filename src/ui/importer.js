@@ -86,6 +86,13 @@ export class ImportPanel {
       return;
     }
     let raw = ex.value;
+    if (isObj(raw) && (raw.format === 'limonat-character-3d' || raw.mode === 'normal3d')) {
+      // a Normal 3D document: it belongs to the other creation mode
+      this.report = { ok: false, applied: false, items: [{ level: 'error', path: '', message: t('n3dDoc') }], n3d: true };
+      this.render();
+      this.focusReport();
+      return;
+    }
     if (isObj(raw) && this.mode !== 'doc') raw = { ...raw, mode: this.mode };
     const r = validateDocument(raw, { current: this.store.config, currentBase: this.store.doc.baseCharacter });
     const items = ex.notes.map(n => ({ level: 'warning', path: '', message: n })).concat(r.items);
@@ -119,7 +126,8 @@ export class ImportPanel {
       h('span.issue-field', pathLabel(it.path)),
       it.path ? h('code.issue-path', { attrs: { dir: 'ltr' } }, it.path) : null,
       h('span.issue-msg', { attrs: { dir: 'ltr' } }, it.message))));
-    const valid = R.canApplyValid ? h('button.btn.gold', { type: 'button', onclick: () => this.apply(true) }, t('rApplyValid')) : null;
+    const valid = R.canApplyValid ? h('button.btn.gold', { type: 'button', onclick: () => this.apply(true) }, t('rApplyValid'))
+      : R.n3d && this.ctx.switchMode ? h('button.btn.gold', { type: 'button', onclick: () => this.ctx.switchMode('n3d') }, t('openN3D')) : null;
     return h('section.card-sec.report', { attrs: { 'aria-live': 'polite' } }, head, counts, valid, R.items.length ? list : null);
   }
 

@@ -1,0 +1,22 @@
+{
+  "format": "limonat-character-3d",
+  "version": "1.0",
+  "mode": "normal3d",
+  "hair": {
+    "colors": {
+      "root": "#E9D08A",
+      "tip": "#F2E2B0"
+    }
+  },
+  "accessories": [
+    {
+      "assetId": "glasses_01",
+      "params": {
+        "style": "round"
+      },
+      "colors": {
+        "main": "#1C1C1C"
+      }
+    }
+  ]
+}

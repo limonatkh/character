@@ -1,0 +1,100 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>n3d thumbnails</title>
+<script type="importmap">{"imports":{"three":"../vendor/three/three.module.js","three/addons/":"../vendor/three/addons/"}}</script>
+</head><body style="margin:0;background:#2a3140">
+<script type="module">
+/* Thumbnail renderer for the Normal 3D asset library (driven by tools/n3d-thumbs.mjs).
+ * window.thumbList() → [{ id, slot }]; window.thumbOf(id, size) → JPEG data URI. */
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import '../src/n3d/assets/index.js';
+import { allAssets, getAsset } from '../src/n3d/core/registry.js';
+import { buildCharacter } from '../src/n3d/build/character.js';
+import { createN3DDocument } from '../src/n3d/core/document.js';
+import { buildScene } from '../src/n3d/render/scene.js';
+
+const MANNEQUIN = '#A9AEB6', GREY = '#7E838C';
+const cache = new Map();
+let renderer, envTex;
+const base = over => createN3DDocument({ hair: { styleId: 'hair_none' }, face: { brows: { styleId: 'brow_none' } }, skin: { tone: MANNEQUIN, roughness: 0.6 }, outfit: [], accessories: [], ...over });
+const tee = { assetId: 'top_tshirt_01', colors: { main: GREY } }, pants = { assetId: 'bottom_trousers_01', colors: { main: '#5E636C' } };
+
+/** Document + framing for one asset. */
+function setup(a) {
+  const it = { assetId: a.id };
+  switch (a.slot) {
+    case 'top': case 'mid': case 'outer': return [base({ outfit: a.slot === 'top' ? [it] : [{ ...tee, colors: { main: '#C9CDD3' } }, it] }), 'upper'];
+    case 'bottom': return [base({ outfit: [it] }), 'lower'];
+    case 'fullBody': return [base({ outfit: [it] }), 'full'];
+    case 'footwear': return [base({ outfit: [it] }), 'feet'];
+    case 'headwear': return [base({ skin: { tone: '#C8906A' }, hair: { styleId: 'hair_crop_01' }, face: {}, outfit: [tee], accessories: [it] }), 'head'];
+    case 'neckwear': return [base({ outfit: a.id === 'neck_tie_01' ? [{ assetId: 'top_dress_shirt_01', colors: { main: '#E8ECF2' } }] : [tee], accessories: [it] }), 'neck'];
+    case 'eyewear': return [base({ skin: { tone: '#C8906A' }, face: {}, accessories: [it] }), 'face'];
+    case 'jewelry': return [base({ skin: { tone: '#C8906A' }, face: {}, outfit: [tee], accessories: [it] }), a.id.includes('earring') ? 'ear' : a.id.includes('necklace') ? 'neck' : 'hand'];
+    case 'handwear': return [base({ outfit: [tee], accessories: [it] }), 'hand'];
+    case 'belt': return [base({ outfit: [tee, pants], accessories: [it] }), 'waist'];
+    case 'bag': return [base({ outfit: [tee, pants], accessories: [it] }), a.id.includes('backpack') ? 'back' : 'full'];
+    case 'hairStyle': return [base({ skin: { tone: '#C8906A' }, face: {}, hair: { styleId: a.id }, outfit: [tee] }), 'head'];
+    case 'browStyle': return [base({ skin: { tone: '#C8906A' }, face: { brows: { styleId: a.id } }, hair: { styleId: 'hair_crop_01' } }), 'brows'];
+    case 'facialHair': return [base({ skin: { tone: '#C8906A' }, face: { facialHair: { styleId: a.id } }, hair: { styleId: 'hair_crop_01' }, outfit: [tee] }), 'face'];
+    case 'preset': return [createN3DDocument(JSON.parse(JSON.stringify(a.doc))), 'full'];
+    default: return [base({}), 'full'];
+  }
+}
+
+function frame(kind, res) {
+  const J = res.rig.joints, go = res.groundOffset || 0, H = res.rig.H + go, hm = res.marks.head;
+  const y = v => v + go;
+  const eye = y(hm.eyes[0].center[1]), top = y(hm.top[1]);
+  let c, span, dir = [0.55, 0.12, -1];
+  switch (kind) {
+    case 'upper': c = [0, (y(J.hips[1]) - 0.12 + top) / 2, 0]; span = top - y(J.hips[1]) + 0.2; break;
+    case 'lower': c = [0, (y(J.hips[1]) + 0.1) / 2 - 0.02, 0]; span = y(J.hips[1]) + 0.14; break;
+    case 'feet': c = [0, 0.07, J.rightToes[2]]; span = 0.34; dir = [0.6, 0.35, -1]; break;
+    case 'head': c = [0, (y(J.neck[1]) + top + 0.06) / 2, 0]; span = top + 0.08 - y(J.neck[1]); break;
+    case 'face': c = [0, eye - 0.035, hm.eyes[0].center[2]]; span = 0.2; dir = [0.35, 0.05, -1]; break;
+    case 'brows': c = [0, eye + 0.012, hm.eyes[0].center[2]]; span = 0.11; dir = [0.25, 0.05, -1]; break;
+    case 'ear': { const e = hm.ears.find(x => x.s < 0).c; c = [e[0], y(e[1]) - 0.01, e[2]]; span = 0.16; dir = [-1, 0.1, -0.6]; break; }
+    case 'neck': c = [0, (y(J.chest[1]) + eye) / 2 - 0.02, 0]; span = eye - y(J.chest[1]) + 0.18; break;
+    case 'hand': { const p = J.leftHand, q = J.leftMiddleProximal; c = [(p[0] + q[0]) / 2, y((p[1] + q[1]) / 2), (p[2] + q[2]) / 2]; span = 0.2; dir = [-0.8, 0.25, -1]; break; }
+    case 'waist': c = [0, y(J.hips[1]) + 0.07, 0]; span = 0.36; dir = [0.45, 0.3, -1]; break;
+    case 'back': c = [0, y(J.chest[1]) - 0.05, 0]; span = 0.85; dir = [0.7, 0.15, 1]; break;
+    default: c = [0, H * 0.5, 0]; span = H * 1.08;
+  }
+  return { c, span, dir };
+}
+
+window.thumbList = () => allAssets().map(a => ({ id: a.id, slot: a.slot }));
+window.thumbOf = (id, size = 112) => {
+  const a = getAsset(id);
+  const [doc, kind] = setup(a);
+  const res = buildCharacter(doc, { cache, detail: 'standard' });
+  if (!renderer) {
+    renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+    renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    envTex = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(renderer), 0.04).texture;
+    document.body.appendChild(renderer.domElement);
+  }
+  renderer.setSize(size, size);
+  const scene = new THREE.Scene();
+  const g = document.createElement('canvas'); g.width = 4; g.height = 128; const x = g.getContext('2d'), grd = x.createLinearGradient(0, 0, 0, 128);
+  grd.addColorStop(0, '#556077'); grd.addColorStop(1, '#2a3140'); x.fillStyle = grd; x.fillRect(0, 0, 4, 128);
+  scene.background = new THREE.CanvasTexture(g); scene.background.colorSpace = THREE.SRGBColorSpace;
+  scene.environment = envTex;
+  const key = new THREE.DirectionalLight(0xffffff, 1.5); key.position.set(-1.5, 2.6, -2.2); scene.add(key);
+  const rim = new THREE.DirectionalLight(0xc8dcff, 0.8); rim.position.set(2, 2, 2); scene.add(rim);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x404a58, 0.3));
+  const group = buildScene(res, {});
+  scene.add(group);
+  const f = frame(kind, res);
+  const cam = new THREE.PerspectiveCamera(28, 1, 0.01, 30);
+  const d = (f.span / 2) / Math.tan(THREE.MathUtils.degToRad(14)) * 1.05;
+  const t = new THREE.Vector3(...f.c);
+  cam.position.copy(t).add(new THREE.Vector3(...f.dir).normalize().multiplyScalar(d)); cam.lookAt(t);
+  renderer.render(scene, cam);
+  const url = renderer.domElement.toDataURL('image/jpeg', 0.8);
+  group.traverse(o => { if (o.isMesh) o.geometry.dispose(); });
+  return { url, errors: res.errors };
+};
+window.ready = true;
+</script></body></html>

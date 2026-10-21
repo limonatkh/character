@@ -1,0 +1,52 @@
+{
+  "format": "limonat-character-3d",
+  "version": "1.0",
+  "mode": "normal3d",
+  "meta": {
+    "name": "Student",
+    "notes": "Hoodie, jeans, sneakers, backpack and glasses."
+  },
+  "body": {
+    "masculinity": 0.4,
+    "height": 1.68
+  },
+  "hair": {
+    "styleId": "hair_bob_01",
+    "colors": {
+      "root": "#3A2618",
+      "tip": "#5A3A22"
+    }
+  },
+  "outfit": [
+    {
+      "assetId": "top_tshirt_01"
+    },
+    {
+      "assetId": "bottom_jeans_01",
+      "params": {
+        "fit": "relaxed"
+      }
+    },
+    {
+      "assetId": "mid_hoodie_01",
+      "colors": {
+        "main": "#6B2E3A",
+        "rib": "#6B2E3A"
+      }
+    },
+    {
+      "assetId": "shoes_sneakers_01"
+    }
+  ],
+  "accessories": [
+    {
+      "assetId": "bag_backpack_01"
+    },
+    {
+      "assetId": "glasses_01",
+      "params": {
+        "style": "round"
+      }
+    }
+  ]
+}

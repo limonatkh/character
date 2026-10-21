@@ -1,0 +1,39 @@
+{
+  "format": "limonat-character-3d",
+  "version": "1.0",
+  "mode": "normal3d",
+  "meta": {
+    "name": "Gulf traditional",
+    "notes": "White thobe, ghutra with agal and Arabic sandals."
+  },
+  "body": {
+    "masculinity": 0.85
+  },
+  "hair": {
+    "styleId": "hair_crop_01"
+  },
+  "face": {
+    "facialHair": {
+      "styleId": "facial_full_beard_01"
+    }
+  },
+  "outfit": [
+    {
+      "assetId": "full_thobe_01"
+    },
+    {
+      "assetId": "shoes_sandals_01",
+      "params": {
+        "style": "arabic"
+      }
+    }
+  ],
+  "accessories": [
+    {
+      "assetId": "head_keffiyeh_01",
+      "colors": {
+        "main": "#F7F7F4"
+      }
+    }
+  ]
+}
