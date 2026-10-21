@@ -58,6 +58,10 @@ export class Viewer {
     this.renderer.setAnimationLoop(() => this.tick());
   }
 
+  /** Stop / restart drawing (used while the other creation mode is on screen). */
+  pause() { this.renderer.setAnimationLoop(null); }
+  resume() { this.renderer.setAnimationLoop(() => this.tick()); }
+
   addGround() {
     // snowy voxel platform, Limonat style
     const g = new THREE.Group();

@@ -7,49 +7,60 @@
  *          so saves follow the user across devices (phone ↔ PC).
  *   local  anywhere else (local copy, own web server): localStorage.
  * Every record is { id, name, updatedAt, baseCharacter, thumb, doc } where
- * doc is a complete character document (schema 1.0). Files (.json) work in
- * both modes for backups and moving characters between apps.
+ * doc is a complete character document (schema 1.0); Normal 3D records add
+ * kind: 'n3d' and hold a limonat-character-3d document. Files (.json) work
+ * in both modes for backups and moving characters between apps.
  * ===================================================================== */
 
 const LS_KEY = 'limonat-cc.library.v1';
 const clone = v => JSON.parse(JSON.stringify(v));
 
-function lsRead() {
-  try { const v = JSON.parse(localStorage.getItem(LS_KEY) || '[]'); return Array.isArray(v) ? v : []; } catch { return []; }
+function lsRead(key) {
+  try { const v = JSON.parse(localStorage.getItem(key) || '[]'); return Array.isArray(v) ? v : []; } catch { return []; }
 }
-function lsWrite(list) {
-  try { localStorage.setItem(LS_KEY, JSON.stringify(list)); return true; } catch { return false; }
+function lsWrite(key, list) {
+  try { localStorage.setItem(key, JSON.stringify(list)); return true; } catch { return false; }
 }
 
 class LocalBackend {
-  constructor() { this.mode = 'local'; }
-  async list() { return lsRead(); }
+  constructor(key = LS_KEY) { this.mode = 'local'; this.key = key; }
+  async list() { return lsRead(this.key); }
   async put(rec) {
-    const list = lsRead().filter(r => r.id !== rec.id);
+    const list = lsRead(this.key).filter(r => r.id !== rec.id);
     list.push(rec);
-    if (!lsWrite(list)) throw Object.assign(new Error('Browser storage is full or blocked.'), { code: 'storage' });
+    if (!lsWrite(this.key, list)) throw Object.assign(new Error('Browser storage is full or blocked.'), { code: 'storage' });
   }
-  async remove(id) { lsWrite(lsRead().filter(r => r.id !== id)); }
+  async remove(id) { lsWrite(this.key, lsRead(this.key).filter(r => r.id !== id)); }
   watch(fn) {
-    const h = e => { if (e.key === LS_KEY) fn(lsRead()); };
+    const h = e => { if (e.key === this.key) fn(lsRead(this.key)); };
     try { window.addEventListener('storage', h); } catch { /* not a browser */ }
     return () => window.removeEventListener('storage', h);
   }
 }
 
+/** Voxel and Normal 3D records share the viewer's private subtree; `kind` tells them apart. */
 class CloudBackend {
-  constructor(db, uid) { this.mode = 'cloud'; this.db = db; this.col = db.collection('data/users/' + uid); }
-  async list() { const s = await this.col.get(); return s.docs.filter(d => d.exists).map(d => clone(d.data())); }
+  constructor(db, uid, keep) { this.mode = 'cloud'; this.db = db; this.keep = keep; this.col = db.collection('data/users/' + uid); }
+  async list() { const s = await this.col.get(); return s.docs.filter(d => d.exists).map(d => clone(d.data())).filter(this.keep); }
   async put(rec) { await this.col.doc(rec.id).set(clone(rec)); }
   async remove(id) { await this.col.doc(id).delete(); }
   watch(fn, onError) {
-    return this.col.onSnapshot(s => fn(s.docs.filter(d => d.exists).map(d => clone(d.data()))), e => onError && onError(e));
+    return this.col.onSnapshot(s => fn(s.docs.filter(d => d.exists).map(d => clone(d.data())).filter(this.keep)), e => onError && onError(e));
   }
 }
 
+const VOXEL_RECORD = doc => ({ id: doc.id, name: doc.character.name, baseCharacter: doc.baseCharacter });
+
 export class Library {
-  constructor() {
-    this.backend = new LocalBackend();
+  /**
+   * opts.kind: 'voxel' (default) or 'n3d'; opts.storageKey: localStorage key;
+   * opts.describe(doc) → { id, name, … } fields stored next to the document.
+   */
+  constructor(opts = {}) {
+    this.kind = opts.kind || 'voxel';
+    this.describe = opts.describe || VOXEL_RECORD;
+    this.keep = this.kind === 'voxel' ? r => !r.kind || r.kind === 'voxel' : r => r.kind === this.kind;
+    this.backend = new LocalBackend(opts.storageKey || LS_KEY);
     this.records = [];
     this.listeners = new Set();
     this.unwatch = null;
@@ -67,7 +78,7 @@ export class Library {
     try {
       const [db, user] = await Promise.all([c.use('db'), c.use('user')]);
       const uid = user && typeof user.id === 'function' ? await user.id() : null;
-      if (db && uid) await this.useBackend(new CloudBackend(db, uid));
+      if (db && uid) await this.useBackend(new CloudBackend(db, uid, this.keep));
     } catch { /* stay local */ }
   }
 
@@ -82,7 +93,7 @@ export class Library {
   get(id) { return this.records.find(r => r.id === id) || null; }
 
   async save(doc, thumb) {
-    const rec = { id: doc.id, name: doc.character.name, updatedAt: new Date().toISOString(), baseCharacter: doc.baseCharacter, thumb: thumb || '', doc: clone(doc) };
+    const rec = { ...this.describe(doc), ...(this.kind === 'voxel' ? {} : { kind: this.kind }), updatedAt: new Date().toISOString(), thumb: thumb || '', doc: clone(doc) };
     await this.backend.put(rec);
     this.records = this.records.filter(r => r.id !== rec.id).concat([rec]);
     this.emit();
@@ -97,10 +108,13 @@ export class Library {
 }
 
 /** Remember which character was open last (a per-browser convenience). */
-export const lastOpen = {
-  get() { try { return localStorage.getItem('limonat-cc.last') || null; } catch { return null; } },
-  set(id) { try { localStorage.setItem('limonat-cc.last', id); } catch { /* ignore */ } },
-};
+export const lastOpen = makeLastOpen('limonat-cc.last');
+export function makeLastOpen(key) {
+  return {
+    get() { try { return localStorage.getItem(key) || null; } catch { return null; } },
+    set(id) { try { localStorage.setItem(key, id); } catch { /* ignore */ } },
+  };
+}
 export const prefs = {
   get(k, d) { try { const v = localStorage.getItem('limonat-cc.' + k); return v === null ? d : v; } catch { return d; } },
   set(k, v) { try { localStorage.setItem('limonat-cc.' + k, v); } catch { /* ignore */ } },

@@ -1,0 +1,22 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>n3d export</title>
+<script type="importmap">{"imports":{"three":"../../vendor/three/three.module.js","three/addons/":"../../vendor/three/addons/"}}</script>
+</head><body>
+<script type="module">
+/* Export check for the Normal 3D pipeline: window.exportDoc(doc, settings) builds the character,
+ * exports the GLB, re-opens it and returns { stats, inspect, b64, meta }. */
+import '../../src/n3d/assets/index.js';
+import { buildCharacter } from '../../src/n3d/build/character.js';
+import { createN3DDocument } from '../../src/n3d/core/document.js';
+import { buildN3DExport, inspectN3DGLB, zipN3D } from '../../src/n3d/export/glb.js';
+const b64 = buf => { const u = new Uint8Array(buf); let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); };
+window.exportDoc = async (doc, settings = {}) => {
+  const res = buildCharacter(createN3DDocument(doc), { detail: settings.detail });
+  const exp = await buildN3DExport(res, { facing: 'limonat', animations: true, ...settings });
+  const ins = await inspectN3DGLB(exp.files.glb.data);
+  delete ins.gltf;
+  const zip = zipN3D(exp);
+  return { stats: exp.stats, inspect: ins, b64: b64(exp.files.glb.data), meta: exp.files.meta.data, js: exp.files.js.data, readme: exp.files.readme.data, zipBytes: zip.size || zip.byteLength || zip.length, errors: res.errors };
+};
+window.ready = true;
+</script></body></html>

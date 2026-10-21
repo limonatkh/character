@@ -47,6 +47,8 @@ const S = {
   aiApply: { ar: 'تطبيق الأوامر', en: 'Apply commands' },
   aiOpen: { ar: 'فتح ملف JSON', en: 'Open JSON file' },
   aiExample: { ar: 'لصق مثال', en: 'Paste example' },
+  n3dDoc: { ar: 'هذا مستند شخصية «3D عادي» (limonat-character-3d). افتحه في نمط 3D العادي.', en: 'This is a Normal 3D character document (limonat-character-3d). Open it in Normal 3D mode.' },
+  openN3D: { ar: 'افتح نمط 3D العادي', en: 'Open Normal 3D mode' },
   aiClear: { ar: 'مسح', en: 'Clear' },
   aiMode: { ar: 'طريقة التطبيق', en: 'Apply as' },
   modeDoc: { ar: 'حسب ما يطلبه الملف', en: 'As the file says' },

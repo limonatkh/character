@@ -1,0 +1,49 @@
+{
+  "format": "limonat-character-3d",
+  "version": "1.0",
+  "mode": "normal3d",
+  "meta": {
+    "name": "Winter",
+    "notes": "Sweater, parka, jeans, boots, beanie and scarf."
+  },
+  "body": {
+    "masculinity": 0.6
+  },
+  "hair": {
+    "styleId": "hair_messy_01"
+  },
+  "outfit": [
+    {
+      "assetId": "mid_sweater_01"
+    },
+    {
+      "assetId": "bottom_jeans_01"
+    },
+    {
+      "assetId": "outer_parka_01",
+      "params": {
+        "closure": "open"
+      }
+    },
+    {
+      "assetId": "shoes_boots_01"
+    }
+  ],
+  "accessories": [
+    {
+      "assetId": "hat_beanie_01"
+    },
+    {
+      "assetId": "neck_scarf_01"
+    },
+    {
+      "assetId": "gloves_01",
+      "params": {
+        "knit": true
+      },
+      "colors": {
+        "main": "#3A3A3A"
+      }
+    }
+  ]
+}

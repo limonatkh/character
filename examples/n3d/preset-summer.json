@@ -1,0 +1,54 @@
+{
+  "format": "limonat-character-3d",
+  "version": "1.0",
+  "mode": "normal3d",
+  "meta": {
+    "name": "Summer dress",
+    "notes": "Floral sleeveless dress, sandals and sunglasses."
+  },
+  "body": {
+    "masculinity": 0.05,
+    "height": 1.64
+  },
+  "hair": {
+    "styleId": "hair_long_wavy_01",
+    "colors": {
+      "root": "#6A4A2A",
+      "tip": "#B58A5A"
+    }
+  },
+  "outfit": [
+    {
+      "assetId": "full_dress_01",
+      "params": {
+        "length": 2.2
+      },
+      "material": {
+        "pattern": "floral"
+      },
+      "colors": {
+        "main": "#F4E6C9",
+        "secondary": "#D9576B",
+        "accent": "#5A8AD9"
+      }
+    },
+    {
+      "assetId": "shoes_sandals_01"
+    }
+  ],
+  "accessories": [
+    {
+      "assetId": "glasses_01",
+      "params": {
+        "style": "cateye",
+        "tint": 0.85
+      }
+    },
+    {
+      "assetId": "hat_bucket_01",
+      "colors": {
+        "main": "#E8DCC0"
+      }
+    }
+  ]
+}

@@ -1,0 +1,928 @@
+You are a character designer for the Limonat game. Turn the reference image (or description) into a NORMAL 3D (realistic or stylized, smooth — NOT voxel) character by writing ONE JSON document for the Limonat Character Creator, Normal 3D mode.
+
+OUTPUT: only the JSON object (no prose, no comments). Format "limonat-character-3d", version "1.0", mode "normal3d". Omitted fields keep sensible defaults, so set what you can see and leave the rest out.
+
+HOW TO READ THE IMAGE
+1. Body: estimate height (m), build (masculinity 0 feminine … 1 masculine anatomy), muscle, body fat, shoulder / hip / waist widths, limb lengths and thickness. Values are multipliers around 1 (average) or 0…1 amounts. Use stylization 0 for realistic people, up to 1 for cartoon / anime proportions.
+2. Face: offsets from −1 to 1 around an average face (0). Judge head and jaw shape, cheekbones, chin, eyes (size, spacing, tilt, openness, shape), brows, nose (bridge, tip, width, profile), lips, ears. Pick the closest brow style, eye (iris) colour, facial hair style and skin tone (hex). Add freckles, moles, wrinkles, scars or makeup only if visible.
+3. Hair: pick the closest hairstyle, then tune length, volume, curl, wave, parting, fringe, hairline (recession, widow’s peak), colours (root, tip, highlights).
+4. Clothing, layer by layer from the skin outward: base top (tucked or not), mid layer (sweater, hoodie, cardigan, waistcoat), outerwear (jacket, blazer, coat), bottoms, full-body garments (dresses, jumpsuits, thobe, abaya), footwear. For each item set the fit, lengths, sleeves, neckline / collar, closure (open / closed), and the fabric, pattern and colours you see. Use pattern + secondary / accent colours for stripes, checks, plaid, prints, colour blocking; wear for faded / washed garments.
+5. Accessories: headwear (caps, hats, beanies, kufi, hijab, keffiyeh with agal, hood up), scarves, shawls, ties, glasses, jewellery, watches, gloves, belts, bags.
+6. Colours are #RRGGBB taken from the image (account for lighting: pick the fabric’s real colour, not its shadow).
+
+RULES
+- Only ids from the catalog below; each item’s params and colors must be ones that item lists. Max 14 outfit items, 12 accessories, one pair of footwear.
+- Numbers must stay inside their ranges (they are clamped otherwise). Enum params must use one of the listed values.
+- Garments are layered automatically by type (base → bottoms → mid → outer); tucked tops go under the trousers / skirt.
+- Do not reproduce logos, brand names or copyrighted characters; describe the look with generic garments, colours and patterns.
+- Detail level: "standard" (fast), "high" (default for exports), "advanced" (maximum detail). Levels: standard — Fast editing: body 11 mm / face 3.2 mm / hands 3.2 mm mesh cells, garment 10 mm, hair cards and clumps at base density, 512 px textures. high — Body 8 mm / face 2.3 mm / hands 2.5 mm, garment 7 mm, denser hair with fine strands at the hairline, 1024 px textures, buttonholes and drawstring details. advanced — Body 6 mm / face 1.8 mm / hands 2 mm, garment 5 mm, maximum hair density with individual strands, 2048 px textures, stitching as real geometry.
+
+DOCUMENT STRUCTURE
+{ format, version, mode: "normal3d", meta: { name, notes }, detail, body: {…}, face: { …shape numbers…, eyes: {…}, brows: { styleId, color, params }, facialHair: { styleId, params, colors }, makeup: {…} }, skin: { tone, undertone, freckles, moles, wrinkles, blemishes, stubble, scars: [{ at, size, angle }] }, hair: { styleId, params, colors }, outfit: [ { assetId, params, colors, material: { fabric, pattern, patternScale, wear, hardware } } ], accessories: [ { assetId, params, colors, material } ] }
+
+BODY PARAMETERS (body.*)
+  Overall:
+  - height: 1.45…2.05 (default 1.75) — standing height in metres
+  - masculinity: 0…1 (default 0.5) — 0 = feminine anatomy (narrower shoulders, wider hips, softer jaw), 1 = masculine
+  - muscle: 0…1 (default 0.35) — muscle mass and definition
+  - bodyFat: 0…1 (default 0.25) — softness and overall mass
+  - headScale: 0.85…1.45 (default 1) — head size relative to the body
+  Torso:
+  - neckLength: 0.75…1.3 (default 1) — neck length
+  - neckThickness: 0.75…1.35 (default 1) — neck thickness
+  - shoulderWidth: 0.8…1.25 (default 1) — shoulder width
+  - chestWidth: 0.8…1.25 (default 1) — rib cage width
+  - chestDepth: 0.8…1.3 (default 1) — rib cage depth (front to back)
+  - bust: 0…1 (default 0.25) — bust volume (mainly for feminine anatomy)
+  - waist: 0.75…1.4 (default 1) — waist width
+  - hipWidth: 0.8…1.3 (default 1) — hip width
+  - belly: 0…1 (default 0) — belly volume
+  - glutes: 0.7…1.35 (default 1) — buttock volume
+  - torsoLength: 0.88…1.15 (default 1) — torso length relative to the legs
+  Arms and hands:
+  - armLength: 0.88…1.15 (default 1) — arm length
+  - forearmRatio: 0.8…1.2 (default 1) — forearm length relative to the upper arm
+  - upperArmThickness: 0.75…1.45 (default 1) — upper arm thickness
+  - forearmThickness: 0.75…1.35 (default 1) — forearm thickness
+  - handSize: 0.85…1.2 (default 1) — hand size
+  - fingerLength: 0.85…1.2 (default 1) — finger length
+  - fingerThickness: 0.8…1.25 (default 1) — finger thickness
+  Legs and feet:
+  - legLength: 0.88…1.15 (default 1) — leg length
+  - thighRatio: 0.9…1.1 (default 1) — thigh length relative to the shin
+  - thighThickness: 0.75…1.45 (default 1) — thigh thickness
+  - calfThickness: 0.75…1.35 (default 1) — calf thickness
+  - footSize: 0.85…1.2 (default 1) — foot size
+  Style:
+  - stylization: 0…1 (default 0) — 0 = realistic proportions, 1 = stylized cartoon (bigger head and eyes, simpler features, softer forms)
+
+FACE SHAPE PARAMETERS (face.*)
+  Head shape:
+  - headWidth: -1…1 (default 0) — skull width
+  - headDepth: -1…1 (default 0) — skull length front to back
+  - craniumHeight: -1…1 (default 0) — height of the top of the head
+  - foreheadHeight: -1…1 (default 0) — forehead height
+  - foreheadSlope: -1…1 (default 0) — how much the forehead slopes back
+  - faceLength: -1…1 (default 0) — length of the lower face
+  Jaw, chin, cheeks:
+  - jawWidth: -1…1 (default 0) — jaw width at the angles
+  - jawAngle: -1…1 (default 0) — softness of the jaw angle
+  - chinLength: -1…1 (default 0) — chin height
+  - chinWidth: -1…1 (default 0) — chin width
+  - chinProjection: -1…1 (default 0) — how far the chin comes forward
+  - chinCleft: 0…1 (default 0) — dimple in the chin
+  - cheekbones: -1…1 (default 0) — cheekbone prominence
+  - cheekFullness: -1…1 (default 0) — cheek fat
+  Eyes and brows:
+  - eyeSize: -1…1 (default 0) — eye size
+  - eyeSpacing: -1…1 (default 0) — distance between the eyes
+  - eyeHeight: -1…1 (default 0) — vertical position of the eyes
+  - eyeTilt: -1…1 (default 0) — outer corners up (+) or down (−)
+  - eyeOpen: -1…1 (default 0) — how open the eyelids are
+  - eyeShape: -1…1 (default 0) — almond (−) to round (+)
+  - eyeDepth: -1…1 (default 0) — deep-set (+) or prominent (−) eyes
+  - lidHood: 0…1 (default 0) — upper lid fold covering the crease
+  - browRidge: -1…1 (default 0) — brow bone prominence
+  - browHeight: -1…1 (default 0) — brow position
+  Nose:
+  - noseLength: -1…1 (default 0) — nose length
+  - noseBridge: -1…1 (default 0) — bridge projection
+  - noseBridgeWidth: -1…1 (default 0) — bridge width
+  - noseTip: -1…1 (default 0) — nose tip size
+  - noseTipUpturn: -1…1 (default 0) — upturned (+) or drooping (−) tip
+  - noseWidth: -1…1 (default 0) — width of the nose wings
+  - noseHook: -1…1 (default 0) — concave (−) or aquiline (+) profile
+  Mouth and lips:
+  - mouthWidth: -1…1 (default 0) — mouth width
+  - upperLip: -1…1 (default 0) — upper lip fullness
+  - lowerLip: -1…1 (default 0) — lower lip fullness
+  - lipProjection: -1…1 (default 0) — how far the lips come forward
+  - cupidsBow: -1…1 (default 0) — definition of the upper lip curve
+  - mouthCorners: -1…1 (default 0) — corners up (+, smiling) or down (−)
+  Ears:
+  - earSize: -1…1 (default 0) — ear size
+  - earProtrusion: -1…1 (default 0) — how far the ears stick out
+  - earHeight: -1…1 (default 0) — vertical position of the ears
+  - earPoint: 0…1 (default 0) — pointed (elf-like) ear tips
+
+EYES (face.eyes.*): iris, sclera, lashColor, heterochromia (optional second iris colour) as #RRGGBB, and:
+  - irisSize: 0.8…1.25 (default 1) — iris size relative to the eye
+  - pupil: 0.6…1.6 (default 1) — pupil size
+  - lashLength: 0.4…1.8 (default 1) — eyelash length
+  - lashDensity: 0.3…1.6 (default 1) — eyelash density
+  - lashCurl: 0…1 (default 0.6) — how much the lashes curl
+
+BROW PARAMS (face.brows.params.*, override the style):
+  - thickness: 0.4…1.8 (default 1) — brow height / thickness
+  - density: 0.3…1.6 (default 1) — number of hairs
+  - arch: -1…1 (default 0) — flat (−) to high arch (+)
+  - angle: -1…1 (default 0) — inner ends lower (+, stern) or higher (−, worried)
+  - length: 0.6…1.3 (default 1) — length toward the temples
+  - tail: -1…1 (default 0) — how much the outer tail drops
+  - spacing: -1…1 (default 0) — closer (−, unibrow) or wider (+)
+  - bushiness: 0…1 (default 0.15) — unruly, bushy hairs
+
+SKIN (skin.*): tone #RRGGBB; scars: up to 6 of { at: cheekLeft | cheekRight | browLeft | browRight | chin | forehead | nose | lip, size 0.2…1, angle −90…90 }, and:
+  - roughness: 0.3…0.8 (default 0.52) — lower = shinier skin
+  - freckles: 0…1 (default 0) — amount of freckles on the nose and cheeks
+  - moles: 0…1 (default 0.15) — number of small moles
+  - wrinkles: 0…1 (default 0) — forehead lines, crow’s feet, smile lines
+  - blemishes: 0…1 (default 0.1) — pores, redness and small blemishes
+  - undertone: -1…1 (default 0) — cool pinkish (−) to warm golden (+)
+  - stubble: 0…1 (default 0) — shaved beard shadow on the jaw and upper lip
+
+MAKEUP (face.makeup.*): lipColor, blushColor, eyeShadowColor as #RRGGBB, and:
+  - lipAmount: 0…1 (default 0.35) — how strongly the lip colour shows
+  - blush: 0…1 (default 0.15) — cheek colour
+  - eyeShadow: 0…1 (default 0) — eye shadow amount
+  - eyeliner: 0…1 (default 0) — eyeliner amount
+
+NORMAL 3D ASSET CATALOG (limonat-character-3d 1.0, 130 assets). Use ids exactly as written; never invent ids.
+
+[hairStyle] Hairstyle → hair.styleId
+- hair_none — Bald: No hair at all (bald, smooth scalp).
+- hair_buzz_01 — Buzz cut: Very short clipper cut (2–5 mm) following the head shape; shows the hairline.
+- hair_crew_01 — Crew cut: Short crew cut: about 2–3 cm on top brushed up and back, tapered short sides and back.
+- hair_sidepart_01 — Short side part: Classic short men’s cut with a side part: 5–7 cm on top combed to one side, shorter sides.
+- hair_slickback_01 — Slicked back: Medium-short hair combed straight back with product, glossy, no parting.
+- hair_crop_01 — Textured crop: Short textured crop with a short fringe pushed forward onto the forehead, faded sides.
+- hair_spiky_01 — Spiky: Short spiky hair styled upward into pointed spikes all over the top.
+- hair_messy_01 — Messy medium: Medium-length tousled hair (8–12 cm) falling in loose, untidy clumps over the forehead and ears.
+- hair_curly_short_01 — Short curly: Short curly hair: tight springy curls about 3–5 cm, rounded shape.
+- hair_afro_01 — Afro: Big rounded afro: tightly coiled hair forming a large soft volume around the head.
+- hair_pixie_01 — Pixie cut: Short pixie cut: longer textured top swept to the side, short sides and nape, side-swept fringe.
+- hair_bob_01 — Bob: Chin-length bob: straight hair cut to one length at the jaw, slightly longer in front, centre or side part.
+- hair_bob_bangs_01 — Bob with bangs: Chin-length bob with straight blunt bangs cut at the eyebrows.
+- hair_shoulder_01 — Shoulder length: Shoulder-length straight hair with a centre part, ends resting on the shoulders.
+- hair_long_straight_01 — Long straight: Long straight hair falling past the shoulders to the mid-back, centre part.
+- hair_long_wavy_01 — Long wavy: Long hair with soft loose waves, side part, past the shoulders.
+- hair_long_curly_01 — Long curly: Long curly hair: defined ringlet curls to below the shoulders with lots of volume.
+- hair_long_bangs_01 — Long with bangs: Long straight hair with straight bangs covering the forehead.
+- hair_ponytail_01 — High ponytail: Hair pulled back tightly into a high ponytail at the back of the crown, tied with a band.
+- hair_ponytail_low_01 — Low ponytail: Hair gathered into a low ponytail at the nape.
+- hair_bun_01 — Top bun: Hair gathered into a round bun on top of the head.
+- hair_bun_low_01 — Low bun: Neat low bun (chignon) at the nape of the neck.
+- hair_topknot_01 — Man bun / top knot: Medium hair tied into a small knot at the top-back of the head.
+- hair_braids_01 — Two braids: Hair parted in the middle and woven into two three-strand braids hanging behind the ears.
+- hair_braid_back_01 — Single braid: All the hair woven into one long three-strand braid hanging down the back.
+- hair_undercut_01 — Undercut: Undercut: shaved/clipped sides and back with long hair on top swept back.
+- hair_mohawk_01 — Mohawk: Mohawk: a strip of tall spiked hair along the centre of the head, shaved sides.
+- hair_locs_01 — Locs: Medium-long locs (dreadlocks): rope-like twisted locks hanging around the head.
+- hair_cornrows_01 — Cornrows: Cornrows: small braids lying flat on the scalp in straight rows from front to back.
+- hair_anime_01 — Anime spiky: Stylized anime/cartoon hair: big pointed clumps, spiky fringe over the forehead and side locks framing the face.
+  Every hairstyle shares these params (hair.params):
+    · length: 0.4…1.8; default 1 — multiplies the hair length of the style
+    · volume: 0…1; default 0.45 — how far the hair stands off the head
+    · density: 0.35…1.6; default 1 — number of hair cards / clumps / strands
+    · thickness: 0.5…1.7; default 1 — width of cards, clumps and strands
+    · curl: 0…1; default 0 — 0 straight, 0.5 curly, 1 tightly curled
+    · wave: 0…1; default 0 — loose waves
+    · direction: -1…1; default 0 — sweep toward the character’s left (−) or right (+)
+    · part: none (None) | left (Left) | center (Center) | right (Right); default none — where the hair is parted (character’s own left/right)
+    · fringe: 0…1.6; default 1 — length of the fringe for styles that have one (0 removes it)
+    · messiness: 0…1; default 0.25 — tousled, untidy direction changes
+    · flyaways: 0…1; default 0.35 — loose fine strands and baby hairs at the hairline
+    · hairlineHeight: -1…1; default 0 — forehead hairline height
+    · recession: 0…1; default 0 — recession at the temples (M-shape)
+    · widowsPeak: 0…1; default 0 — V-shaped point in the middle of the hairline
+    · sideburns: 0…1; default 0.5 — length of the sideburns in front of the ears
+    · highlightAmount: 0…0.8; default 0 — share of strands in the highlight colour
+    · lowlightAmount: 0…0.8; default 0 — share of darker strands
+    · gloss: 0…1; default 0.35 — how glossy the hair is
+  hair.colors: root, tip, highlight (#RRGGBB).
+
+[browStyle] Eyebrows → face.brows.styleId
+- brow_none — No eyebrows: No eyebrows (shaved / very light).
+- brow_natural_01 — Natural: Medium natural brows with a soft arch.
+- brow_thick_straight_01 — Thick straight: Thick, fairly straight, dense brows.
+- brow_thin_arched_01 — Thin arched: Thin, groomed, high-arched brows.
+- brow_bushy_01 — Bushy: Full, untidy bushy brows.
+- brow_angled_01 — Angled: Sharp angled brows (stern look).
+- brow_rounded_01 — Rounded: Softly rounded, gently curved brows.
+- brow_sparse_01 — Sparse / light: Light, sparse brows.
+- brow_worried_01 — Upturned (worried): Inner ends raised (worried / sad expression).
+- brow_unibrow_01 — Joined (unibrow): Thick brows nearly meeting in the middle.
+
+[facialHair] Facial hair → face.facialHair.styleId
+- facial_none — Clean-shaven: No facial hair.
+- facial_stubble_01 — Stubble: A few days of stubble over the jaw, chin and upper lip (mostly a shadow with very short hairs).
+    · length: 0.3…3; default 1 — multiplies the length of the style
+    · density: 0.3…1.6; default 1 — how full the facial hair is
+    · thickness: 0.5…1.6; default 1 — width of the hairs / clumps
+    · curl: 0…1; default 0 — straight (0) to curly (1)
+    · messiness: 0…1; default 0.3 — groomed (0) to untidy (1)
+    · colors: root (Colour, default #2B1E16), tip (Tip colour, default #3A2A1E)
+- facial_short_beard_01 — Short beard: Short, even, trimmed full beard with moustache.
+    · length: 0.3…3; default 1 — multiplies the length of the style
+    · density: 0.3…1.6; default 1 — how full the facial hair is
+    · thickness: 0.5…1.6; default 1 — width of the hairs / clumps
+    · curl: 0…1; default 0 — straight (0) to curly (1)
+    · messiness: 0…1; default 0.3 — groomed (0) to untidy (1)
+    · colors: root (Colour, default #2B1E16), tip (Tip colour, default #3A2A1E)
+- facial_full_beard_01 — Full beard: Full beard of medium length connected to the moustache.
+    · length: 0.3…3; default 1 — multiplies the length of the style
+    · density: 0.3…1.6; default 1 — how full the facial hair is
+    · thickness: 0.5…1.6; default 1 — width of the hairs / clumps
+    · curl: 0…1; default 0 — straight (0) to curly (1)
+    · messiness: 0…1; default 0.3 — groomed (0) to untidy (1)
+    · colors: root (Colour, default #2B1E16), tip (Tip colour, default #3A2A1E)
+- facial_long_beard_01 — Long beard: Long full beard hanging onto the chest.
+    · length: 0.3…3; default 1 — multiplies the length of the style
+    · density: 0.3…1.6; default 1 — how full the facial hair is
+    · thickness: 0.5…1.6; default 1 — width of the hairs / clumps
+    · curl: 0…1; default 0 — straight (0) to curly (1)
+    · messiness: 0…1; default 0.3 — groomed (0) to untidy (1)
+    · colors: root (Colour, default #2B1E16), tip (Tip colour, default #3A2A1E)
+- facial_goatee_01 — Goatee: Chin beard joined to the moustache (circle beard).
+    · length: 0.3…3; default 1 — multiplies the length of the style
+    · density: 0.3…1.6; default 1 — how full the facial hair is
+    · thickness: 0.5…1.6; default 1 — width of the hairs / clumps
+    · curl: 0…1; default 0 — straight (0) to curly (1)
+    · messiness: 0…1; default 0.3 — groomed (0) to untidy (1)
+    · colors: root (Colour, default #2B1E16), tip (Tip colour, default #3A2A1E)
+- facial_chin_beard_01 — Chin beard: Beard only on the chin (no moustache).
+    · length: 0.3…3; default 1 — multiplies the length of the style
+    · density: 0.3…1.6; default 1 — how full the facial hair is
+    · thickness: 0.5…1.6; default 1 — width of the hairs / clumps
+    · curl: 0…1; default 0 — straight (0) to curly (1)
+    · messiness: 0…1; default 0.3 — groomed (0) to untidy (1)
+    · colors: root (Colour, default #2B1E16), tip (Tip colour, default #3A2A1E)
+- facial_moustache_01 — Moustache: Classic full moustache over the upper lip.
+    · length: 0.3…3; default 1 — multiplies the length of the style
+    · density: 0.3…1.6; default 1 — how full the facial hair is
+    · thickness: 0.5…1.6; default 1 — width of the hairs / clumps
+    · curl: 0…1; default 0 — straight (0) to curly (1)
+    · messiness: 0…1; default 0.3 — groomed (0) to untidy (1)
+    · colors: root (Colour, default #2B1E16), tip (Tip colour, default #3A2A1E)
+- facial_handlebar_01 — Handlebar moustache: Long moustache with ends curled upward.
+    · length: 0.3…3; default 1 — multiplies the length of the style
+    · density: 0.3…1.6; default 1 — how full the facial hair is
+    · thickness: 0.5…1.6; default 1 — width of the hairs / clumps
+    · curl: 0…1; default 0 — straight (0) to curly (1)
+    · messiness: 0…1; default 0.3 — groomed (0) to untidy (1)
+    · colors: root (Colour, default #2B1E16), tip (Tip colour, default #3A2A1E)
+- facial_pencil_01 — Pencil moustache: Thin, neatly trimmed moustache along the lip.
+    · length: 0.3…3; default 1 — multiplies the length of the style
+    · density: 0.3…1.6; default 1 — how full the facial hair is
+    · thickness: 0.5…1.6; default 1 — width of the hairs / clumps
+    · curl: 0…1; default 0 — straight (0) to curly (1)
+    · messiness: 0…1; default 0.3 — groomed (0) to untidy (1)
+    · colors: root (Colour, default #2B1E16), tip (Tip colour, default #3A2A1E)
+- facial_chinstrap_01 — Chin strap: Narrow beard line along the jaw from ear to ear.
+    · length: 0.3…3; default 1 — multiplies the length of the style
+    · density: 0.3…1.6; default 1 — how full the facial hair is
+    · thickness: 0.5…1.6; default 1 — width of the hairs / clumps
+    · curl: 0…1; default 0 — straight (0) to curly (1)
+    · messiness: 0…1; default 0.3 — groomed (0) to untidy (1)
+    · colors: root (Colour, default #2B1E16), tip (Tip colour, default #3A2A1E)
+- facial_mutton_chops_01 — Mutton chops: Wide sideburns down the cheeks, shaved chin.
+    · length: 0.3…3; default 1 — multiplies the length of the style
+    · density: 0.3…1.6; default 1 — how full the facial hair is
+    · thickness: 0.5…1.6; default 1 — width of the hairs / clumps
+    · curl: 0…1; default 0 — straight (0) to curly (1)
+    · messiness: 0…1; default 0.3 — groomed (0) to untidy (1)
+    · colors: root (Colour, default #2B1E16), tip (Tip colour, default #3A2A1E)
+- facial_soul_patch_01 — Soul patch: Small tuft under the lower lip.
+    · length: 0.3…3; default 1 — multiplies the length of the style
+    · density: 0.3…1.6; default 1 — how full the facial hair is
+    · thickness: 0.5…1.6; default 1 — width of the hairs / clumps
+    · curl: 0…1; default 0 — straight (0) to curly (1)
+    · messiness: 0…1; default 0.3 — groomed (0) to untidy (1)
+    · colors: root (Colour, default #2B1E16), tip (Tip colour, default #3A2A1E)
+
+[top] Tops (base layer) → outfit[] (slot top)
+- top_tshirt_01 — T-shirt: Classic T-shirt in cotton jersey with a ribbed neckband; choose crew, V or scoop neck, sleeve length and fit.
+    · fit: skinTight (Skin-tight) | slim (Slim) | regular (Regular) | relaxed (Relaxed) | loose (Loose) | oversized (Oversized); default regular — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 0…1.3; default 0.6 — 0 cropped · 0.5 at the hip · 1 upper thigh (tunic)
+    · sleeveLength: 0…1; default 0.3 — 0 sleeveless · 0.12 cap · 0.3 short · 0.5 elbow · 0.75 three-quarter · 1 full length
+    · sleeveWidth: -1…1; default 0 — tapered (−1) … straight (0) … wide / bell (+1)
+    · neckline: crew (Crew (round)) | v (V-neck) | scoop (Scoop) | boat (Boat); default crew — neckline shape
+    · necklineDepth: 0…1; default 0.3 — how low the neckline goes
+    · necklineWidth: -1…1; default 0 — narrow (−) to wide (+)
+    · hemWidth: -1…1; default 0 — fitted (−1) … straight (0) … flared / A-line (+1)
+    · tucked: true | false; default false — tucked into the trousers or skirt (sits under their waistband)
+    · sleeveRoll: true | false; default false — sleeve ends rolled up once
+    · colors: main (Main colour, default #F2F2F2), secondary (Secondary colour (patterns), default #1F2A44), accent (Accent colour (patterns), default #C0392B), rib (Ribbed bands, default #F2F2F2)
+    · fabrics: cotton_jersey, polyester_sport, linen, rib_knit (default cotton_jersey)
+- top_longsleeve_01 — Long-sleeve T-shirt: Long-sleeve jersey top with optional ribbed cuffs.
+    · fit: skinTight (Skin-tight) | slim (Slim) | regular (Regular) | relaxed (Relaxed) | loose (Loose) | oversized (Oversized); default slim — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 0…1.3; default 0.6 — 0 cropped · 0.5 at the hip · 1 upper thigh (tunic)
+    · sleeveLength: 0.5…1; default 1 — 0 sleeveless · 0.12 cap · 0.3 short · 0.5 elbow · 0.75 three-quarter · 1 full length
+    · sleeveWidth: -1…1; default 0 — tapered (−1) … straight (0) … wide / bell (+1)
+    · neckline: crew (Crew (round)) | v (V-neck) | scoop (Scoop) | boat (Boat) | mock (Mock neck); default crew — neckline shape
+    · necklineDepth: 0…1; default 0.25 — how low the neckline goes
+    · cuffs: none (Plain hem) | rib (Ribbed cuff); default none — finish at the end of the sleeve or leg
+    · tucked: true | false; default false — tucked into the trousers or skirt (sits under their waistband)
+    · colors: main (Main colour, default #2E3A4F), secondary (Secondary colour (patterns), default #E6E6E6), rib (Ribbed bands, default #2E3A4F)
+    · fabrics: cotton_jersey, rib_knit, polyester_sport (default cotton_jersey)
+- top_polo_01 — Polo shirt: Piqué polo shirt with a knitted polo collar, three-button placket and ribbed sleeve bands.
+    · fit: skinTight (Skin-tight) | slim (Slim) | regular (Regular) | relaxed (Relaxed) | loose (Loose) | oversized (Oversized); default regular — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 0…1.3; default 0.6 — 0 cropped · 0.5 at the hip · 1 upper thigh (tunic)
+    · sleeveLength: 0.2…1; default 0.3 — 0 sleeveless · 0.12 cap · 0.3 short · 0.5 elbow · 0.75 three-quarter · 1 full length
+    · buttons: 0…4; default 3 — number of front buttons
+    · tucked: true | false; default false — tucked into the trousers or skirt (sits under their waistband)
+    · colors: main (Main colour, default #1E5631), rib (Ribbed bands, default #1E5631), hardware (Buttons / zip / rivets, default #F0EDE5), secondary (Secondary colour (patterns), default #FFFFFF)
+    · fabrics: cotton_jersey, polyester_sport (default cotton_jersey)
+- top_dress_shirt_01 — Button-up shirt: Woven button-up shirt with a point collar, full button placket, buttoned cuffs and a curved shirt-tail hem; optional chest pocket.
+    · fit: skinTight (Skin-tight) | slim (Slim) | regular (Regular) | relaxed (Relaxed) | loose (Loose) | oversized (Oversized); default regular — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 0.4…1.2; default 0.75 — 0 cropped · 0.5 at the hip · 1 upper thigh (tunic)
+    · sleeveLength: 0.25…1; default 1 — 0 sleeveless · 0.12 cap · 0.3 short · 0.5 elbow · 0.75 three-quarter · 1 full length
+    · collar: shirt (Point collar) | mandarin (Mandarin (band)) | none (No collar); default shirt — collar style
+    · buttons: 3…9; default 7 — number of front buttons
+    · pocket: true | false; default false — patch pocket on the left chest
+    · hemShape: straight (Straight) | curved (Curved (shirt-tail)); default curved — shape of the bottom edge
+    · tucked: true | false; default false — tucked into the trousers or skirt (sits under their waistband)
+    · sleeveRoll: true | false; default false — sleeves rolled up
+    · colors: main (Main colour, default #EEF2F7), secondary (Secondary colour (patterns), default #7C93B8), accent (Accent colour (patterns), default #1F2A44), hardware (Buttons / zip / rivets, default #EDEAE2), stitch (Stitching thread, default #D9DEE6)
+    · fabrics: cotton_poplin, oxford_cloth, linen, denim, silk, corduroy (default cotton_poplin)
+- top_tank_01 — Tank top: Sleeveless tank top with adjustable strap width and armhole depth.
+    · fit: skinTight (Skin-tight) | slim (Slim) | regular (Regular) | relaxed (Relaxed) | loose (Loose) | oversized (Oversized); default slim — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 0…1.3; default 0.6 — 0 cropped · 0.5 at the hip · 1 upper thigh (tunic)
+    · neckline: crew (Crew (round)) | scoop (Scoop) | v (V-neck) | square (Square); default scoop — neckline shape
+    · necklineDepth: 0…1; default 0.4 — how low the neckline goes
+    · strapWidth: 0…1; default 0.4 — thin straps (0) to wide (1)
+    · armholeDepth: 0…1; default 0.4 — how low the armholes are cut
+    · tucked: true | false; default false — tucked into the trousers or skirt (sits under their waistband)
+    · colors: main (Main colour, default #FFFFFF), secondary (Secondary colour (patterns), default #222222), rib (Ribbed bands, default #FFFFFF)
+    · fabrics: cotton_jersey, rib_knit, polyester_sport, silk (default cotton_jersey)
+- top_henley_01 — Henley: Collarless knit top with a short button placket at the neck.
+    · fit: skinTight (Skin-tight) | slim (Slim) | regular (Regular) | relaxed (Relaxed) | loose (Loose) | oversized (Oversized); default slim — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 0…1.3; default 0.6 — 0 cropped · 0.5 at the hip · 1 upper thigh (tunic)
+    · sleeveLength: 0.25…1; default 1 — 0 sleeveless · 0.12 cap · 0.3 short · 0.5 elbow · 0.75 three-quarter · 1 full length
+    · buttons: 2…5; default 3 — number of front buttons
+    · cuffs: none (Plain hem) | rib (Ribbed cuff); default rib — finish at the end of the sleeve or leg
+    · tucked: true | false; default false — tucked into the trousers or skirt (sits under their waistband)
+    · colors: main (Main colour, default #8A7660), rib (Ribbed bands, default #8A7660), hardware (Buttons / zip / rivets, default #D9CBB5)
+    · fabrics: cotton_jersey, rib_knit, linen (default cotton_jersey)
+- top_blouse_01 — Blouse: Soft flowing blouse with a V or round neck, optional buttons and loose sleeves.
+    · fit: skinTight (Skin-tight) | slim (Slim) | regular (Regular) | relaxed (Relaxed) | loose (Loose) | oversized (Oversized); default relaxed — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 0…1.3; default 0.65 — 0 cropped · 0.5 at the hip · 1 upper thigh (tunic)
+    · sleeveLength: 0…1; default 0.75 — 0 sleeveless · 0.12 cap · 0.3 short · 0.5 elbow · 0.75 three-quarter · 1 full length
+    · sleeveWidth: -1…1; default 0.4 — tapered (−1) … straight (0) … wide / bell (+1)
+    · neckline: v (V-neck) | crew (Crew (round)) | scoop (Scoop) | boat (Boat) | square (Square); default v — neckline shape
+    · necklineDepth: 0…1; default 0.35 — how low the neckline goes
+    · buttons: 0…8; default 0 — number of front buttons
+    · hemWidth: -1…1; default 0.2 — fitted (−1) … straight (0) … flared / A-line (+1)
+    · tucked: true | false; default false — tucked into the trousers or skirt (sits under their waistband)
+    · colors: main (Main colour, default #F4E1D2), secondary (Secondary colour (patterns), default #C76D7E), accent (Accent colour (patterns), default #3B5B4F), hardware (Buttons / zip / rivets, default #F8F5EE)
+    · fabrics: crepe, silk, chiffon, cotton_poplin, linen (default crepe)
+- top_turtleneck_01 — Turtleneck: Fine-knit turtleneck (rolled high collar) or mock neck.
+    · fit: skinTight (Skin-tight) | slim (Slim) | regular (Regular) | relaxed (Relaxed) | loose (Loose) | oversized (Oversized); default slim — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 0…1.3; default 0.6 — 0 cropped · 0.5 at the hip · 1 upper thigh (tunic)
+    · sleeveLength: 0.3…1; default 1 — 0 sleeveless · 0.12 cap · 0.3 short · 0.5 elbow · 0.75 three-quarter · 1 full length
+    · neckline: turtle (Turtleneck) | mock (Mock neck); default turtle — neckline shape
+    · tucked: true | false; default false — tucked into the trousers or skirt (sits under their waistband)
+    · colors: main (Main colour, default #1C1C1C), rib (Ribbed bands, default #1C1C1C)
+    · fabrics: rib_knit, knit_wool, cotton_jersey (default rib_knit)
+
+[mid] Mid layer (sweaters, hoodies, vests) → outfit[] (slot mid)
+- mid_sweatshirt_01 — Sweatshirt: Crew-neck fleece sweatshirt with ribbed neckband, cuffs and hem band that gather the body.
+    · fit: skinTight (Skin-tight) | slim (Slim) | regular (Regular) | relaxed (Relaxed) | loose (Loose) | oversized (Oversized); default relaxed — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 0…1.3; default 0.6 — 0 cropped · 0.5 at the hip · 1 upper thigh (tunic)
+    · sleeveLength: 0.3…1; default 1 — 0 sleeveless · 0.12 cap · 0.3 short · 0.5 elbow · 0.75 three-quarter · 1 full length
+    · sleeveWidth: -1…1; default 0 — tapered (−1) … straight (0) … wide / bell (+1)
+    · thickness: 0.6…2; default 1 — multiplies the fabric thickness (padded garments look puffier)
+    · colors: main (Main colour, default #9AA5B1), rib (Ribbed bands, default #9AA5B1), secondary (Secondary colour (patterns), default #2D2D2D)
+    · fabrics: fleece, cotton_jersey, knit_wool (default fleece)
+- mid_hoodie_01 — Hoodie: Fleece hoodie with a lined hood, drawstrings, kangaroo pocket and ribbed cuffs and hem; pullover or zip-up (closed or open).
+    · fit: skinTight (Skin-tight) | slim (Slim) | regular (Regular) | relaxed (Relaxed) | loose (Loose) | oversized (Oversized); default relaxed — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 0…1.3; default 0.62 — 0 cropped · 0.5 at the hip · 1 upper thigh (tunic)
+    · sleeveLength: 0.3…1; default 1 — 0 sleeveless · 0.12 cap · 0.3 short · 0.5 elbow · 0.75 three-quarter · 1 full length
+    · closure: closed (Closed) | zipped (Zipped) | open (Open); default closed — how the front is worn
+    · hood: true | false; default true — hood lying on the back
+    · pocket: true | false; default true — front pouch pocket
+    · thickness: 0.6…2; default 1 — multiplies the fabric thickness (padded garments look puffier)
+    · colors: main (Main colour, default #3B3F46), rib (Ribbed bands, default #3B3F46), cord (Drawstrings, default #EDEDED), hardware (Buttons / zip / rivets, default #BDBDBD), secondary (Secondary colour (patterns), default #E0E0E0)
+    · fabrics: fleece, cotton_jersey, polyester_sport (default fleece)
+- mid_sweater_01 — Sweater: Knitted wool sweater (jumper) with ribbed hem, cuffs and neck; crew, V or turtleneck.
+    · fit: skinTight (Skin-tight) | slim (Slim) | regular (Regular) | relaxed (Relaxed) | loose (Loose) | oversized (Oversized); default relaxed — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 0…1.3; default 0.62 — 0 cropped · 0.5 at the hip · 1 upper thigh (tunic)
+    · sleeveLength: 0.5…1; default 1 — 0 sleeveless · 0.12 cap · 0.3 short · 0.5 elbow · 0.75 three-quarter · 1 full length
+    · neckline: crew (Crew (round)) | v (V-neck) | turtle (Turtleneck) | mock (Mock neck); default crew — neckline shape
+    · necklineDepth: 0…1; default 0.3 — how low the neckline goes
+    · thickness: 0.6…2; default 1 — multiplies the fabric thickness (padded garments look puffier)
+    · colors: main (Main colour, default #7A2E3A), rib (Ribbed bands, default #7A2E3A), secondary (Secondary colour (patterns), default #E8DCC8), accent (Accent colour (patterns), default #2C3E50)
+    · fabrics: knit_wool, cable_knit, fleece (default knit_wool)
+- mid_cardigan_01 — Cardigan: Knitted cardigan with a V front, button band and optional patch pockets; worn buttoned or open.
+    · fit: skinTight (Skin-tight) | slim (Slim) | regular (Regular) | relaxed (Relaxed) | loose (Loose) | oversized (Oversized); default relaxed — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 0.4…1.6; default 0.75 — 0 cropped · 0.5 at the hip · 1 upper thigh (tunic)
+    · sleeveLength: 0.5…1; default 1 — 0 sleeveless · 0.12 cap · 0.3 short · 0.5 elbow · 0.75 three-quarter · 1 full length
+    · closure: closed (Closed) | open (Open); default closed — how the front is worn
+    · buttons: 0…7; default 5 — number of front buttons
+    · pocket: true | false; default true — show the pockets
+    · colors: main (Main colour, default #C8B48A), rib (Ribbed bands, default #C8B48A), hardware (Buttons / zip / rivets, default #5A4632)
+    · fabrics: knit_wool, cable_knit, cotton_jersey (default knit_wool)
+- mid_waistcoat_01 — Waistcoat (vest): Tailored sleeveless waistcoat with a V front, buttons and welt pockets.
+    · fit: skinTight (Skin-tight) | slim (Slim) | regular (Regular); default slim — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 0.3…0.7; default 0.45 — 0 cropped · 0.5 at the hip · 1 upper thigh (tunic)
+    · buttons: 3…6; default 5 — number of front buttons
+    · pocket: true | false; default true — show the pockets
+    · colors: main (Main colour, default #3A3F4A), lining (Lining, default #8E8E8E), hardware (Buttons / zip / rivets, default #2B2B2B), secondary (Secondary colour (patterns), default #5B6070)
+    · fabrics: wool_suiting, tweed, linen, velvet (default wool_suiting)
+
+[outer] Outerwear (jackets, coats, blazers) → outfit[] (slot outer)
+- outer_denim_jacket_01 — Denim jacket: Trucker denim jacket with a point collar, metal buttons, flap chest pockets, buttoned waistband and contrast stitching.
+    · fit: slim (Slim) | regular (Regular) | relaxed (Relaxed) | oversized (Oversized); default regular — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 0.3…0.7; default 0.45 — 0 cropped · 0.5 at the hip · 1 upper thigh (tunic)
+    · sleeveLength: 0.5…1; default 1 — 0 sleeveless · 0.12 cap · 0.3 short · 0.5 elbow · 0.75 three-quarter · 1 full length
+    · closure: closed (Closed) | open (Open); default closed — how the front is worn
+    · pocket: true | false; default true — flap pockets on the chest
+    · colors: main (Main colour, default #4A6A95), stitch (Stitching thread, default #D39B3A), hardware (Buttons / zip / rivets, default #B08D57), secondary (Secondary colour (patterns), default #3B5579)
+    · fabrics: denim, corduroy, cotton_canvas, suede (default denim)
+- outer_bomber_01 — Bomber jacket: Padded bomber jacket with a ribbed collar, cuffs and hem, front zip and welt pockets.
+    · fit: skinTight (Skin-tight) | slim (Slim) | regular (Regular) | relaxed (Relaxed) | loose (Loose) | oversized (Oversized); default relaxed — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 0.35…0.7; default 0.5 — 0 cropped · 0.5 at the hip · 1 upper thigh (tunic)
+    · closure: zipped (Zipped) | open (Open); default zipped — how the front is worn
+    · thickness: 0.6…2; default 1.6 — multiplies the fabric thickness (padded garments look puffier)
+    · sleeveLength: 0.8…1; default 1 — 0 sleeveless · 0.12 cap · 0.3 short · 0.5 elbow · 0.75 three-quarter · 1 full length
+    · colors: main (Main colour, default #4B5320), rib (Ribbed bands, default #1F1F1F), lining (Lining, default #E8772E), hardware (Buttons / zip / rivets, default #C0C0C0)
+    · fabrics: nylon, leather, suede, wool_coating (default nylon)
+- outer_leather_jacket_01 — Leather jacket: Short leather jacket with notch lapels, front zip and zipped pockets.
+    · fit: slim (Slim) | regular (Regular) | relaxed (Relaxed); default slim — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 0.3…0.65; default 0.45 — 0 cropped · 0.5 at the hip · 1 upper thigh (tunic)
+    · closure: open (Open) | zipped (Zipped); default open — how the front is worn
+    · colors: main (Main colour, default #1B1B1B), lining (Lining, default #5A1A1A), hardware (Buttons / zip / rivets, default #BFC3C7), stitch (Stitching thread, default #2A2A2A)
+    · fabrics: leather, suede, denim (default leather)
+- outer_blazer_01 — Blazer / suit jacket: Tailored, lined blazer with notch, peak or shawl lapels, one to three front buttons, flap pockets, a chest welt pocket and sleeve buttons.
+    · fit: slim (Slim) | regular (Regular) | relaxed (Relaxed); default regular — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 0.75…1.2; default 0.95 — 0 cropped · 0.5 at the hip · 1 upper thigh (tunic)
+    · collar: notch (Notch lapel) | peak (Peak lapel) | shawl (Shawl lapel); default notch — collar style
+    · lapelWidth: -1…1; default 0 — narrow (−) to wide (+) lapels
+    · buttons: 1…3; default 2 — number of front buttons
+    · closure: closed (Closed) | open (Open); default closed — how the front is worn
+    · pocket: true | false; default true — show the pockets
+    · colors: main (Main colour, default #2B3242), secondary (Secondary colour (patterns), default #3D4659), lining (Lining, default #6B2737), hardware (Buttons / zip / rivets, default #1C1C1C)
+    · fabrics: wool_suiting, tweed, linen, velvet, corduroy (default wool_suiting)
+- outer_coat_01 — Overcoat / trench coat: Long lined coat: overcoat with notch lapels or trench coat with epaulettes; single or open front, belt optional.
+    · fit: slim (Slim) | regular (Regular) | relaxed (Relaxed) | oversized (Oversized); default regular — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 1…3; default 2 — 1 upper thigh · 1.5 above the knee · 2 knee · 2.5 mid-calf · 3 ankle
+    · style: overcoat (Overcoat) | trench (Trench coat); default overcoat — overcoat (clean) or trench (epaulettes)
+    · collar: notch (Notch lapel) | peak (Peak lapel); default notch — collar style
+    · closure: closed (Closed) | open (Open); default closed — how the front is worn
+    · buttons: 2…5; default 3 — number of front buttons
+    · hemWidth: -1…1; default 0.2 — fitted (−1) … straight (0) … flared / A-line (+1)
+    · thickness: 0.6…2; default 1 — multiplies the fabric thickness (padded garments look puffier)
+    · colors: main (Main colour, default #5B4636), lining (Lining, default #2F2F35), hardware (Buttons / zip / rivets, default #2A211A), secondary (Secondary colour (patterns), default #3E3027)
+    · fabrics: wool_coating, cotton_canvas, tweed, leather, nylon (default wool_coating)
+- outer_parka_01 — Parka: Padded hooded parka with a front zip, big flap pockets and ribbed inner cuffs.
+    · fit: regular (Regular) | relaxed (Relaxed) | loose (Loose) | oversized (Oversized); default relaxed — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 0.8…2; default 1.3 — 1 upper thigh · 1.5 above the knee · 2 knee · 2.5 mid-calf · 3 ankle
+    · closure: zipped (Zipped) | open (Open); default zipped — how the front is worn
+    · hood: true | false; default true — hood lying on the back
+    · thickness: 0.6…2; default 1.5 — multiplies the fabric thickness (padded garments look puffier)
+    · colors: main (Main colour, default #4E5B3A), lining (Lining, default #C46A2B), hardware (Buttons / zip / rivets, default #3A3A3A), cord (Drawstrings, default #2B2B2B)
+    · fabrics: cotton_canvas, nylon, quilted (default cotton_canvas)
+- outer_puffer_01 — Puffer jacket: Quilted down puffer jacket: horizontal baffles, stand collar, front zip; with or without sleeves (gilet).
+    · fit: regular (Regular) | relaxed (Relaxed) | loose (Loose); default relaxed — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 0.4…1.3; default 0.6 — 0 cropped · 0.5 at the hip · 1 upper thigh (tunic)
+    · sleeveLength: 0…1; default 1 — 0 sleeveless · 0.12 cap · 0.3 short · 0.5 elbow · 0.75 three-quarter · 1 full length
+    · closure: zipped (Zipped) | open (Open); default zipped — how the front is worn
+    · puffiness: 0.3…1.5; default 1 — how thick the padded baffles are
+    · colors: main (Main colour, default #1F3A5F), lining (Lining, default #1F3A5F), hardware (Buttons / zip / rivets, default #D0D0D0)
+    · fabrics: quilted, nylon (default quilted)
+- outer_service_jacket_01 — Uniform jacket: Uniform / service jacket with a stand or notch collar, epaulettes, four flap pockets and a row of buttons (military, police, pilot, school uniforms).
+    · fit: slim (Slim) | regular (Regular) | relaxed (Relaxed); default regular — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 0.6…1.1; default 0.85 — 0 cropped · 0.5 at the hip · 1 upper thigh (tunic)
+    · collar: mandarin (Mandarin (band)) | notch (Notch lapel); default mandarin — collar style
+    · buttons: 4…7; default 5 — number of front buttons
+    · colors: main (Main colour, default #2F3B2B), hardware (Buttons / zip / rivets, default #C9A54A), trim (Trim (collar, plackets, contrast panels), default #2F3B2B), lining (Lining, default #25301F)
+    · fabrics: wool_suiting, cotton_canvas, chino_twill (default wool_suiting)
+
+[bottom] Bottoms (trousers, shorts, skirts) → outfit[] (slot bottom)
+- bottom_jeans_01 — Jeans: Five-pocket denim jeans with belt loops, button fly, rivets and contrast double stitching. Fit + leg opening give skinny, slim, straight, bootcut, loose or baggy.
+    · fit: skinTight (Skin-tight) | slim (Slim) | regular (Regular) | relaxed (Relaxed) | loose (Loose) | oversized (Oversized); default slim — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · rise: 0…1; default 0.45 — 0 low rise · 0.5 mid rise · 1 high waist
+    · legLength: 0.3…1.04; default 1 — 0.35 short shorts · 0.45 shorts · 0.6 knee · 0.75 capri · 1 ankle · 1.03 full break
+    · legOpening: -1…1; default -0.2 — tapered / skinny (−1) … straight (0) … wide / flared (+1)
+    · cuff: none (Plain hem) | turnUp (Turn-up); default none — finish at the end of the sleeve or leg
+    · crotchDrop: 0…1; default 0 — how low the crotch hangs (sirwal, harem, baggy)
+    · colors: main (Main colour, default #34507A), stitch (Stitching thread, default #D39B3A), hardware (Buttons / zip / rivets, default #B08D57), secondary (Secondary colour (patterns), default #2A4063)
+    · fabrics: denim, corduroy, cotton_canvas, chino_twill (default denim)
+- bottom_trousers_01 — Trousers / chinos: Woven trousers (chinos or dress trousers) with a waistband, belt loops, slanted front pockets, welt back pockets; skinny to wide via fit and leg opening.
+    · fit: skinTight (Skin-tight) | slim (Slim) | regular (Regular) | relaxed (Relaxed) | loose (Loose) | oversized (Oversized); default regular — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · rise: 0…1; default 0.55 — 0 low rise · 0.5 mid rise · 1 high waist
+    · legLength: 0.3…1.04; default 1.02 — 0.35 short shorts · 0.45 shorts · 0.6 knee · 0.75 capri · 1 ankle · 1.03 full break
+    · legOpening: -1…1; default 0 — tapered / skinny (−1) … straight (0) … wide / flared (+1)
+    · cuff: none (Plain hem) | turnUp (Turn-up); default none — finish at the end of the sleeve or leg
+    · colors: main (Main colour, default #B9A27C), hardware (Buttons / zip / rivets, default #3B2F25), secondary (Secondary colour (patterns), default #8C7A5B), stitch (Stitching thread, default #A89272)
+    · fabrics: chino_twill, wool_suiting, linen, corduroy, cotton_canvas (default chino_twill)
+- bottom_cargo_01 — Cargo trousers: Loose utility trousers with big bellows cargo pockets on the thighs and flap back pockets.
+    · fit: regular (Regular) | relaxed (Relaxed) | loose (Loose) | oversized (Oversized); default loose — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · rise: 0…1; default 0.5 — 0 low rise · 0.5 mid rise · 1 high waist
+    · legLength: 0.3…1.04; default 1 — 0.35 short shorts · 0.45 shorts · 0.6 knee · 0.75 capri · 1 ankle · 1.03 full break
+    · legOpening: -1…1; default -0.2 — tapered / skinny (−1) … straight (0) … wide / flared (+1)
+    · cuff: none (Plain hem) | rib (Ribbed cuff); default none — finish at the end of the sleeve or leg
+    · colors: main (Main colour, default #5A5E3D), hardware (Buttons / zip / rivets, default #2E2E2E), secondary (Secondary colour (patterns), default #3E4229), accent (Accent colour (patterns), default #7A6C4F)
+    · fabrics: cotton_canvas, chino_twill, nylon (default cotton_canvas)
+- bottom_shorts_01 — Shorts: Casual woven shorts with waistband and belt loops; length from short to knee.
+    · fit: slim (Slim) | regular (Regular) | relaxed (Relaxed) | loose (Loose); default regular — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · rise: 0…1; default 0.5 — 0 low rise · 0.5 mid rise · 1 high waist
+    · legLength: 0.3…0.65; default 0.42 — 0.35 short shorts · 0.45 shorts · 0.6 knee · 0.75 capri · 1 ankle · 1.03 full break
+    · legOpening: -1…1; default 0.2 — tapered / skinny (−1) … straight (0) … wide / flared (+1)
+    · cuff: none (Plain hem) | turnUp (Turn-up); default none — finish at the end of the sleeve or leg
+    · colors: main (Main colour, default #C4B08A), hardware (Buttons / zip / rivets, default #3B2F25), secondary (Secondary colour (patterns), default #5E7A99)
+    · fabrics: chino_twill, denim, linen, cotton_canvas (default chino_twill)
+- bottom_athletic_shorts_01 — Athletic shorts: Lightweight sports shorts with an elastic drawstring waist.
+    · fit: slim (Slim) | regular (Regular) | relaxed (Relaxed) | loose (Loose); default relaxed — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · legLength: 0.3…0.6; default 0.4 — 0.35 short shorts · 0.45 shorts · 0.6 knee · 0.75 capri · 1 ankle · 1.03 full break
+    · legOpening: -1…1; default 0.4 — tapered / skinny (−1) … straight (0) … wide / flared (+1)
+    · colors: main (Main colour, default #1B1F2A), cord (Drawstrings, default #FFFFFF), secondary (Secondary colour (patterns), default #E14B3B)
+    · fabrics: polyester_sport, nylon, cotton_jersey (default polyester_sport)
+- bottom_sweatpants_01 — Sweatpants / joggers: Fleece sweatpants with an elastic drawstring waist; straight hem or ribbed jogger cuffs.
+    · fit: slim (Slim) | regular (Regular) | relaxed (Relaxed) | loose (Loose) | oversized (Oversized); default relaxed — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · legLength: 0.8…1.04; default 1 — 0.35 short shorts · 0.45 shorts · 0.6 knee · 0.75 capri · 1 ankle · 1.03 full break
+    · cuff: none (Plain hem) | rib (Ribbed cuff); default rib — finish at the end of the sleeve or leg
+    · legOpening: -1…1; default -0.3 — tapered / skinny (−1) … straight (0) … wide / flared (+1)
+    · colors: main (Main colour, default #6B6F76), cord (Drawstrings, default #EDEDED), rib (Ribbed bands, default #6B6F76)
+    · fabrics: fleece, cotton_jersey, polyester_sport (default fleece)
+- bottom_leggings_01 — Leggings: Skin-tight stretch leggings with an elastic waistband.
+    · rise: 0…1; default 0.75 — 0 low rise · 0.5 mid rise · 1 high waist
+    · legLength: 0.45…1; default 1 — 0.35 short shorts · 0.45 shorts · 0.6 knee · 0.75 capri · 1 ankle · 1.03 full break
+    · colors: main (Main colour, default #151515), secondary (Secondary colour (patterns), default #3A3A3A)
+    · fabrics: polyester_sport, cotton_jersey, rib_knit (default polyester_sport)
+- bottom_sirwal_01 — Sirwal (traditional trousers): Traditional loose sirwal / harem trousers with a gathered waist, dropped crotch and narrower ankles.
+    · fit: relaxed (Relaxed) | loose (Loose) | oversized (Oversized); default loose — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · legLength: 0.7…1.02; default 0.98 — 0.35 short shorts · 0.45 shorts · 0.6 knee · 0.75 capri · 1 ankle · 1.03 full break
+    · crotchDrop: 0…1; default 0.7 — how low the crotch hangs (sirwal, harem, baggy)
+    · legOpening: -1…1; default -0.6 — tapered / skinny (−1) … straight (0) … wide / flared (+1)
+    · cuff: none (Plain hem) | rib (Ribbed cuff); default none — finish at the end of the sleeve or leg
+    · colors: main (Main colour, default #EDE6D6), secondary (Secondary colour (patterns), default #B8A988), cord (Drawstrings, default #EDE6D6)
+    · fabrics: cotton_poplin, linen, cotton_canvas, crepe (default cotton_poplin)
+- bottom_skirt_01 — Skirt: Skirt with a waistband: pencil, A-line, circle, pleated or wrap; any length from mini to maxi.
+    · style: pencil (Pencil) | aline (A-line) | circle (Circle) | pleated (Pleated) | wrap (Wrap); default aline — skirt cut
+    · length: 1…3; default 1.8 — 1 upper thigh · 1.5 above the knee · 2 knee · 2.5 mid-calf · 3 ankle
+    · rise: 0…1; default 0.8 — 0 low rise · 0.5 mid rise · 1 high waist
+    · hemWidth: -1…1; default 0 — fitted (−1) … straight (0) … flared / A-line (+1)
+    · pleats: 0…1; default 0.5 — fewer (0) to more (1) pleats (pleated style)
+    · colors: main (Main colour, default #3E2A47), secondary (Secondary colour (patterns), default #C9B6D6), accent (Accent colour (patterns), default #E4C04A), hardware (Buttons / zip / rivets, default #2B2B2B)
+    · fabrics: wool_suiting, denim, crepe, silk, linen, leather, tweed, corduroy (default wool_suiting)
+
+[fullBody] Full-body garments → outfit[] (slot fullBody)
+- full_dress_01 — Dress: One-piece dress: any sleeve length, neckline and length (mini to maxi), fitted to flared skirt.
+    · fit: skinTight (Skin-tight) | slim (Slim) | regular (Regular) | relaxed (Relaxed) | loose (Loose); default regular — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 1…3; default 2 — 1 upper thigh · 1.5 above the knee · 2 knee · 2.5 mid-calf · 3 ankle
+    · sleeveLength: 0…1; default 0 — 0 sleeveless · 0.12 cap · 0.3 short · 0.5 elbow · 0.75 three-quarter · 1 full length
+    · sleeveWidth: -1…1; default 0 — tapered (−1) … straight (0) … wide / bell (+1)
+    · neckline: crew (Crew (round)) | v (V-neck) | scoop (Scoop) | boat (Boat) | square (Square); default v — neckline shape
+    · necklineDepth: 0…1; default 0.4 — how low the neckline goes
+    · hemWidth: -1…1; default 0.3 — fitted (−1) … straight (0) … flared / A-line (+1)
+    · strapWidth: 0…1; default 0.5 — thin straps (0) to wide shoulders (1)
+    · colors: main (Main colour, default #2A6A5A), secondary (Secondary colour (patterns), default #F2E6C9), accent (Accent colour (patterns), default #B3473F)
+    · fabrics: crepe, silk, cotton_jersey, linen, velvet, chiffon, denim (default crepe)
+- full_jumpsuit_01 — Jumpsuit: One-piece jumpsuit with collar, front placket, sleeves and full-length legs.
+    · fit: slim (Slim) | regular (Regular) | relaxed (Relaxed) | loose (Loose); default relaxed — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · sleeveLength: 0…1; default 0.3 — 0 sleeveless · 0.12 cap · 0.3 short · 0.5 elbow · 0.75 three-quarter · 1 full length
+    · legLength: 0.3…1.04; default 1 — 0.35 short shorts · 0.45 shorts · 0.6 knee · 0.75 capri · 1 ankle · 1.03 full break
+    · legOpening: -1…1; default 0 — tapered / skinny (−1) … straight (0) … wide / flared (+1)
+    · buttons: 0…7; default 5 — number of front buttons
+    · colors: main (Main colour, default #6C7A55), hardware (Buttons / zip / rivets, default #3B3B3B), secondary (Secondary colour (patterns), default #4D583D)
+    · fabrics: chino_twill, denim, crepe, linen, cotton_canvas (default chino_twill)
+- full_coveralls_01 — Coveralls / boiler suit: Loose workwear coveralls with a stand collar, full front zip, chest pockets and long sleeves.
+    · fit: regular (Regular) | relaxed (Relaxed) | loose (Loose) | oversized (Oversized); default loose — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · sleeveLength: 0.3…1; default 1 — 0 sleeveless · 0.12 cap · 0.3 short · 0.5 elbow · 0.75 three-quarter · 1 full length
+    · legLength: 0.3…1.04; default 1 — 0.35 short shorts · 0.45 shorts · 0.6 knee · 0.75 capri · 1 ankle · 1.03 full break
+    · colors: main (Main colour, default #24477A), hardware (Buttons / zip / rivets, default #B5B5B5), trim (Trim (collar, plackets, contrast panels), default #24477A), stitch (Stitching thread, default #E2C044)
+    · fabrics: cotton_canvas, chino_twill, denim, nylon (default cotton_canvas)
+- full_overalls_01 — Overalls (dungarees): Denim dungarees: bib front with a chest pocket, shoulder straps with metal buckles, full trousers.
+    · fit: regular (Regular) | relaxed (Relaxed) | loose (Loose); default relaxed — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · legLength: 0.3…1.04; default 1 — 0.35 short shorts · 0.45 shorts · 0.6 knee · 0.75 capri · 1 ankle · 1.03 full break
+    · legOpening: -1…1; default 0 — tapered / skinny (−1) … straight (0) … wide / flared (+1)
+    · cuff: none (Plain hem) | turnUp (Turn-up); default none — finish at the end of the sleeve or leg
+    · colors: main (Main colour, default #3F5F8C), stitch (Stitching thread, default #D39B3A), hardware (Buttons / zip / rivets, default #B08D57)
+    · fabrics: denim, cotton_canvas, corduroy (default denim)
+- full_robe_01 — Robe / kimono: Long wrap robe with wide sleeves and an open V front (bathrobe, kimono, house robe, academic gown).
+    · fit: relaxed (Relaxed) | loose (Loose) | oversized (Oversized); default loose — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 1.2…3; default 2.3 — 1 upper thigh · 1.5 above the knee · 2 knee · 2.5 mid-calf · 3 ankle
+    · sleeveLength: 0.5…1; default 0.8 — 0 sleeveless · 0.12 cap · 0.3 short · 0.5 elbow · 0.75 three-quarter · 1 full length
+    · sleeveWidth: -1…1; default 0.7 — tapered (−1) … straight (0) … wide / bell (+1)
+    · closure: closed (Closed) | open (Open); default closed — how the front is worn
+    · thickness: 0.6…2; default 1 — multiplies the fabric thickness (padded garments look puffier)
+    · colors: main (Main colour, default #7F1D2D), trim (Trim (collar, plackets, contrast panels), default #7F1D2D), secondary (Secondary colour (patterns), default #E8D8B0)
+    · fabrics: fleece, silk, cotton_jersey, linen, velvet (default cotton_jersey)
+- full_thobe_01 — Thobe / kandura: Traditional ankle-length thobe (dishdasha, kandura) with long sleeves, a collar or collarless neck, short button placket and side pocket slits.
+    · fit: regular (Regular) | relaxed (Relaxed) | loose (Loose); default relaxed — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 2.5…3; default 2.95 — 1 upper thigh · 1.5 above the knee · 2 knee · 2.5 mid-calf · 3 ankle
+    · collar: mandarin (Mandarin (band)) | shirt (Point collar) | none (No collar); default mandarin — collar style
+    · buttons: 0…5; default 3 — number of front buttons
+    · sleeveLength: 0.8…1; default 1 — 0 sleeveless · 0.12 cap · 0.3 short · 0.5 elbow · 0.75 three-quarter · 1 full length
+    · cuffs: none (Plain hem) | band (Buttoned cuff); default none — finish at the end of the sleeve or leg
+    · colors: main (Main colour, default #F7F7F4), hardware (Buttons / zip / rivets, default #F7F7F4), stitch (Stitching thread, default #E9E9E4), secondary (Secondary colour (patterns), default #D9D4C7)
+    · fabrics: cotton_poplin, linen, wool_suiting, crepe (default cotton_poplin)
+- full_abaya_01 — Abaya: Long flowing abaya with wide sleeves, worn closed or open over clothes.
+    · fit: relaxed (Relaxed) | loose (Loose) | oversized (Oversized); default loose — how close the garment sits to the body: skin-tight, slim, regular, relaxed, loose, oversized (changes the shape, not the scale)
+    · length: 2.6…3; default 3 — 1 upper thigh · 1.5 above the knee · 2 knee · 2.5 mid-calf · 3 ankle
+    · sleeveWidth: -1…1; default 0.6 — tapered (−1) … straight (0) … wide / bell (+1)
+    · closure: closed (Closed) | open (Open); default closed — how the front is worn
+    · trimColor: true | false; default false — decorative trim colour on the edges
+    · colors: main (Main colour, default #121212), trim (Trim (collar, plackets, contrast panels), default #6E5A2F), secondary (Secondary colour (patterns), default #2A2A2A)
+    · fabrics: crepe, chiffon, silk, linen (default crepe)
+
+[footwear] Footwear → outfit[] (slot footwear)
+- shoes_sneakers_01 — Sneakers: Low-top sneakers with a padded collar, tongue, laces and eyelets, rubber midsole, toe cap and side panel.
+    · toe: -1…1; default -0.4 — round (−1) … almond (0) … pointed (+1)
+    · sole: 1.5…5; default 3 — sole height in centimetres
+    · laceRows: 4…8; default 6 — number of eyelet pairs
+    · highTop: true | false; default false — collar above the ankle
+    · colors: main (Upper, default #F4F4F2), accent (Side panel, default #1E3A8A), trim (Toe cap / heel, default #E8E8E4), midsole (Midsole, default #FFFFFF), outsole (Outsole, default #2A2A2A), laces (Laces, default #FFFFFF), lining (Lining, default #D9D9D9), hardware (Eyelets, default #CFCFCF)
+    · fabrics: leather, suede, cotton_canvas, polyester_sport (default leather)
+- shoes_running_01 — Running shoes: Lightweight running shoes with a thick cushioned midsole, mesh upper and padded heel.
+    · toe: -1…1; default -0.2 — round (−1) … almond (0) … pointed (+1)
+    · sole: 2.5…6; default 3.8 — sole height in centimetres
+    · colors: main (Upper, default #3A3F4B), accent (Side panel, default #FF5A36), trim (Toe / heel, default #2C303A), midsole (Midsole, default #F2F2F2), outsole (Outsole, default #FF5A36), laces (Laces, default #F2F2F2), lining (Lining, default #222222), hardware (Eyelets, default #2C303A)
+    · fabrics: polyester_sport, nylon (default polyester_sport)
+- shoes_boots_01 — Boots: Boots: ankle boots, lace-up combat / work boots, Chelsea boots with elastic gussets, or knee-high boots; thick sole with a heel block.
+    · style: ankle (Ankle boot) | combat (Combat / work (laced)) | chelsea (Chelsea (elastic sides)) | knee (Knee-high); default combat — boot style
+    · shaft: 10…45; default 18 — how high the boot goes (cm above the ground)
+    · toe: -1…1; default -0.3 — round (−1) … almond (0) … pointed (+1)
+    · sole: 2…5; default 3.2 — sole height in centimetres
+    · colors: main (Leather, default #3B2A1E), trim (Toe / heel, default #33251A), elastic (Elastic gussets, default #1E1E1E), midsole (Welt / sole edge, default #2A1E15), outsole (Outsole, default #151515), laces (Laces, default #5A4632), lining (Lining, default #7A6450), hardware (Hooks / eyelets, default #4A4A4A)
+    · fabrics: leather, suede, cotton_canvas (default leather)
+- shoes_dress_01 — Dress shoes: Formal leather shoes: Oxford (closed lacing, toe cap), Derby or penny loafer; slim sole with a stacked heel.
+    · style: oxford (Oxford) | derby (Derby) | loafer (Penny loafer); default oxford — shoe style
+    · toe: -1…1; default 0.2 — round (−1) … almond (0) … pointed (+1)
+    · colors: main (Leather, default #1A1412), trim (Toe cap / strap, default #1A1412), midsole (Sole edge, default #1A1412), outsole (Sole, default #3A2A20), laces (Laces, default #111111), lining (Lining, default #8A6A4A), hardware (Eyelets, default #1A1412)
+    · fabrics: leather, suede (default leather)
+- shoes_sandals_01 — Sandals: Open sandals with a footbed sole and straps across the foot; or slides with one wide strap.
+    · style: strappy (Strappy sandal) | slide (Slide) | arabic (Arabic sandal (na‘al)); default strappy — sandal style
+    · sole: 1…4; default 1.8 — sole height in centimetres
+    · colors: main (Straps, default #6B4A2E), midsole (Footbed, default #8A6A4A), outsole (Sole, default #2A2A2A)
+    · fabrics: leather, nylon, suede (default leather)
+- shoes_slippers_01 — Slippers: Soft closed house slippers with a padded collar.
+    · toe: -1…1; default -0.8 — round (−1) … almond (0) … pointed (+1)
+    · openBack: true | false; default false — backless slipper (mule)
+    · colors: main (Upper, default #6E7B8B), midsole (Sole, default #E9E4DA), outsole (Outsole, default #5A5A5A), lining (Lining, default #E9E4DA)
+    · fabrics: fleece, suede, velvet (default fleece)
+
+[headwear] Hats and head coverings → accessories[] (slot headwear)
+- hat_cap_01 — Baseball cap: Six-panel baseball cap with a curved visor, top button and eyelets; sits on the hair (hair under the crown is hidden).
+    · visorCurve: 0…1; default 0.45 — flat (0) to strongly curved (1) visor
+    · visorLength: 0.7…1.3; default 1 — visor length
+    · backwards: true | false; default false — visor at the back
+    · colors: main (Crown, default #1F2A44), accent (Visor underside, default #1F2A44)
+    · fabrics: cotton_canvas, denim, wool_suiting, polyester_sport, corduroy (default cotton_canvas)
+- hat_beanie_01 — Beanie: Knitted beanie with a folded rib cuff; optional slouch and pom-pom.
+    · slouch: 0…1; default 0.25 — fitted (0) to slouchy (1)
+    · cuff: true | false; default true — turned-up rib band
+    · pompom: true | false; default false — pom-pom on top
+    · colors: main (Knit, default #A23B2C), rib (Cuff, default #A23B2C)
+    · fabrics: knit_wool, rib_knit, cable_knit, fleece (default knit_wool)
+- hat_fedora_01 — Fedora: Felt fedora with a pinched, dented crown, ribbon band and medium brim.
+    · brim: 0.04…0.08; default 0.058 — brim width (m)
+    · crownHeight: 0.08…0.13; default 0.11 — crown height (m)
+    · colors: main (Felt, default #5A4A3A), trim (Ribbon, default #1F1A16)
+    · fabrics: wool_coating, tweed, suede, linen (default wool_coating)
+- hat_bucket_01 — Bucket hat: Soft bucket hat with a downward-sloping brim.
+    · brim: 0.035…0.075; default 0.055 — brim width (m)
+    · colors: main (Fabric, default #C8B58A), trim (Band, default #C8B58A)
+    · fabrics: cotton_canvas, denim, nylon, corduroy, fleece (default cotton_canvas)
+- hat_kufi_01 — Kufi / taqiyah: Close-fitting rounded skullcap (kufi, taqiyah, kippah-style) covering the top of the head.
+    · depth: 0…1; default 0.5 — small cap on the crown (0) to deep cap (1)
+    · colors: main (Cap, default #F4F1EA), secondary (Embroidery, default #D8D2C4)
+    · fabrics: embroidered, cotton_jersey, knit_wool, velvet (default embroidered)
+- hat_beret_01 — Beret: Soft round felt beret, tilted to one side.
+    · tilt: -1…1; default 0.5 — tilted to the character’s left (−) or right (+)
+    · size: 0.8…1.25; default 1 — overall size
+    · colors: main (Felt, default #8B1E2D)
+    · fabrics: wool_coating, knit_wool, velvet (default wool_coating)
+- head_hijab_01 — Hijab: Head scarf covering the hair, ears and neck with an open face, falling over the shoulders and chest.
+    · length: 0…0.2; default 0.06 — how far it falls over the chest (m)
+    · colors: main (Fabric, default #3A4A5C), secondary (Pattern, default #D9CBB5)
+    · fabrics: crepe, chiffon, silk, cotton_jersey (default crepe)
+- head_hood_up_01 — Hood (worn up): A hood worn up over the head, open at the face (pair it with a hoodie or parka).
+    · colors: main (Fabric, default #3B3F46), rib (Edge, default #3B3F46)
+    · fabrics: fleece, cotton_jersey, nylon, wool_coating (default fleece)
+- head_keffiyeh_01 — Keffiyeh / ghutra: Square head cloth folded into a triangle and draped over the head and shoulders, optionally held by a black agal. Use the shemagh pattern for a red-and-white or black-and-white keffiyeh, solid white for a ghutra.
+    · agal: true | false; default true — black double cord ring on top
+    · size: 0.85…1.2; default 1 — overall size
+    · colors: main (Cloth, default #F7F7F4), secondary (Pattern, default #B3262B), accent (Agal, default #141414)
+    · fabrics: cotton_poplin, linen, cotton_jersey (default cotton_poplin)
+
+[neckwear] Scarves, shawls, ties → accessories[] (slot neckwear)
+- neck_scarf_01 — Scarf: Knitted or woven scarf wrapped once around the neck with the ends hanging in front (or one end thrown over the shoulder).
+    · length: 1…2; default 1.6 — scarf length (m)
+    · width: 0.12…0.4; default 0.24 — scarf width (m)
+    · wrap: front (Both ends in front) | oneBack (One end over the shoulder); default front — how the ends hang
+    · colors: main (Main, default #B5462F), secondary (Pattern, default #E8D9B5), accent (Accent, default #2C3E50)
+    · fabrics: knit_wool, cable_knit, wool_coating, silk, cotton_jersey, linen (default knit_wool)
+- neck_shawl_01 — Shawl: Large shawl wrapped over the shoulders and back, ends falling in front.
+    · length: 1.1…2; default 1.5 — shawl length (m)
+    · width: 0.35…0.8; default 0.6 — shawl width (m)
+    · colors: main (Main, default #6D5A7A), secondary (Pattern, default #E7D8C9), accent (Accent, default #B9965B)
+    · fabrics: knit_wool, silk, chiffon, linen, cotton_jersey (default knit_wool)
+- neck_tie_01 — Tie / bow tie: Necktie with a knot under the collar and the blade lying on the shirt, or a bow tie. Wear with a collared shirt.
+    · style: tie (Necktie) | bow (Bow tie); default tie — necktie or bow tie
+    · width: 0.7…1.2; default 1 — skinny (0.7) to wide (1.2)
+    · length: 0.85…1.1; default 1 — how low the tie ends
+    · colors: main (Tie, default #7A1F2B), secondary (Pattern, default #1F2A44), accent (Accent, default #C9A54A)
+    · fabrics: silk, knit_wool, wool_suiting, linen (default silk)
+
+[eyewear] Glasses → accessories[] (slot eyewear)
+- glasses_01 — Glasses / sunglasses: Eyeglasses or sunglasses: rectangular, round, thick acetate, cat-eye or aviator frames with clear or tinted lenses.
+    · style: rectangle (Rectangular metal) | round (Round metal) | acetate (Thick frame) | cateye (Cat-eye) | aviator (Aviator); default rectangle — frame shape
+    · size: 0.85…1.2; default 1 — overall size
+    · tint: 0…1; default 0 — clear (0) to dark sunglasses (1)
+    · colors: main (Frame, default #1E1E1E), lens (Lens tint, default #30343A)
+
+[jewelry] Jewellery and watches → accessories[] (slot jewelry)
+- jewel_earrings_01 — Earrings: A pair of earrings: studs, hoops or drops.
+    · style: stud (Stud) | hoop (Hoop) | drop (Drop); default stud — earring style
+    · size: 0.6…2; default 1 — overall size
+    · colors: main (Metal / stone, default #D4AF37)
+- jewel_necklace_01 — Necklace: Chain or bead necklace resting on the clothes, with an optional pendant.
+    · style: chain (Chain) | beads (Beads); default chain — necklace type
+    · length: 0…1; default 0.45 — choker (0) to long (1)
+    · pendant: true | false; default true — pendant at the front
+    · pendantShape: round (Round stone) | disc (Disc); default round — pendant shape
+    · colors: main (Chain / beads, default #D4AF37), accent (Pendant, default #2E86AB)
+- jewel_ring_01 — Ring: Ring on a finger, plain band or with a stone.
+    · hand: left | right; default left — which hand
+    · finger: Ring (Ring finger) | Index (Index) | Middle (Middle) | Little (Little finger); default Ring — which finger
+    · gem: true | false; default false — stone on top
+    · colors: main (Metal, default #C0C0C0)
+- jewel_bracelet_01 — Bracelet: Bracelet on a wrist: chain, bead or cuff.
+    · side: left | right; default right — which wrist
+    · style: chain (Chain) | beads (Beads) | cuff (Cuff); default chain — bracelet type
+    · colors: main (Material, default #C9A54A)
+- watch_01 — Wrist watch: Analogue wrist watch with a round or square case, dial, hands and strap.
+    · side: left | right; default left — which wrist
+    · shape: round (Round) | square (Square); default round — case shape
+    · size: 0.8…1.3; default 1 — overall size
+    · colors: main (Case, default #C0C0C0), accent (Dial, default #F4F1EA), strap (Strap, default #4A3020), lens (Crystal, default #DDEEFF)
+
+[handwear] Gloves → accessories[] (slot handwear)
+- gloves_01 — Gloves: A pair of gloves that follow the hands and fingers: leather or knitted with a rib cuff.
+    · cuff: 0…1; default 0.25 — wrist (0) to gauntlet (1)
+    · knit: true | false; default false — ribbed knit cuff
+    · colors: main (Gloves, default #2B2420), rib (Cuff, default #2B2420)
+    · fabrics: leather, knit_wool, suede, polyester_sport (default leather)
+
+[bag] Bags → accessories[] (slot bag)
+- bag_backpack_01 — Backpack: Backpack on the back with padded shoulder straps, front pocket, top handle and zip pulls.
+    · size: 0.75…1.3; default 1 — overall size
+    · colors: main (Bag, default #2F4A3A), strap (Straps, default #1E1E1E), hardware (Zips, default #2B2B2B)
+    · fabrics: nylon, cotton_canvas, leather, denim (default nylon)
+- bag_crossbody_01 — Crossbody / waist bag: Messenger-style crossbody bag with a flap (strap across the chest) or a waist bag (belt bag).
+    · style: crossbody (Crossbody) | waist (Waist bag); default crossbody — bag type
+    · side: left | right; default right — which hip
+    · size: 0.75…1.3; default 1 — overall size
+    · colors: main (Bag, default #6B3E26), strap (Strap, default #4A2A18), hardware (Hardware, default #B08D57)
+    · fabrics: leather, nylon, cotton_canvas, suede (default leather)
+
+[belt] Belts → accessories[] (slot belt)
+- belt_01 — Belt: Leather belt with a metal buckle, worn on the trousers’ waistband (or the natural waist).
+    · width: 0.02…0.05; default 0.034 — belt width (m)
+    · colors: main (Leather, default #3B2414), hardware (Buckle, default #C0C0C0)
+    · fabrics: leather, suede, cotton_canvas (default leather)
+
+FABRICS (outfit[].material.fabric): cotton_jersey (Cotton jersey (T-shirt knit)), rib_knit (Rib knit), fleece (Fleece / sweatshirt), cotton_poplin (Cotton poplin (shirting)), oxford_cloth (Oxford cloth), denim (Denim), chino_twill (Chino twill), wool_suiting (Wool suiting), wool_coating (Wool coating (melton)), tweed (Tweed), knit_wool (Wool knit (sweater)), cable_knit (Cable knit), linen (Linen), silk (Silk / satin), chiffon (Chiffon (sheer)), velvet (Velvet), corduroy (Corduroy), leather (Leather), suede (Suede), nylon (Nylon / technical), polyester_sport (Sport polyester (mesh)), quilted (Quilted padding (puffer)), cotton_canvas (Cotton canvas / workwear), crepe (Crepe (flowing)), embroidered (Embroidered cotton)
+PATTERNS (material.pattern, drawn with colors main + secondary + accent): solid (Solid), stripes (Horizontal stripes), verticalStripes (Vertical stripes), pinstripe (Pinstripe), checks (Checks), gingham (Gingham), plaid (Plaid / tartan), houndstooth (Houndstooth), herringbone (Herringbone), polka (Polka dots), camo (Camouflage), floral (Floral print), geometric (Geometric print), shemagh (Shemagh / keffiyeh weave), colorBlock (Colour blocking (panels))
+HARDWARE (material.hardware: buttons, zips, rivets, buckles): plastic, horn, brass, silver, gunmetal, gold
+material.patternScale: 0.25…4 (1 = natural size); material.wear: 0…1 (fading / washed look).
+FITS (params.fit): skinTight (Skin-tight), slim (Slim), regular (Regular), relaxed (Relaxed), loose (Loose), oversized (Oversized) — fit changes the garment shape (ease, drape), never its scale.
+
+EXAMPLE (a complete, valid document):
+{
+ "format": "limonat-character-3d",
+ "version": "1.0",
+ "mode": "normal3d",
+ "meta": {
+  "name": "Layla",
+  "notes": "Example: smart-casual outfit from a reference photo"
+ },
+ "detail": "high",
+ "body": {
+  "height": 1.66,
+  "masculinity": 0.15,
+  "muscle": 0.25,
+  "bodyFat": 0.3,
+  "hipWidth": 1.05,
+  "legLength": 1.02
+ },
+ "face": {
+  "headWidth": -0.1,
+  "jawWidth": -0.3,
+  "chinLength": 0.1,
+  "cheekbones": 0.4,
+  "eyeSize": 0.25,
+  "eyeTilt": 0.2,
+  "noseWidth": -0.2,
+  "upperLip": 0.3,
+  "lowerLip": 0.4,
+  "eyes": {
+   "iris": "#4A3020",
+   "lashLength": 1.2
+  },
+  "brows": {
+   "styleId": "brow_rounded_01",
+   "color": "#2A1B12"
+  },
+  "facialHair": {
+   "styleId": "facial_none"
+  },
+  "makeup": {
+   "lipColor": "#A8505A",
+   "lipAmount": 0.5,
+   "blush": 0.3
+  }
+ },
+ "skin": {
+  "tone": "#C08A64",
+  "undertone": 0.3,
+  "freckles": 0.15
+ },
+ "hair": {
+  "styleId": "hair_long_wavy_01",
+  "params": {
+   "length": 1.1,
+   "volume": 0.55,
+   "part": "left"
+  },
+  "colors": {
+   "root": "#2B1B12",
+   "tip": "#5A3A22",
+   "highlight": "#8A6040"
+  }
+ },
+ "outfit": [
+  {
+   "assetId": "top_blouse_01",
+   "params": {
+    "fit": "relaxed",
+    "neckline": "v",
+    "sleeveLength": 0.75,
+    "tucked": true
+   },
+   "colors": {
+    "main": "#F3E9DC"
+   },
+   "material": {
+    "fabric": "silk"
+   }
+  },
+  {
+   "assetId": "bottom_trousers_01",
+   "params": {
+    "fit": "relaxed",
+    "rise": 0.85,
+    "legOpening": 0.6,
+    "legLength": 1.02
+   },
+   "colors": {
+    "main": "#2F3A4A"
+   },
+   "material": {
+    "fabric": "wool_suiting"
+   }
+  },
+  {
+   "assetId": "outer_blazer_01",
+   "params": {
+    "fit": "regular",
+    "collar": "notch",
+    "closure": "open",
+    "buttons": 1
+   },
+   "colors": {
+    "main": "#B8A48A",
+    "lining": "#5A2A35"
+   },
+   "material": {
+    "fabric": "linen"
+   }
+  },
+  {
+   "assetId": "shoes_dress_01",
+   "params": {
+    "style": "loafer"
+   },
+   "colors": {
+    "main": "#3B2416"
+   }
+  }
+ ],
+ "accessories": [
+  {
+   "assetId": "jewel_earrings_01",
+   "params": {
+    "style": "hoop",
+    "size": 1
+   },
+   "colors": {
+    "main": "#D4AF37"
+   }
+  },
+  {
+   "assetId": "bag_crossbody_01",
+   "params": {
+    "style": "crossbody",
+    "side": "right"
+   },
+   "colors": {
+    "main": "#6B3E26",
+    "strap": "#4A2A18"
+   }
+  }
+ ]
+}
+
+Now look at the reference and write the JSON document.

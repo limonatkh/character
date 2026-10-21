@@ -21,6 +21,7 @@ import { ImportPanel } from './ui/importer.js';
 import { PromptPanel } from './ui/prompt-panel.js';
 import { CharactersPanel } from './ui/characters.js';
 import { ExportPanel } from './ui/export-panel.js';
+import { modeSwitch } from './ui/modes.js';
 
 const TABS = [['customize', 'tabCustomize'], ['ai', 'tabAi'], ['prompt', 'tabPrompt'], ['chars', 'tabChars'], ['export', 'tabExport']];
 const VIEWS = [['front', 'vFront'], ['right', 'vSide'], ['back', 'vBack'], ['threeQuarter', 'v34'], ['face', 'vFace']];
@@ -29,8 +30,8 @@ const POSES = [['rest', 'pRest'], ['idle', 'pIdle'], ['walk', 'pWalk'], ['wave',
 const el = id => document.getElementById(id);
 
 class App {
-  constructor() {
-    setLang(prefs.get('lang', 'ar'));
+  constructor(host) {
+    this.host = host;
     this.store = new Store(newDocument(defaultBaseId()));
     this.library = new Library();
     this.tab = TABS.some(([id]) => id === prefs.get('tab', 'customize')) ? prefs.get('tab', 'customize') : 'customize';
@@ -48,6 +49,7 @@ class App {
     const ctx = {
       store: this.store, library: this.library, viewer: this.viewer, thumbs: this.thumbs, queue: this.queue, cache: this.cache,
       goTab: id => this.setTab(id), confirm: (m, y) => this.confirm(m, y), onCheckMode: on => this.setCheckMode(on),
+      switchMode: m => this.host && this.host.show(m),
     };
     this.panels = {
       customize: new CustomizePanel(el('tab-customize'), ctx),
@@ -64,6 +66,14 @@ class App {
     this.setTab(this.tab);
     this.bindKeys();
     this.library.start().then(() => this.restoreLast());
+  }
+
+  // ------------------------------------------------------------------ show / hide (mode switching)
+  pause() { if (this.viewer && this.viewer.pause) this.viewer.pause(); }
+  onShow() {
+    if (this.lang !== getLang()) { this.renderShell(); for (const k of Object.keys(this.panels)) this.stale.add(k); this.setTab(this.tab); }
+    if (this.viewer && this.viewer.resume) { this.viewer.resume(); this.viewer.resize(); }
+    document.title = t('appTitle');
   }
 
   // ------------------------------------------------------------------ state → view
@@ -128,7 +138,8 @@ class App {
 
   // ------------------------------------------------------------------ shell
   renderShell() {
-    document.title = t('appTitle');
+    this.lang = getLang();
+    if (!el('app').hidden) document.title = t('appTitle');
     const top = clear(el('topbar'));
     this.nameInput = h('input.name-input', {
       id: 'char-name', type: 'text', maxLength: 40, value: this.store.config.name, attrs: { 'aria-label': t('name'), dir: 'auto', autocomplete: 'off' },
@@ -141,6 +152,7 @@ class App {
     const langBtn = h('button.btn.small.lang', { type: 'button', title: t('langLabel'), attrs: { 'aria-label': t('langLabel') }, onclick: () => this.toggleLang() }, t('lang'));
     top.append(
       h('div.brand', h('img.logo', { src: LOGO_HEAD, alt: '', width: 40, height: 40, attrs: { 'aria-hidden': 'true' } }), h('div.brand-text', h('h1', t('appTitle')), h('span.brand-sub', t('appSub')))),
+      this.host ? modeSwitch('voxel', m => this.host.show(m)) : null,
       h('label.name-wrap', h('span.sr', t('name')), this.nameInput, this.statusChip),
       h('div.top-actions', this.undoBtn, this.redoBtn, langBtn));
 
@@ -196,6 +208,7 @@ class App {
 
   bindKeys() {
     window.addEventListener('keydown', e => {
+      if (el('app').hidden) return;
       const typing = e.target && (e.target.tagName === 'TEXTAREA' || (e.target.tagName === 'INPUT' && /text|search|number/.test(e.target.type)));
       if (typing || !(e.ctrlKey || e.metaKey)) return;
       const k = e.key.toLowerCase();
@@ -220,12 +233,43 @@ class App {
   }
 }
 
-function boot() {
-  try { window.limonatCreator = new App(); }
-  catch (e) {
-    console.error(e);
-    const app = el('app');
-    if (app) app.append(h('p.banner.error', 'The creator failed to start: ' + e.message));
+/**
+ * Two independent creation modes share the page: Voxel (#app, this file)
+ * and Normal 3D (#app3d, src/n3d/ui/app.js, loaded the first time it is
+ * opened). The chosen mode is remembered per browser.
+ */
+class ModeHost {
+  constructor() { this.apps = {}; this.mode = null; }
+  async show(mode) {
+    mode = mode === 'n3d' ? 'n3d' : 'voxel';
+    prefs.set('mode', mode);
+    this.mode = mode;
+    el('app').hidden = mode !== 'voxel';
+    el('app3d').hidden = mode !== 'n3d';
+    for (const [m, a] of Object.entries(this.apps)) if (m !== mode && a.pause) a.pause();
+    try {
+      if (!this.apps[mode]) {
+        if (mode === 'voxel') { this.apps.voxel = new App(this); window.limonatCreator = this.apps.voxel; }
+        else {
+          el('app3d').append(h('p.banner.loading', '…'));
+          const { N3DApp } = await import('./n3d/ui/app.js');
+          if (this.mode !== 'n3d') return;
+          this.apps.n3d = new N3DApp(el('app3d'), this);
+          window.limonatCreator3D = this.apps.n3d;
+        }
+      }
+      this.apps[mode].onShow();
+    } catch (e) {
+      console.error(e);
+      const root = el(mode === 'voxel' ? 'app' : 'app3d');
+      if (root) root.append(h('p.banner.error', 'The creator failed to start: ' + e.message));
+    }
   }
+}
+
+function boot() {
+  setLang(prefs.get('lang', 'ar'));
+  const host = window.limonatModes = new ModeHost();
+  host.show(prefs.get('mode', 'voxel'));
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();

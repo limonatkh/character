@@ -1,0 +1,46 @@
+{
+  "format": "limonat-character-3d",
+  "version": "1.0",
+  "mode": "normal3d",
+  "meta": {
+    "name": "Athlete",
+    "notes": "Tank top, athletic shorts and running shoes."
+  },
+  "body": {
+    "masculinity": 0.8,
+    "muscle": 0.85,
+    "bodyFat": 0.1,
+    "shoulderWidth": 1.1
+  },
+  "hair": {
+    "styleId": "hair_buzz_01"
+  },
+  "outfit": [
+    {
+      "assetId": "top_tank_01",
+      "material": {
+        "fabric": "polyester_sport"
+      },
+      "colors": {
+        "main": "#E14B3B"
+      }
+    },
+    {
+      "assetId": "bottom_athletic_shorts_01"
+    },
+    {
+      "assetId": "shoes_running_01"
+    }
+  ],
+  "accessories": [
+    {
+      "assetId": "watch_01",
+      "params": {
+        "shape": "square"
+      },
+      "colors": {
+        "strap": "#1E1E1E"
+      }
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "format": "limonat-character-3d",
+  "version": "1.0",
+  "mode": "normal3d",
+  "meta": {
+    "name": "Worker",
+    "notes": "Coveralls, boots, cap and gloves."
+  },
+  "body": {
+    "masculinity": 0.85,
+    "muscle": 0.55
+  },
+  "hair": {
+    "styleId": "hair_crop_01"
+  },
+  "face": {
+    "facialHair": {
+      "styleId": "facial_stubble_01"
+    }
+  },
+  "outfit": [
+    {
+      "assetId": "full_coveralls_01"
+    },
+    {
+      "assetId": "shoes_boots_01",
+      "params": {
+        "style": "combat"
+      }
+    }
+  ],
+  "accessories": [
+    {
+      "assetId": "hat_cap_01",
+      "colors": {
+        "main": "#E8A33B"
+      }
+    },
+    {
+      "assetId": "gloves_01"
+    }
+  ]
+}

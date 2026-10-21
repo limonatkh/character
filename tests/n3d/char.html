@@ -1,0 +1,53 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>n3d character</title>
+<style>body{margin:0;background:#2a2f3a}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"../../vendor/three/three.module.js","three/addons/":"../../vendor/three/addons/"}}</script>
+</head><body>
+<script type="module">
+/* Development renderer for the full Normal 3D pipeline (build → scene),
+ * used by screenshot scripts: window.renderDoc(doc, { views, w, h, detail, mode, wire }). */
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import '../../src/n3d/assets/index.js';
+import { buildCharacter } from '../../src/n3d/build/character.js';
+import { createN3DDocument } from '../../src/n3d/core/document.js';
+import { buildScene } from '../../src/n3d/render/scene.js';
+import { applyPose } from '../../src/n3d/render/skeleton3.js';
+const cache = new Map();
+let renderer = null, pmrem = null, envTex = null;
+window.renderDoc = (doc, opts = {}) => {
+  const t0 = performance.now();
+  const res = buildCharacter(createN3DDocument(doc), { cache, detail: opts.detail });
+  const tb = performance.now() - t0;
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(opts.bg || '#3a4150');
+  const W = opts.w || 300, H = opts.h || 600;
+  const views = opts.views || ['front', 'side', 'back', 'tq'];
+  if (!renderer) { renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0; pmrem = new THREE.PMREMGenerator(renderer); envTex = pmrem.fromScene(new RoomEnvironment(renderer), 0.04).texture; }
+  scene.environment = envTex;
+  const key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(-1.5, 2.6, -2.2); scene.add(key);
+  const rim = new THREE.DirectionalLight(0xc8dcff, 0.8); rim.position.set(2, 2, 2); scene.add(rim);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x404a58, 0.35));
+  const group = buildScene(res, { wire: opts.wire, mode: opts.mode, skinned: !!opts.pose });
+  scene.add(group);
+  if (opts.pose) { applyPose(group.userData.skeleton, opts.pose, opts.t || 0.6); group.updateMatrixWorld(true); }
+  renderer.setSize(W * views.length, H); renderer.setScissorTest(true);
+  document.body.innerHTML = ''; document.body.appendChild(renderer.domElement);
+  const h = res.rig.H, hm = res.marks.head, go = res.groundOffset || 0;
+  views.forEach((v, i) => {
+    const cam = new THREE.PerspectiveCamera(30, W / H, 0.01, 50);
+    let t = new THREE.Vector3(0, h * 0.52 + go, 0), dir, dist = h * 2.3;
+    if (v === 'front') dir = [0, 0.02, -1]; if (v === 'side') dir = [1, 0.02, 0]; if (v === 'back') dir = [0, 0.05, 1]; if (v === 'tq') dir = [0.7, 0.2, -0.8];
+    if (v === 'headBack' || v === 'headTop') { t = new THREE.Vector3(0, hm.cranium.c[1] - 0.02 + go, hm.cranium.c[2]); dist = 0.85; dir = v === 'headBack' ? [0.45, 0.15, 1] : [0.2, 1, 0.5]; }
+    if (v === 'face' || v === 'faceTq' || v === 'faceSide') { t = new THREE.Vector3(0, hm.eyes[0].center[1] - 0.03 + go, -0.02); dist = 0.75; dir = v === 'face' ? [0, 0.02, -1] : v === 'faceTq' ? [0.6, 0.1, -0.8] : [1, 0.02, -0.1]; }
+    if (v === 'chest' || v === 'chestTq' || v === 'chestBack') { t = new THREE.Vector3(0, h * 0.72 + go, 0); dist = 1.3; dir = v === 'chest' ? [0, 0.1, -1] : v === 'chestBack' ? [0, 0.15, 1] : [0.7, 0.2, -0.7]; }
+    if (v === 'waist' || v === 'waistTq') { t = new THREE.Vector3(0, h * 0.5 + go, 0); dist = 1.4; dir = v === 'waist' ? [0, 0.1, -1] : [0.7, 0.1, -0.7]; }
+    if (v === 'feet' || v === 'feetSide' || v === 'feetBack') { t = new THREE.Vector3(0, 0.08, -0.02); dist = 0.9; dir = v === 'feet' ? [0.35, 0.45, -1] : v === 'feetBack' ? [0.3, 0.4, 1] : [1, 0.25, -0.15]; }
+    cam.position.copy(t).add(new THREE.Vector3(...dir).normalize().multiplyScalar(dist)); cam.lookAt(t);
+    renderer.setViewport(i * W, 0, W, H); renderer.setScissor(i * W, 0, W, H); renderer.render(scene, cam);
+  });
+  group.traverse(o => { if (o.isMesh) o.geometry.dispose(); });
+  return { buildMs: Math.round(tb), stats: res.stats, errors: res.errors };
+};
+window.ready = true;
+</script></body></html>

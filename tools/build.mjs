@@ -31,6 +31,16 @@ const result = await esbuild.build({
 });
 let js = result.outputFiles[0].text.replace(/<\/script/gi, '<\\/script');
 
+// The Normal 3D build worker, bundled separately and started from a Blob URL
+// (a single-file page cannot load a second module file).
+const worker = await esbuild.build({
+  entryPoints: [rel('src/n3d/build/worker.js')],
+  bundle: true, format: 'iife', minify: true, target: ['es2020'], write: false,
+  plugins: [threeAlias], legalComments: 'none', charset: 'utf8',
+});
+const workerJs = worker.outputFiles[0].text;
+const workerTag = `<script>globalThis.__N3D_WORKER_SRC__=${JSON.stringify(workerJs).replace(/<\/script/gi, '<\\/script')};</script>`;
+
 let css = fs.readFileSync(rel('css/app.css'), 'utf8');
 css = css.replace(/url\(\.\.\/fonts\/([^)]+)\)/g, (_, f) => `url(data:font/woff2;base64,${fs.readFileSync(rel('fonts/' + f)).toString('base64')})`);
 css = (await esbuild.transform(css, { loader: 'css', minify: true })).code;
@@ -56,6 +66,7 @@ ${licence}
 </head>
 <body>
 ${body}
+${workerTag}
 <script type="module">${js}</script>
 </body>
 </html>
@@ -67,6 +78,7 @@ ${licence}
 <style>${css}</style>
 <script>document.documentElement.lang='ar';document.documentElement.dir='rtl';</script>
 ${body}
+${workerTag}
 <script type="module">${js}</script>
 `;
 
@@ -76,3 +88,4 @@ fs.writeFileSync(rel('dist/artifact.html'), artifact);
 const kb = s => (Buffer.byteLength(s) / 1024).toFixed(0) + ' KB';
 console.log('dist/limonat-character-creator.html', kb(standalone));
 console.log('dist/artifact.html', kb(artifact));
+console.log('  of which: app', kb(js), '· Normal 3D build worker', kb(workerJs), '· CSS + fonts', kb(css));

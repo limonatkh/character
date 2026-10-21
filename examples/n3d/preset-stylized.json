@@ -1,0 +1,50 @@
+{
+  "format": "limonat-character-3d",
+  "version": "1.0",
+  "mode": "normal3d",
+  "meta": {
+    "name": "Stylized hero",
+    "notes": "Stylized proportions, bomber jacket, cargo trousers and boots."
+  },
+  "body": {
+    "stylization": 0.9,
+    "headScale": 1.2,
+    "masculinity": 0.7
+  },
+  "face": {
+    "eyeSize": 0.6
+  },
+  "hair": {
+    "styleId": "hair_spiky_01",
+    "colors": {
+      "root": "#2B2B2B",
+      "tip": "#2B2B2B"
+    }
+  },
+  "outfit": [
+    {
+      "assetId": "top_tshirt_01",
+      "colors": {
+        "main": "#F2D16B"
+      }
+    },
+    {
+      "assetId": "bottom_cargo_01"
+    },
+    {
+      "assetId": "outer_bomber_01",
+      "params": {
+        "closure": "open"
+      },
+      "colors": {
+        "main": "#2F4A6B"
+      }
+    },
+    {
+      "assetId": "shoes_boots_01",
+      "params": {
+        "style": "combat"
+      }
+    }
+  ]
+}
