@@ -866,6 +866,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -1037,6 +1043,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -1193,6 +1205,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -1325,6 +1343,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -1494,6 +1518,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -1642,6 +1672,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -1779,6 +1815,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -1948,6 +1990,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -2074,6 +2122,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -2206,6 +2260,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -2359,6 +2419,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -2505,6 +2571,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -2643,6 +2715,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -2767,6 +2845,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -2901,6 +2985,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -3040,6 +3130,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -3159,6 +3255,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -3309,6 +3411,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -3470,6 +3578,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -3603,6 +3717,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -3732,6 +3852,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -3858,6 +3984,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -4004,6 +4136,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -4143,6 +4281,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -4278,6 +4422,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -4410,6 +4560,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -4525,6 +4681,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -4651,6 +4813,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -4752,6 +4920,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -4883,6 +5057,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -5023,6 +5203,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -5184,6 +5370,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -5316,6 +5508,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -5436,6 +5634,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -5559,6 +5763,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -5698,6 +5908,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -5843,6 +6059,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -5971,6 +6193,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -6111,6 +6339,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -6235,6 +6469,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -6379,6 +6619,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -6502,6 +6748,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -6609,6 +6861,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -6726,6 +6984,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -6835,6 +7099,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -6941,6 +7211,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -7044,6 +7320,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -7141,6 +7423,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -7236,6 +7524,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -7335,6 +7629,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -7431,6 +7731,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -7518,6 +7824,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -7622,6 +7934,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -7740,6 +8058,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -7847,6 +8171,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -7962,6 +8292,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -8098,6 +8434,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -8219,6 +8561,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -8358,6 +8706,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -8487,6 +8841,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -8609,6 +8969,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -8751,6 +9117,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -8852,6 +9224,12 @@
               "uid": {
                 "type": "string"
               },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
+              },
               "params": {
                 "type": "object",
                 "additionalProperties": false,
@@ -8946,6 +9324,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -9046,6 +9430,12 @@
               },
               "uid": {
                 "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "how sure the model is that this item matches the reference"
               },
               "params": {
                 "type": "object",
@@ -9151,6 +9541,116 @@
           }
         ]
       }
+    },
+    "reference": {
+      "type": "object",
+      "description": "what the reference image shows",
+      "properties": {
+        "description": {
+          "type": "string",
+          "maxLength": 400
+        },
+        "framing": {
+          "enum": [
+            "full",
+            "upper",
+            "head",
+            "partial",
+            "description"
+          ]
+        },
+        "style": {
+          "enum": [
+            "realistic",
+            "stylized",
+            "cartoon",
+            "anime"
+          ]
+        }
+      }
+    },
+    "observations": {
+      "type": "array",
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "required": [
+          "note"
+        ],
+        "properties": {
+          "area": {
+            "enum": [
+              "body",
+              "face",
+              "skin",
+              "hair",
+              "outfit",
+              "footwear",
+              "accessories",
+              "other"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 400
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    },
+    "uncertain": {
+      "type": "array",
+      "maxItems": 24,
+      "description": "guesses about hidden or unclear parts",
+      "items": {
+        "type": "object",
+        "required": [
+          "note"
+        ],
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 400
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    },
+    "unsupported": {
+      "type": "array",
+      "maxItems": 24,
+      "description": "visible features the library cannot reproduce",
+      "items": {
+        "type": "object",
+        "required": [
+          "feature"
+        ],
+        "properties": {
+          "feature": {
+            "type": "string",
+            "maxLength": 400
+          },
+          "closestSubstitute": {
+            "type": "string",
+            "maxLength": 400
+          }
+        }
+      }
+    },
+    "ai": {
+      "type": "object",
+      "description": "the same four notes as stored by the app (reference, observations, uncertain, unsupported, importedAt)"
     }
   }
 }

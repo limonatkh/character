@@ -9,6 +9,10 @@ HOW TO READ THE IMAGE
 4. Clothing, layer by layer from the skin outward: base top (tucked or not), mid layer (sweater, hoodie, cardigan, waistcoat), outerwear (jacket, blazer, coat), bottoms, full-body garments (dresses, jumpsuits, thobe, abaya), footwear. For each item set the fit, lengths, sleeves, neckline / collar, closure (open / closed), and the fabric, pattern and colours you see. Use pattern + secondary / accent colours for stripes, checks, plaid, prints, colour blocking; wear for faded / washed garments.
 5. Accessories: headwear (caps, hats, beanies, kufi, hijab, keffiyeh with agal, hood up), scarves, shawls, ties, glasses, jewellery, watches, gloves, belts, bags.
 6. Colours are #RRGGBB taken from the image (account for lighting: pick the fabric’s real colour, not its shadow).
+7. Report what you saw: "reference" { description, framing (full | upper | head | partial | description), style (realistic | stylized | cartoon | anime) } and "observations": one entry per area you analysed { area (body | face | skin | hair | outfit | footwear | accessories | other), note, confidence 0…1 }. Give every outfit / accessory item a "confidence" 0…1 (how sure you are it matches).
+8. Hidden or unclear parts (feet out of frame, the back of the head, a covered garment): choose sensible defaults that fit the character and list each guess in "uncertain" { field, note, confidence }. Never present a guess as seen.
+9. Visible features that no asset, parameter, fabric or pattern can reproduce (an embroidery, a logo, an unusual garment) go in "unsupported" { feature, closestSubstitute } — the closest thing you used instead, or "none". Never invent ids or parameters to cover them.
+Keep these lists short and concrete (at most 24 entries each).
 
 RULES
 - Only ids from the catalog below; each item’s params and colors must be ones that item lists. Max 14 outfit items, 12 accessories, one pair of footwear.
@@ -18,7 +22,7 @@ RULES
 - Detail level: "standard" (fast), "high" (default for exports), "advanced" (maximum detail). Levels: standard — Fast editing: body 11 mm / face 3.2 mm / hands 3.2 mm mesh cells, garment 10 mm, hair cards and clumps at base density, 512 px textures. high — Body 8 mm / face 2.3 mm / hands 2.5 mm, garment 7 mm, denser hair with fine strands at the hairline, 1024 px textures, buttonholes and drawstring details. advanced — Body 6 mm / face 1.8 mm / hands 2 mm, garment 5 mm, maximum hair density with individual strands, 2048 px textures, stitching as real geometry.
 
 DOCUMENT STRUCTURE
-{ format, version, mode: "normal3d", meta: { name, notes }, detail, body: {…}, face: { …shape numbers…, eyes: {…}, brows: { styleId, color, params }, facialHair: { styleId, params, colors }, makeup: {…} }, skin: { tone, undertone, freckles, moles, wrinkles, blemishes, stubble, scars: [{ at, size, angle }] }, hair: { styleId, params, colors }, outfit: [ { assetId, params, colors, material: { fabric, pattern, patternScale, wear, hardware } } ], accessories: [ { assetId, params, colors, material } ] }
+{ format, version, mode: "normal3d", meta: { name, notes }, detail, body: {…}, face: { …shape numbers…, eyes: {…}, brows: { styleId, color, params }, facialHair: { styleId, params, colors }, makeup: {…} }, skin: { tone, undertone, freckles, moles, wrinkles, blemishes, stubble, scars: [{ at, size, angle }] }, hair: { styleId, params, colors }, outfit: [ { assetId, params, colors, material: { fabric, pattern, patternScale, wear, hardware }, confidence } ], accessories: [ { assetId, params, colors, material, confidence } ], reference: { description, framing, style }, observations: [ { area, note, confidence } ], uncertain: [ { field, note, confidence } ], unsupported: [ { feature, closestSubstitute } ] }
 
 BODY PARAMETERS (body.*)
   Overall:
@@ -920,7 +924,43 @@ EXAMPLE (a complete, valid document):
    "colors": {
     "main": "#6B3E26",
     "strap": "#4A2A18"
-   }
+   },
+   "confidence": 0.6
+  }
+ ],
+ "reference": {
+  "description": "Full-length photo of a young woman in smart-casual clothes, front view, soft daylight.",
+  "framing": "full",
+  "style": "realistic"
+ },
+ "observations": [
+  {
+   "area": "hair",
+   "note": "Long dark-brown hair in loose waves past the shoulders, side part on the left.",
+   "confidence": 0.9
+  },
+  {
+   "area": "outfit",
+   "note": "Beige linen blazer worn open over a cream silk blouse tucked into navy trousers.",
+   "confidence": 0.85
+  },
+  {
+   "area": "face",
+   "note": "Oval face, high cheekbones, almond eyes, full lips.",
+   "confidence": 0.7
+  }
+ ],
+ "uncertain": [
+  {
+   "field": "outfit[3]",
+   "note": "The feet are partly hidden: chose brown loafers.",
+   "confidence": 0.4
+  }
+ ],
+ "unsupported": [
+  {
+   "feature": "Small embroidered flowers on the blouse cuffs",
+   "closestSubstitute": "plain cuffs"
   }
  ]
 }

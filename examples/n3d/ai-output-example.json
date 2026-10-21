@@ -137,7 +137,43 @@
       "colors": {
         "main": "#6B3E26",
         "strap": "#4A2A18"
-      }
+      },
+      "confidence": 0.6
+    }
+  ],
+  "reference": {
+    "description": "Full-length photo of a young woman in smart-casual clothes, front view, soft daylight.",
+    "framing": "full",
+    "style": "realistic"
+  },
+  "observations": [
+    {
+      "area": "hair",
+      "note": "Long dark-brown hair in loose waves past the shoulders, side part on the left.",
+      "confidence": 0.9
+    },
+    {
+      "area": "outfit",
+      "note": "Beige linen blazer worn open over a cream silk blouse tucked into navy trousers.",
+      "confidence": 0.85
+    },
+    {
+      "area": "face",
+      "note": "Oval face, high cheekbones, almond eyes, full lips.",
+      "confidence": 0.7
+    }
+  ],
+  "uncertain": [
+    {
+      "field": "outfit[3]",
+      "note": "The feet are partly hidden: chose brown loafers.",
+      "confidence": 0.4
+    }
+  ],
+  "unsupported": [
+    {
+      "feature": "Small embroidered flowers on the blouse cuffs",
+      "closestSubstitute": "plain cuffs"
     }
   ]
 }
