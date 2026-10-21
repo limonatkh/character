@@ -94,9 +94,23 @@ export class N3DImportPanel {
       R.canApplyValid ? h('button.btn.gold', { type: 'button', id: 'n3d-ai-valid', onclick: () => this.apply(true) }, T('applyValid')) : null,
       R.items.length ? issueList(R.items) : null);
   }
+  /** What the model reported with the current character: notes, reference, observations, guesses, unsupported features, low-confidence items. */
   notesView() {
-    const n = this.store.doc.meta.notes;
-    return n ? h('section.card-sec.notes', h('h3', T('notesTitle')), h('p', { attrs: { dir: 'auto' } }, n)) : null;
+    const doc = this.store.doc, ai = doc.ai || {}, n = doc.meta.notes;
+    const pct = c => (typeof c === 'number' ? h('span.conf', { dataset: { low: String(c < 0.5) } }, Math.round(c * 100) + '%') : null);
+    const block = (title, items) => (items && items.length ? h('div.note-block', h('div.field-label', title), h('ul', items)) : null);
+    const label = it => Lb(allAssets().find(a => a.id === it.assetId)?.label) || it.assetId;
+    const low = [...doc.outfit, ...doc.accessories].filter(it => typeof it.confidence === 'number' && it.confidence < 0.5);
+    const ref = ai.reference;
+    const blocks = [
+      n ? h('p', { attrs: { dir: 'auto' } }, n) : null,
+      ref ? h('div.note-block', h('div.field-label', T('refTitle')), h('p', { attrs: { dir: 'auto' } }, [ref.description, ref.framing && T('framing_' + ref.framing), ref.style && T('style_' + ref.style)].filter(Boolean).join(' · '))) : null,
+      block(T('obsTitle'), (ai.observations || []).map(o => h('li', h('span.chip.small', T('area_' + o.area)), ' ', h('span', { attrs: { dir: 'auto' } }, o.note), ' ', pct(o.confidence)))),
+      block(T('uncTitle'), (ai.uncertain || []).map(u => h('li', u.field ? h('code', { attrs: { dir: 'ltr' } }, u.field) : null, u.field ? ' ' : null, h('span', { attrs: { dir: 'auto' } }, u.note), ' ', pct(u.confidence)))),
+      block(T('unsTitle'), (ai.unsupported || []).map(u => h('li', h('span', { attrs: { dir: 'auto' } }, u.feature), u.closestSubstitute ? h('span.muted', { attrs: { dir: 'auto' } }, ' → ' + T('substitute') + ': ' + u.closestSubstitute) : null))),
+      block(T('lowConfTitle'), low.map(it => h('li', h('span', label(it)), ' ', pct(it.confidence)))),
+    ].filter(Boolean);
+    return blocks.length ? h('section.card-sec.notes', { id: 'n3d-ai-notes' }, h('h3', T('notesTitle')), ...blocks) : null;
   }
 }
 

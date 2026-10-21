@@ -10,9 +10,11 @@
  *
  * mode 'replace': the input describes a whole character (missing → default)
  * mode 'merge':   the input changes the given base document (missing → keep)
+ * AI notes (reference, observations, uncertain, unsupported — top level or
+ * inside "ai") never block a document: bad entries are dropped with a warning.
  * ===================================================================== */
 import { BODY_PARAMS, FACE_PARAMS } from '../core/params.js';
-import { completeN3D, N3D_FORMAT, EYE_PARAMS, SKIN_PARAMS, MAKEUP_PARAMS, BROW_PARAMS, HEX_RE } from '../core/document.js';
+import { completeN3D, N3D_FORMAT, EYE_PARAMS, SKIN_PARAMS, MAKEUP_PARAMS, BROW_PARAMS, HEX_RE, cleanAiNotes } from '../core/document.js';
 import { getAsset, SLOTS, allAssets } from '../core/registry.js';
 import { DETAIL_IDS } from '../core/detail.js';
 import { FABRICS, PATTERNS, HARDWARE } from '../materials/fabrics.js';
@@ -42,8 +44,16 @@ export function validateN3D(input, opts = {}) {
   if (src.version && !/^1\./.test(String(src.version))) warn('version', `version ${src.version} is newer than this creator (1.x); unknown fields are ignored`);
   const merge = opts.mode === 'merge' && opts.base;
   const out = merge ? clone(opts.base) : {};
-  const known = ['format', 'version', 'mode', 'meta', 'name', 'detail', 'body', 'face', 'skin', 'hair', 'outfit', 'accessories', '$schema', 'notes'];
+  const known = ['format', 'version', 'mode', 'meta', 'name', 'detail', 'body', 'face', 'skin', 'hair', 'outfit', 'accessories', '$schema', 'notes', 'reference', 'observations', 'uncertain', 'unsupported', 'ai'];
   for (const k of Object.keys(src)) if (!known.includes(k)) warn(k, 'unknown field ignored');
+
+  // ---- AI notes: what the reference shows, observations + confidence, guesses, unsupported features
+  const aiSrc = isObj(src.ai) ? src.ai : {};
+  const noteKeys = ['reference', 'observations', 'uncertain', 'unsupported'];
+  if (noteKeys.some(k => src[k] !== undefined || aiSrc[k] !== undefined)) {
+    const ai = cleanAiNotes(Object.fromEntries(noteKeys.map(k => [k, src[k] !== undefined ? src[k] : aiSrc[k]])), warn);
+    if (ai) out.ai = { ...ai, importedAt: new Date().toISOString() }; else delete out.ai;
+  }
 
   // ---- meta / name
   out.meta = { ...(out.meta || {}), ...(isObj(src.meta) ? src.meta : {}) };
@@ -182,6 +192,10 @@ export function validateN3D(input, opts = {}) {
   function cleanItem(p, it, a) {
     const res = { assetId: a.id, params: {}, colors: {}, material: {} };
     if (typeof it.uid === 'string') res.uid = it.uid;
+    if (it.confidence !== undefined) {
+      if (typeof it.confidence !== 'number' || !isFinite(it.confidence)) warn(`${p}.confidence`, 'must be a number from 0 to 1');
+      else { const c = Math.min(1, Math.max(0, it.confidence)); if (c !== it.confidence) warn(`${p}.confidence`, `clamped to ${c} (0…1)`); res.confidence = c; }
+    }
     if (it.params !== undefined) {
       if (!isObj(it.params)) err(`${p}.params`, 'must be an object');
       else for (const [k, v] of Object.entries(it.params)) {

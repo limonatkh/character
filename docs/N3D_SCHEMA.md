@@ -1,6 +1,6 @@
 # Normal 3D character document — format `limonat-character-3d` 1.0
 
-Version 1.0.0 · 2026-10-11 · creator 1.1.0
+Version 1.0.0 · 2026-10-21 · creator 1.1.0
 
 This format belongs to the **Normal 3D** mode only. It shares nothing with the
 Voxel document (`limonat-character`, see [SCHEMA.md](SCHEMA.md)): different
@@ -50,7 +50,14 @@ they always match the app.
       "colors":   { "main": "#F3E9DC" },
       "material": { "fabric": "silk", "pattern": "none", "patternScale": 1, "wear": 0, "hardware": "silver" } }
   ],
-  "accessories": [ { "assetId": "neck_scarf_01", "params": { "wrap": "oneBack" }, "colors": {}, "material": {} } ]   // up to 12
+  "accessories": [ { "assetId": "neck_scarf_01", "params": { "wrap": "oneBack" }, "colors": {}, "material": {},
+                     "confidence": 0.6 } ],                                   // up to 12; confidence optional on any item
+
+  // what an AI model reports (all optional, never block an import; kept with the character as "ai")
+  "reference":    { "description": "Full-length photo, front view, daylight", "framing": "full", "style": "realistic" },
+  "observations": [ { "area": "hair", "note": "long dark waves, side part", "confidence": 0.9 } ],
+  "uncertain":    [ { "field": "outfit[3]", "note": "feet hidden: chose loafers", "confidence": 0.4 } ],
+  "unsupported":  [ { "feature": "embroidered flowers on the cuffs", "closestSubstitute": "plain cuffs" } ]
 }
 ```
 
@@ -67,6 +74,16 @@ they always match the app.
   `uid` (stable id used by the interface and in GLB node names).
 * Colours are `#RRGGBB`. `#abc`, `abc` and lower case are accepted and
   normalised.
+* **AI notes** — `reference` (`framing`: full, upper, head, partial,
+  description; `style`: realistic, stylized, cartoon, anime), `observations`
+  (`area`: body, face, skin, hair, outfit, footwear, accessories, other; a
+  `note`; `confidence` 0…1), `uncertain` (guesses about hidden or unclear
+  parts) and `unsupported` (visible features the library cannot reproduce, with
+  the closest substitute). Up to 24 entries each, 400 characters per text; plain
+  strings are accepted as entries. They may also be written inside an `"ai"`
+  object. The app stores them as `ai` (with `importedAt`), shows them in the AI
+  import tab together with every item whose `confidence` is below 0.5, and
+  includes them in exports.
 
 ## 2. Validation
 
@@ -81,7 +98,7 @@ throws. It accepts a whole document, a partial one, JSON inside prose or a
 | Kind | Examples | Effect |
 |---|---|---|
 | **error** | unknown asset id (with a "did you mean …?" suggestion), item in the wrong list (shoes in `accessories`), wrong type, enum value not offered, unknown fabric / pattern / hardware, Voxel document | that field is dropped |
-| **warning** | number out of range (clamped), unknown parameter for this asset (with the list of its parameters), colour normalised, more than one pair of footwear (first kept), name too long, more items than the limits, unknown top-level field | fixed automatically |
+| **warning** | number out of range (clamped), unknown parameter for this asset (with the list of its parameters), colour normalised, more than one pair of footwear (first kept), name too long, more items than the limits, unknown top-level field, malformed AI notes (bad area, confidence outside 0…1, entry without text) | fixed automatically |
 
 `doc` is always complete and safe to build. **Replace** mode: missing parts
 take default values (a new character). **Merge** mode: the input changes only

@@ -1,6 +1,6 @@
 # Normal 3D mode — overview
 
-Version 1.0.0 · 2026-10-11 · creator 1.1.0 · document format `limonat-character-3d` 1.0
+Version 1.0.0 · 2026-10-21 · creator 1.1.0 · document format `limonat-character-3d` 1.0
 
 The creator now has **two independent creation modes** in one page:
 
@@ -46,6 +46,7 @@ pre-made meshes are scaled or swapped):
 * **Viewport:** orbit (drag), pan (two fingers / right button), zoom (wheel / pinch);
   views *front, side, back, ¾, face, upper body, hand, feet*; display modes
   *materials, clay, wireframe / topology, normals, UV checker, material slots*;
+  lighting *studio, daylight, warm indoor, dramatic, flat*;
   poses *A-pose, relaxed, idle, walk, wave, T-pose* on the real skeleton; spin.
   A chip shows the build stage while the character is rebuilt in the background.
 * **Customize** — sections *Body, Face, Hair, Upper body, Lower body, Full body,
@@ -61,6 +62,11 @@ pre-made meshes are scaled or swapped):
 * **Characters** — save, save a copy, open, duplicate, rename, delete,
   **compare** (a saved character beside the current one), download / import JSON,
   new character. Saves follow your Claude account in the published page.
+* **AI prompt / AI import** — the Normal 3D prompt (with the asset catalog,
+  copy buttons, schema and catalog downloads); the importer checks the JSON,
+  replaces the character or applies changes, and shows the model's notes:
+  what it observed with confidence values, its guesses, and features it could
+  not reproduce. See [N3D_AI_WORKFLOW.md](N3D_AI_WORKFLOW.md).
 * **Undo / redo** for every change (Ctrl+Z / Ctrl+Shift+Z, or the arrows).
 * **Advanced** — detail level, statistics, random character, and the full
   document as editable JSON.

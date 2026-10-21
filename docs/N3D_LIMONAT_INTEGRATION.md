@@ -77,17 +77,19 @@ Measured exports (GLB with textures, skeleton and the three clips):
 | High (export default) | 414 k · 14.4 MB | 736 k · 25 MB |
 | Advanced | 667 k · 23 MB | — |
 
-A voxel character is a few thousand triangles. On phones a Normal 3D
-character at standard detail is heavy, especially with several on screen
-(duels, bots). Recommended for the game: export at *standard*, use
-`material: 'lambert'`, keep Normal 3D characters to the player (bots stay
-voxel), and consider a decimation step (e.g. `gltf-transform simplify`) for a
-mobile build. Textures are capped at 2048 px (512 px at standard, 1024 px at high).
+The exported voxel hero is about 1 500 triangles. On phones a Normal 3D
+character at standard detail is heavy, especially with several on screen:
+duel bots and opponents pick their characters from the same `VR.CHARACTERS`
+list, so a registered Normal 3D character can appear on them too.
+Recommended for the game: export at *standard*, use `material: 'lambert'`,
+and consider a decimation step (e.g. `gltf-transform simplify`) for a mobile
+build. Textures are capped at 2048 px (512 px at standard, 1024 px at high).
 
 ## 5. For the future recording app
 
 The GLB is a standard skinned glTF 2.0 (VRM bone names, 55 bones, 19
 attachment points, `extras.limonatCharacter3D` with the full creator
-document), so any engine or editor (Blender, Unity, Unreal, three.js with
-`GLTFLoader` + `AnimationMixer`) can use it directly; the exported clips play
-as they are.
+document), so it is meant to load in any glTF 2.0 tool (three.js `GLTFLoader` +
+`AnimationMixer`, Blender, game engines with a glTF importer) with its clips.
+Tested: Three's GLTFLoader (the clips play), the Khronos validator and
+gltf-transform; not yet opened in Blender or a game engine.

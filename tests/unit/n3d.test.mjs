@@ -79,6 +79,43 @@ test('validator: merge mode keeps the base, voxel documents are refused, text wi
   assert.ok(lim.doc.outfit.length <= LIMITS.outfit);
 });
 
+test('AI notes: reference, observations with confidence, guesses and unsupported features are kept and checked', () => {
+  const r = validateN3D({
+    mode: 'normal3d',
+    outfit: [{ assetId: 'top_tshirt_01', confidence: 0.3 }, { assetId: 'bottom_jeans_01', confidence: 7 }],
+    reference: { description: 'Photo, front view', framing: 'upper', style: 'photo' },
+    observations: [{ area: 'hair', note: 'short black crop', confidence: 0.9 }, 'wears a watch', { area: 'tail', note: 'x', confidence: 'high' }, { area: 'face' }],
+    uncertain: ['feet hidden: chose sneakers', { field: 'outfit[1]', note: 'legs cropped', confidence: -1 }],
+    unsupported: [{ feature: 'Embroidered logo', closestSubstitute: 'none' }, 'cape with fur trim', 42],
+  });
+  assert.equal(r.ok, true, 'notes never block a document');
+  const ai = r.doc.ai;
+  assert.deepEqual(ai.reference, { description: 'Photo, front view', framing: 'upper' }, 'unknown style dropped');
+  assert.equal(ai.observations.length, 3, 'observation without a note dropped');
+  assert.deepEqual(ai.observations[1], { area: 'other', note: 'wears a watch' });
+  assert.equal(ai.observations[2].area, 'other', 'unknown area → other');
+  assert.equal(ai.observations[2].confidence, undefined, 'non-numeric confidence dropped');
+  assert.equal(ai.uncertain[1].confidence, 0, 'confidence clamped');
+  assert.deepEqual(ai.unsupported.map(u => u.feature), ['Embroidered logo', 'cape with fur trim']);
+  assert.equal(r.doc.outfit[0].confidence, 0.3);
+  assert.equal(r.doc.outfit[1].confidence, 1, 'item confidence clamped');
+  for (const path of ['reference.style', 'observations[2].area', 'observations[2].confidence', 'observations[3]', 'uncertain[1].confidence', 'unsupported[2]', 'outfit[1].confidence'])
+    assert.ok(r.warnings.some(w => w.path === path), `warning for ${path}`);
+  // the notes survive completeN3D (saves, exports) and merges that do not mention them
+  assert.deepEqual(completeN3D(r.doc).ai.unsupported, ai.unsupported);
+  const m = validateN3D({ hair: { colors: { root: '#222222' } } }, { mode: 'merge', base: r.doc });
+  assert.deepEqual(m.doc.ai.unsupported, ai.unsupported);
+  const m2 = validateN3D({ unsupported: ['new thing'] }, { mode: 'merge', base: r.doc });
+  assert.deepEqual(m2.doc.ai.unsupported, [{ feature: 'new thing' }]);
+  // the example shows the model how to write them; the prompt and schema describe them
+  const ex = validateN3D(exampleN3D());
+  assert.ok(ex.doc.ai.observations.length && ex.doc.ai.unsupported.length && ex.doc.ai.uncertain.length);
+  assert.equal(ex.warnings.length, 0, ex.warnings.map(w => w.path + ' ' + w.message).join('; '));
+  const prompt = buildN3DPrompt({ includeCatalog: false }), schema = buildN3DJsonSchema();
+  for (const k of ['reference', 'observations', 'uncertain', 'unsupported', 'confidence']) assert.ok(prompt.includes(k), `prompt explains ${k}`);
+  for (const k of ['reference', 'observations', 'uncertain', 'unsupported']) assert.ok(schema.properties[k], `schema has ${k}`);
+});
+
 test('completeN3D never throws and always returns a full document', () => {
   for (const junk of [null, 5, 'x', [], { body: 7 }, { outfit: [1, null, { assetId: 3 }] }, { face: { eyes: 'blue' } }]) {
     const d = completeN3D(junk);

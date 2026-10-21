@@ -169,6 +169,8 @@ try {
   await page.click('#n3d-ai-apply');
   d = await doc();
   check('14b. valid AI JSON replaces the character', d.meta.name === 'Layla' && d.outfit.length >= 4, `${d.meta.name}, ${d.outfit.map(o => o.assetId).join(', ')}`);
+  const notes = await page.locator('#n3d-ai-notes').innerText().catch(() => '');
+  check("14c. the model's notes are shown: observations with confidence, guesses, unsupported features", /embroidered/i.test(notes) && /90%/.test(notes) && /loafers/i.test(notes) && d.ai && d.ai.unsupported.length === 1, notes.split('\n').slice(0, 2).join(' / '));
   await built(240000);
   await shot('4-ai');
   await page.fill('#n3d-ai-json', JSON.stringify({ format: 'limonat-character-3d', version: '1.0', mode: 'normal3d', body: { height: 3, muscle: 'big' }, hair: { styleId: 'hair_spikey_01' }, outfit: [{ assetId: 'top_hawaiian_99' }, { assetId: 'bottom_jeans_01', colors: { main: '#123456' } }] }));

@@ -1,6 +1,6 @@
 # Image → Normal 3D character with an external AI model
 
-Version 1.0.0 · 2026-10-11 · creator 1.1.0
+Version 1.0.0 · 2026-10-21 · creator 1.1.0
 
 The creator has no AI built in. Any model that reads images works (ChatGPT,
 Gemini, Claude, Copilot, a local vision model…). The Normal 3D mode has its
@@ -31,6 +31,11 @@ The same prompt is in [`docs/N3D_AI_PROMPT.txt`](N3D_AI_PROMPT.txt).
   parting, fringe, hairline, colours) and the **outfit layer by layer** (base
   top tucked or not, mid layer, outerwear, bottoms, full-body garments,
   footwear), then accessories.
+* Report what it saw: a `reference` description, `observations` per area with
+  a `confidence` (0–1), and a `confidence` on each garment and accessory.
+* List guesses about hidden or unclear parts (feet out of frame, the back of
+  the head) in `uncertain`, and visible features nothing in the library can
+  reproduce in `unsupported`, with the closest substitute it used.
 * Use only catalog ids and only the parameters each item lists; keep numbers
   in range; take colours from the fabric, not its shadow.
 * Write only the JSON, no prose. No logos, brand names or copyrighted
@@ -59,7 +64,16 @@ The importer never crashes and never applies a broken document silently.
   ask it to correct its JSON.
 * JSON wrapped in prose or a ```` ```json ```` fence is found automatically.
 
-## 5. Tips
+## 5. What the model could not see or reproduce
+
+After an import, the AI import tab shows **Notes from the model**: what the
+reference shows, its observations with confidence values, its guesses, the
+features it marked as not supported yet (with what it used instead) and the
+items it chose with less than 50 % confidence. These notes stay with the
+character (saved, and included in the export metadata), so you know what to
+check or adjust by hand.
+
+## 6. Tips
 
 * A full-length, front-facing photo in plain light gives the best body and
   outfit; a close-up adds a better face (send both, or a second prompt with

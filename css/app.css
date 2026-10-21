@@ -323,6 +323,10 @@ textarea.code:focus { border-color: var(--gold); outline: none; }
 .issue-msg { grid-column: 1 / -1; font-family: system-ui, 'Segoe UI', Roboto, sans-serif; font-size: 13.5px; line-height: 1.5; overflow-wrap: anywhere; text-align: start; }
 .note-block { display: flex; flex-direction: column; gap: 4px; }
 .notes ul { margin: 0; padding-inline-start: 1.2em; }
+.notes li { margin-block: 3px; }
+.notes .conf { font-family: var(--mono); font-size: 12px; padding: 0 5px; border: 2px solid var(--ink); background: var(--info); color: var(--ink); white-space: nowrap; }
+.notes .conf[data-low="true"] { background: var(--gold); }
+.notes .chip.small { font-size: 12px; padding: 0 6px; }
 
 /* prompt steps */
 .steps { margin: 0; padding-inline-start: 1.6em; display: flex; flex-direction: column; gap: 7px; font-family: var(--read); font-size: 15px; line-height: 1.55; }

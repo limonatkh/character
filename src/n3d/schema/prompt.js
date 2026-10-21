@@ -8,7 +8,7 @@
  * ===================================================================== */
 import { allAssets, listAssets, SLOTS } from '../core/registry.js';
 import { BODY_PARAMS, FACE_PARAMS, BODY_GROUPS, FACE_GROUPS } from '../core/params.js';
-import { EYE_PARAMS, SKIN_PARAMS, MAKEUP_PARAMS, BROW_PARAMS, N3D_FORMAT, N3D_VERSION, createN3DDocument } from '../core/document.js';
+import { EYE_PARAMS, SKIN_PARAMS, MAKEUP_PARAMS, BROW_PARAMS, N3D_FORMAT, N3D_VERSION, createN3DDocument, AI_LIMITS, REF_FRAMING, REF_STYLE, OBS_AREAS } from '../core/document.js';
 import { FABRICS, PATTERNS, HARDWARE } from '../materials/fabrics.js';
 import { FITS } from '../garments/fit.js';
 import { DETAIL_LEVELS } from '../core/detail.js';
@@ -87,8 +87,16 @@ export function exampleN3D() {
     ],
     accessories: [
       { assetId: 'jewel_earrings_01', params: { style: 'hoop', size: 1 }, colors: { main: '#D4AF37' } },
-      { assetId: 'bag_crossbody_01', params: { style: 'crossbody', side: 'right' }, colors: { main: '#6B3E26', strap: '#4A2A18' } },
+      { assetId: 'bag_crossbody_01', params: { style: 'crossbody', side: 'right' }, colors: { main: '#6B3E26', strap: '#4A2A18' }, confidence: 0.6 },
     ],
+    reference: { description: 'Full-length photo of a young woman in smart-casual clothes, front view, soft daylight.', framing: 'full', style: 'realistic' },
+    observations: [
+      { area: 'hair', note: 'Long dark-brown hair in loose waves past the shoulders, side part on the left.', confidence: 0.9 },
+      { area: 'outfit', note: 'Beige linen blazer worn open over a cream silk blouse tucked into navy trousers.', confidence: 0.85 },
+      { area: 'face', note: 'Oval face, high cheekbones, almond eyes, full lips.', confidence: 0.7 },
+    ],
+    uncertain: [{ field: 'outfit[3]', note: 'The feet are partly hidden: chose brown loafers.', confidence: 0.4 }],
+    unsupported: [{ feature: 'Small embroidered flowers on the blouse cuffs', closestSubstitute: 'plain cuffs' }],
   };
 }
 
@@ -104,6 +112,10 @@ export function buildN3DPrompt(opts = {}) {
   L.push('4. Clothing, layer by layer from the skin outward: base top (tucked or not), mid layer (sweater, hoodie, cardigan, waistcoat), outerwear (jacket, blazer, coat), bottoms, full-body garments (dresses, jumpsuits, thobe, abaya), footwear. For each item set the fit, lengths, sleeves, neckline / collar, closure (open / closed), and the fabric, pattern and colours you see. Use pattern + secondary / accent colours for stripes, checks, plaid, prints, colour blocking; wear for faded / washed garments.');
   L.push('5. Accessories: headwear (caps, hats, beanies, kufi, hijab, keffiyeh with agal, hood up), scarves, shawls, ties, glasses, jewellery, watches, gloves, belts, bags.');
   L.push('6. Colours are #RRGGBB taken from the image (account for lighting: pick the fabric’s real colour, not its shadow).');
+  L.push(`7. Report what you saw: "reference" { description, framing (${REF_FRAMING.join(' | ')}), style (${REF_STYLE.join(' | ')}) } and "observations": one entry per area you analysed { area (${OBS_AREAS.join(' | ')}), note, confidence 0…1 }. Give every outfit / accessory item a "confidence" 0…1 (how sure you are it matches).`);
+  L.push('8. Hidden or unclear parts (feet out of frame, the back of the head, a covered garment): choose sensible defaults that fit the character and list each guess in "uncertain" { field, note, confidence }. Never present a guess as seen.');
+  L.push('9. Visible features that no asset, parameter, fabric or pattern can reproduce (an embroidery, a logo, an unusual garment) go in "unsupported" { feature, closestSubstitute } — the closest thing you used instead, or "none". Never invent ids or parameters to cover them.');
+  L.push(`Keep these lists short and concrete (at most ${AI_LIMITS.notes} entries each).`);
   L.push('', 'RULES');
   L.push(`- Only ids from the catalog below; each item’s params and colors must be ones that item lists. Max ${LIMITS.outfit} outfit items, ${LIMITS.accessories} accessories, one pair of footwear.`);
   L.push('- Numbers must stay inside their ranges (they are clamped otherwise). Enum params must use one of the listed values.');
@@ -111,7 +123,7 @@ export function buildN3DPrompt(opts = {}) {
   L.push('- Do not reproduce logos, brand names or copyrighted characters; describe the look with generic garments, colours and patterns.');
   L.push('- Detail level: "standard" (fast), "high" (default for exports), "advanced" (maximum detail). Levels: ' + Object.entries(DETAIL_LEVELS).map(([k, d]) => `${k} — ${d.doc}`).join(' '));
   L.push('', 'DOCUMENT STRUCTURE');
-  L.push('{ format, version, mode: "normal3d", meta: { name, notes }, detail, body: {…}, face: { …shape numbers…, eyes: {…}, brows: { styleId, color, params }, facialHair: { styleId, params, colors }, makeup: {…} }, skin: { tone, undertone, freckles, moles, wrinkles, blemishes, stubble, scars: [{ at, size, angle }] }, hair: { styleId, params, colors }, outfit: [ { assetId, params, colors, material: { fabric, pattern, patternScale, wear, hardware } } ], accessories: [ { assetId, params, colors, material } ] }');
+  L.push('{ format, version, mode: "normal3d", meta: { name, notes }, detail, body: {…}, face: { …shape numbers…, eyes: {…}, brows: { styleId, color, params }, facialHair: { styleId, params, colors }, makeup: {…} }, skin: { tone, undertone, freckles, moles, wrinkles, blemishes, stubble, scars: [{ at, size, angle }] }, hair: { styleId, params, colors }, outfit: [ { assetId, params, colors, material: { fabric, pattern, patternScale, wear, hardware }, confidence } ], accessories: [ { assetId, params, colors, material, confidence } ], reference: { description, framing, style }, observations: [ { area, note, confidence } ], uncertain: [ { field, note, confidence } ], unsupported: [ { feature, closestSubstitute } ] }');
   L.push('', 'BODY PARAMETERS (body.*)'); L.push(...tableLines(BODY_PARAMS, BODY_GROUPS));
   L.push('', 'FACE SHAPE PARAMETERS (face.*)'); L.push(...tableLines(FACE_PARAMS, FACE_GROUPS));
   L.push('', 'EYES (face.eyes.*): iris, sclera, lashColor, heterochromia (optional second iris colour) as #RRGGBB, and:'); L.push(...tableLines(EYE_PARAMS));
@@ -145,7 +157,7 @@ export function buildN3DJsonSchema() {
     oneOf: allAssets().filter(a => slots.includes(a.slot)).map(a => ({
       type: 'object', required: ['assetId'], additionalProperties: false,
       properties: {
-        assetId: { const: a.id, description: a.description }, uid: { type: 'string' },
+        assetId: { const: a.id, description: a.description }, uid: { type: 'string' }, confidence: { type: 'number', minimum: 0, maximum: 1, description: 'how sure the model is that this item matches the reference' },
         params: { type: 'object', additionalProperties: false, properties: Object.fromEntries(Object.entries(a.params || {}).map(([k, p]) => [k, paramSchema(p)])) },
         colors: { type: 'object', additionalProperties: false, properties: Object.fromEntries(Object.keys(a.colors || {}).map(k => [k, color])) },
         material: { type: 'object', additionalProperties: false, properties: { fabric: { enum: a.fabrics && a.fabrics.length ? a.fabrics : Object.keys(FABRICS) }, pattern: { enum: Object.keys(PATTERNS) }, patternScale: { type: 'number', minimum: 0.25, maximum: 4 }, wear: { type: 'number', minimum: 0, maximum: 1 }, hardware: { enum: Object.keys(HARDWARE) } } },
@@ -166,6 +178,11 @@ export function buildN3DJsonSchema() {
       hair: styleRef('hairStyle'),
       outfit: { type: 'array', maxItems: LIMITS.outfit, items: itemSchema(['top', 'mid', 'outer', 'bottom', 'fullBody', 'footwear']) },
       accessories: { type: 'array', maxItems: LIMITS.accessories, items: itemSchema(['headwear', 'neckwear', 'handwear', 'eyewear', 'jewelry', 'bag', 'belt']) },
+      reference: { type: 'object', description: 'what the reference image shows', properties: { description: { type: 'string', maxLength: AI_LIMITS.text }, framing: { enum: REF_FRAMING }, style: { enum: REF_STYLE } } },
+      observations: { type: 'array', maxItems: AI_LIMITS.notes, items: { type: 'object', required: ['note'], properties: { area: { enum: OBS_AREAS }, note: { type: 'string', maxLength: AI_LIMITS.text }, confidence: { type: 'number', minimum: 0, maximum: 1 } } } },
+      uncertain: { type: 'array', maxItems: AI_LIMITS.notes, description: 'guesses about hidden or unclear parts', items: { type: 'object', required: ['note'], properties: { field: { type: 'string' }, note: { type: 'string', maxLength: AI_LIMITS.text }, confidence: { type: 'number', minimum: 0, maximum: 1 } } } },
+      unsupported: { type: 'array', maxItems: AI_LIMITS.notes, description: 'visible features the library cannot reproduce', items: { type: 'object', required: ['feature'], properties: { feature: { type: 'string', maxLength: AI_LIMITS.text }, closestSubstitute: { type: 'string', maxLength: AI_LIMITS.text } } } },
+      ai: { type: 'object', description: 'the same four notes as stored by the app (reference, observations, uncertain, unsupported, importedAt)' },
     },
   };
 }
